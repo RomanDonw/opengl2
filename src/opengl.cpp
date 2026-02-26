@@ -7,7 +7,7 @@ int initOpenGL(GLFWwindow **window, unsigned short windowWidth, unsigned short w
     if (!glfwInit())
     {
         std::cout << "Failed to initialize GLFW." << std::endl;
-        return 1;
+        return INITOPENGL_ERROR;
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -30,20 +30,22 @@ int initOpenGL(GLFWwindow **window, unsigned short windowWidth, unsigned short w
     {
         std::cout << "Can't initialize GLFW window. Program halted with error exit code." << std::endl;
         glfwTerminate();
-        return 1;
+        return INITOPENGL_ERROR;
     }
     glfwMakeContextCurrent(w);
     
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD. Program halted with error exit code." << std::endl;
+
+        glfwMakeContextCurrent(NULL);
         glfwTerminate();
-        return 1;
+        return INITOPENGL_ERROR;
     }
 
     *window = w;
     
     glViewport(0, 0, windowWidth, windowHeight);
 
-    return 0;
+    return INITOPENGL_SUCCESS;
 }
