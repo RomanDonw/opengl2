@@ -1,2 +1,6 @@
 /.vscode
 *.code-workspace
+
+!/build/
+/build/*
+!/build/res
