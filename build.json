@@ -49,6 +49,9 @@
     {
         "files":
         [
+            "src/openal.cpp",
+            "src/opengl.cpp",
+
             "src/main.cpp"
         ]
     }
