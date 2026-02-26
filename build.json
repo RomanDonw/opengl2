@@ -49,8 +49,16 @@
     {
         "files":
         [
-            "src/openal.cpp",
-            "src/opengl.cpp",
+            "src/engine/external/openal.cpp",
+            "src/engine/external/opengl.cpp",
+
+            "src/engine/resources/Mesh.cpp",
+            "src/engine/resources/Texture.cpp",
+            "src/engine/resources/ShaderProgram.cpp",
+
+            "src/engine/Engine.cpp",
+            "src/engine/ResourceManager.cpp",
+            "src/engine/Transform.cpp",
 
             "src/main.cpp"
         ]

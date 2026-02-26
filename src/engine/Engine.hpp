@@ -1,9 +1,9 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
 
-#include "../opengl.hpp"
-#include "../openal.hpp"
-#include "../physics.hpp"
+#include "external/opengl.hpp"
+#include "external/openal.hpp"
+#include "external/physics.hpp"
 
 #include <string>
 

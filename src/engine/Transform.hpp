@@ -1,7 +1,7 @@
 #ifndef TRANSFORM_HPP
 #define TRANSFORM_HPP
 
-#include "../glm.hpp"
+#include "external/glm.hpp"
 
 #include <string>
 

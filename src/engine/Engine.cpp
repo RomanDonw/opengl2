@@ -1,6 +1,7 @@
 #include "Engine.hpp"
 
 #include "ResourceManager.hpp"
+#include "Scene.hpp"
 
 bool Engine::Init(unsigned short windowWidth, unsigned short windowHeight)
 {

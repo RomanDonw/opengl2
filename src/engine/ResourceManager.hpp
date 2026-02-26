@@ -23,7 +23,7 @@ class ResourceManager final
         ~ResourceManager() = delete;
 
     public:
-        void DeleteAll();
+        static void DeleteAll();
 
         static bool HasMesh(std::string name);
         static Mesh *CreateMesh(std::string name); // can return nullptr.

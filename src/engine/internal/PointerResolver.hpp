@@ -3,7 +3,7 @@
 
 class Engine;
 
-class PointerResolver
+class PointerResolver final
 {
     friend class Engine;
 

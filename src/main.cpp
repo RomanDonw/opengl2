@@ -4,15 +4,33 @@
 #include "openal.hpp"
 #include "glm.hpp"
 
+const unsigned short FPS = 60;
+
 int main()
 {
-    GLFWwindow *w;
+    if (!Engine::Init(1200, 700)) return 1;
+
+    GLFWwindow *window = Engine::GetWindow();
+
+    glfwSetTime(0);
+    double prev_time = glfwGetTime();
+    while (!glfwWindowShouldClose(window))
     {
-        int ret = initOpenGL(&w, 1200, 700);
-        if (ret != 0) return ret;
+        double delta = glfwGetTime() - prev_time;
+
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
+
+        if (delta >= 1.0 / FPS)
+        {
+            prev_time = glfwGetTime();
+
+            glfwSwapBuffers(window);
+        }
+
+        glfwPollEvents();
     }
 
-    glfwTerminate();
+    Engine::Shutdown();
 
     return 0;
 }
