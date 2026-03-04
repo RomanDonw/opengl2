@@ -4,59 +4,127 @@
 #include "resources/Texture.hpp"
 #include "resources/ShaderProgram.hpp"
 
+#include "Scene.hpp"
+
+// === PRIVATE ===
+
+ResourceManager::~ResourceManager() { DeleteAll(); }
+
+// === PUBLIC ===
+
 void ResourceManager::DeleteAll()
 {
     
 }
 
-bool ResourceManager::HasMesh(std::string name) { return meshes.contains(name); }
+// === Mesh ===
+
+bool ResourceManager::HasMesh(std::string name) { return meshes.contains(name) && name.length() != 0; }
+
 Mesh *ResourceManager::CreateMesh(std::string name)
 {
-    if (HasMesh(name)) return nullptr;
+    if (HasMesh(name) || name.length() == 0) return nullptr;
 
     Mesh *ret = new Mesh();
     meshes.insert({name, ret});
     return ret;
 }
+
 Mesh *ResourceManager::GetMesh(std::string name)
 {
-    if (!HasMesh(name)) return nullptr;
+    if (!HasMesh(name) || name.length() == 0) return nullptr;
     return meshes.at(name);
 }
+
 bool ResourceManager::DeleteMesh(std::string name)
 {
-    if (!HasMesh(name)) return false;
+    if (!HasMesh(name) || name.length() == 0) return false;
+
+    delete GetMesh(name);
     meshes.erase(name);
     return true;
 }
 
-bool ResourceManager::HasTexture(std::string name) { return textures.contains(name); }
+// === Texture ===
+
+bool ResourceManager::HasTexture(std::string name) { return textures.contains(name) && name.length() != 0; }
+
 Texture *ResourceManager::CreateTexture(std::string name)
 {
-    if (HasTexture(name)) return nullptr;
+    if (HasTexture(name) || name.length() == 0) return nullptr;
 
     Texture *ret = new Texture();
     textures.insert({name, ret});
     return ret;
 }
+
 Texture *ResourceManager::GetTexture(std::string name)
 {
-    if (!HasTexture(name)) return nullptr;
+    if (!HasTexture(name) || name.length() == 0) return nullptr;
     return textures.at(name);
 }
+
 bool ResourceManager::DeleteTexture(std::string name)
 {
-    if (!HasTexture(name)) return false;
+    if (!HasTexture(name) || name.length() == 0) return false;
+
+    delete GetTexture(name);
     textures.erase(name);
     return true;
 }
 
-bool ResourceManager::HasShaderProgram(std::string name);
-ShaderProgram *ResourceManager::CreateShaderProgram(std::string name); // can return nullptr.
-ShaderProgram *ResourceManager::GetShaderProgram(std::string name); // can return nullptr.
-bool ResourceManager::DeleteShaderProgram(std::string name);
+// === ShaderProgram ===
 
-bool ResourceManager::HasScene(std::string name);
-Scene *ResourceManager::CreateScene(std::string name); // can return nullptr.
-Scene *ResourceManager::GetScene(std::string name); // can return nullptr.
-bool ResourceManager::DeleteScene(std::string name);
+bool ResourceManager::HasShaderProgram(std::string name) { return shprogs.contains(name) && name.length() != 0; }
+
+ShaderProgram *ResourceManager::CreateShaderProgram(std::string name)
+{
+    if (HasShaderProgram(name) || name.length() == 0) return nullptr;
+
+    ShaderProgram *ret = new ShaderProgram();
+    shprogs.insert({name, ret});
+    return ret;
+}
+
+ShaderProgram *ResourceManager::GetShaderProgram(std::string name)
+{
+    if (!HasShaderProgram(name) || name.length() == 0) return nullptr;
+    return shprogs.at(name);
+}
+
+bool ResourceManager::DeleteShaderProgram(std::string name)
+{
+    if (!HasShaderProgram(name) || name.length() == 0) return false;
+
+    delete GetShaderProgram(name);
+    shprogs.erase(name);
+    return true;
+}
+
+// === Scene ===
+
+bool ResourceManager::HasScene(std::string name) { return scenes.contains(name) && name.length() != 0; }
+
+Scene *ResourceManager::CreateScene(std::string name)
+{
+    if (HasScene(name) || name.length() == 0) return nullptr;
+
+    Scene *ret = new Scene();
+    scenes.insert({name, ret});
+    return ret;
+}
+
+Scene *ResourceManager::GetScene(std::string name)
+{
+    if (!HasScene(name) || name.length() == 0) return nullptr;
+    return scenes.at(name);
+}
+
+bool ResourceManager::DeleteScene(std::string name)
+{
+    if (!HasScene(name) || name.length() == 0) return false;
+
+    delete GetScene(name);
+    scenes.erase(name);
+    return true;
+}

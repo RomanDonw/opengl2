@@ -20,7 +20,7 @@ class ResourceManager final
         //static inline std::unordered_map<std::string, AudioClip *> clips = std::unordered_map<std::string, AudioClip *>();
 
         ResourceManager() = delete;
-        ~ResourceManager() = delete;
+        ~ResourceManager();
 
     public:
         static void DeleteAll();
