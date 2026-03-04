@@ -26,7 +26,7 @@ int initOpenGL(GLFWwindow **window, unsigned short windowWidth, unsigned short w
     //glfwGetMonitorWorkarea(m, NULL, NULL, &width, &height);
 
     GLFWwindow *w = glfwCreateWindow(windowWidth, windowHeight, "OpenGL", NULL/*m*/, NULL);
-    if (!window)
+    if (!w)
     {
         std::cout << "Can't initialize GLFW window. Program halted with error exit code." << std::endl;
         glfwTerminate();
