@@ -11,12 +11,11 @@ class Engine final
 {
     private:
         Engine() = delete;
-        ~Engine() = delete;
+        ~Engine();
 
         static inline bool inited = false;
 
         static inline GLFWwindow *window = nullptr;
-        static inline phys::PhysicsCommon physcommon = phys::PhysicsCommon();
 
     public:
         static inline std::string CurrentScene = "";
@@ -24,7 +23,7 @@ class Engine final
         static bool Init(unsigned short windowWidth, unsigned short windowHeight);
         static bool Shutdown();
 
-        static GLFWwindow *GetWindow();
+        static GLFWwindow *GetWindow(); // can return nullptr.
 
         static bool Update(double delta);
         static bool Render();

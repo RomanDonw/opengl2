@@ -14,7 +14,10 @@ ResourceManager::~ResourceManager() { DeleteAll(); }
 
 void ResourceManager::DeleteAll()
 {
-    
+    for (std::pair<std::string, Mesh *> pair : meshes) DeleteMesh(pair.first);
+    for (std::pair<std::string, Texture *> pair : textures) DeleteTexture(pair.first);
+    for (std::pair<std::string, ShaderProgram *> pair : shprogs) DeleteShaderProgram(pair.first);
+    for (std::pair<std::string, Scene *> pair : scenes) DeleteScene(pair.first);
 }
 
 // === Mesh ===

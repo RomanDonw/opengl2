@@ -3,6 +3,14 @@
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
 
+#include <cstdio>
+
+// === PRIVATE ===
+
+Engine::~Engine() { Shutdown(); }
+
+// === PUBLIC ===
+
 bool Engine::Init(unsigned short windowWidth, unsigned short windowHeight)
 {
     if (inited) return false;

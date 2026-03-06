@@ -20,7 +20,7 @@
         [
             "lib/libglfw3.a",
             "lib/libglad.a",
-            "lib/libreactphysics3d.a"
+            "lib/libJolt.dll.a"
         ],
         "libraries":
         [
@@ -55,6 +55,10 @@
             "src/engine/resources/Mesh.cpp",
             "src/engine/resources/Texture.cpp",
             "src/engine/resources/ShaderProgram.cpp",
+
+            "src/engine/Scene.cpp",
+            "src/engine/objects/GameObject/GameObject.cpp",
+            "src/engine/objects/GameObject/GameObjectTransform.cpp",
 
             "src/engine/Engine.cpp",
             "src/engine/ResourceManager.cpp",
