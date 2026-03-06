@@ -7,6 +7,7 @@
 class Engine;
 class ResourceManager;
 class GameObject;
+class Camera;
 
 class Scene final
 {
@@ -18,16 +19,23 @@ class Scene final
         ~Scene();
 
         std::vector<GameObject *> objects;
+        Camera *currcam = nullptr;
 
         void Render();
         void Update(double delta);
 
     public:
+        template<std::derived_from<GameObject> T>
+        bool HasObject(T *obj);
+
         template<std::derived_from<GameObject> T, typename... Args>
         T *CreateObject(Args&&... args);
 
         template<std::derived_from<GameObject> T>
         void DeleteObject(T *obj);
+
+        Camera *GetCurrentCamera(); // can return nullptr.
+        void SetCurrentCamera(Camera *cam);
 };
 
 #endif

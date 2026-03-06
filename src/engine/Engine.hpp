@@ -1,11 +1,13 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
 
+#include "external/glm.hpp"
 #include "external/opengl.hpp"
 #include "external/openal.hpp"
 #include "external/physics.hpp"
 
 #include <string>
+#include <utility>
 
 class Engine final
 {
@@ -17,6 +19,8 @@ class Engine final
 
         static inline GLFWwindow *window = nullptr;
 
+        static void resizecallback(GLFWwindow *w, int width, int height);
+
     public:
         static inline std::string CurrentScene = "";
 
@@ -24,6 +28,7 @@ class Engine final
         static bool Shutdown();
 
         static GLFWwindow *GetWindow(); // can return nullptr.
+        static glm::uvec2 GetWindowSize();
 
         static bool Update(double delta);
         static bool Render();

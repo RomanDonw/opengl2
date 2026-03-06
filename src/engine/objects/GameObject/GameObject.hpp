@@ -2,7 +2,9 @@
 #define GAMEOBJECT_HPP
 
 #include <vector>
+#include <string>
 
+#include "GameObjectTypes.hpp"
 #include "GameObjectTransform.hpp"
 
 class Scene;
@@ -18,21 +20,29 @@ class GameObject
 
         virtual void OnGlobalTransformChanged();
 
-        GameObject(Transform t);
-        GameObject();
+        GameObject(Scene *s, Transform t);
+        GameObject(Scene *s);
 
         virtual ~GameObject();
 
+        Scene *scene;
         GameObject *parent = nullptr;
         std::vector<GameObject *> children = std::vector<GameObject *>();
 
         virtual void Update(double delta);
-        virtual void Render();
+        virtual void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt);
 
     public:
+        const GameObjectType type = GAMEOBJECT;
         GameObjectTransform transform;
+        bool enableRender = true;
+        std::string usedShaderProgram = "";
 
+        GameObject *GetParent(); // can return nullptr.
         size_t SetParent(GameObject *new_parent, bool save_global_pos = true);
+
+        Scene *GetScene();
+
         Transform GetParentGlobalTransform();
         Transform GetGlobalTransform();
 };

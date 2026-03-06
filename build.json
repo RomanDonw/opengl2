@@ -1,7 +1,7 @@
 {
     "compiler":
     {
-        "command": "g++ -std=c++23 -c",
+        "command": "g++ -std=c++23 -O2 -c",
         "options": "",
         "include-pathes":
         [
@@ -57,8 +57,12 @@
             "src/engine/resources/ShaderProgram.cpp",
 
             "src/engine/Scene.cpp",
+
             "src/engine/objects/GameObject/GameObject.cpp",
             "src/engine/objects/GameObject/GameObjectTransform.cpp",
+
+            "src/engine/objects/NonRenderable/NonRenderable.cpp",
+            "src/engine/objects/Camera/Camera.cpp",
 
             "src/engine/Engine.cpp",
             "src/engine/ResourceManager.cpp",

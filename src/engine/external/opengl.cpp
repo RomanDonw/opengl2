@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-int initOpenGL(GLFWwindow **window, unsigned short windowWidth, unsigned short windowHeight)
+int initOpenGL(GLFWwindow **window, int windowWidth, int windowHeight)
 {
     if (!glfwInit())
     {

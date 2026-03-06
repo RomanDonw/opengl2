@@ -44,7 +44,7 @@ Transform::~Transform() {}
 
 Transform Transform::Copy() { return *this; }
 
-std::string Transform::ToString()
+std::string Transform::ToString() const
 {
     std::ostringstream ss;
     glm::vec3 rot = glm::eulerAngles(rotation);
@@ -55,20 +55,20 @@ std::string Transform::ToString()
 
 // ================================
 
-glm::vec3 Transform::GetPosition() { return position; }
-glm::quat Transform::GetRotation() { return rotation; }
-glm::mat4 Transform::GetRotationMatrix() { return glm::toMat4(rotation); }
-glm::vec3 Transform::GetScale() { return scale; }
+glm::vec3 Transform::GetPosition() const { return position; }
+glm::quat Transform::GetRotation() const { return rotation; }
+glm::mat4 Transform::GetRotationMatrix() const { return glm::toMat4(rotation); }
+glm::vec3 Transform::GetScale() const { return scale; }
 
 // ================================
 
-glm::vec3 Transform::GetFront() { return rotation * glm::vec3(0, 0, -1); }
-glm::vec3 Transform::GetUp() { return rotation * glm::vec3(0, 1, 0); }
-glm::vec3 Transform::GetRight() { return rotation * glm::vec3(1, 0, 0); }
+glm::vec3 Transform::GetFront() const { return rotation * glm::vec3(0, 0, -1); }
+glm::vec3 Transform::GetUp() const { return rotation * glm::vec3(0, 1, 0); }
+glm::vec3 Transform::GetRight() const { return rotation * glm::vec3(1, 0, 0); }
 
 // ================================
 
-glm::mat4 Transform::GetTransformationMatrix()
+glm::mat4 Transform::GetTransformationMatrix() const
 { return glm::scale(glm::translate(glm::mat4(1), position) * GetRotationMatrix(), scale); }
 
 // ================================

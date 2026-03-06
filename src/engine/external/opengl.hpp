@@ -7,6 +7,6 @@
 #define INITOPENGL_SUCCESS 0
 #define INITOPENGL_ERROR 1
 
-int initOpenGL(GLFWwindow **window, unsigned short windowWidth, unsigned short windowHeight);
+int initOpenGL(GLFWwindow **window, int windowWidth, int windowHeight);
 
 #endif

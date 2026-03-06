@@ -27,24 +27,24 @@ class Transform
 
         Transform Copy();
 
-        std::string ToString();
+        std::string ToString() const;
 
         // ================================
 
-        glm::vec3 GetPosition();
-        glm::quat GetRotation();
-        glm::mat4 GetRotationMatrix();
-        glm::vec3 GetScale();
+        glm::vec3 GetPosition() const;
+        glm::quat GetRotation() const;
+        glm::mat4 GetRotationMatrix() const;
+        glm::vec3 GetScale() const;
 
         // ================================
 
-        glm::vec3 GetFront();
-        glm::vec3 GetUp();
-        glm::vec3 GetRight();
+        glm::vec3 GetFront() const;
+        glm::vec3 GetUp() const;
+        glm::vec3 GetRight() const;
 
         // ================================
 
-        glm::mat4 GetTransformationMatrix();
+        glm::mat4 GetTransformationMatrix() const;
 
         // ================================
 
