@@ -3,11 +3,11 @@
 
 #include "../../external/glm.hpp"
 
-#include "../NonRenderable/NonRenderable.hpp"
+#include "../Pivot/Pivot.hpp"
 
 class Scene;
 
-class Camera final : public NonRenderable
+class Camera final : public Pivot
 {
     friend class Scene;
 

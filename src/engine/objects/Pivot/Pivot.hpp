@@ -1,19 +1,24 @@
 #ifndef PIVOT_HPP
 #define PIVOT_HPP
 
-#include "../NonRenderable/NonRenderable.hpp"
+#include "../GameObject/GameObject.hpp"
 
 class Scene;
 
-class Pivot final : public NonRenderable
+class Pivot : public GameObject
 {
     friend class Scene;
 
-    private:
+    protected:
         Pivot(Scene *s, Transform t);
         Pivot(Scene *s);
 
         ~Pivot();
+
+        void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt) override;
+
+    public:
+        const GameObjectType type = PIVOT;
 };
 
 #endif
