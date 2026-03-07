@@ -11,6 +11,9 @@
 #include "engine/resources/Texture.hpp"
 #include "engine/Scene.hpp"
 
+#include "engine/objects/GameObject/GameObject.hpp"
+#include "engine/objects/Camera/Camera.hpp"
+
 const unsigned short FPS = 100;
 
 bool readtextfile(std::string filename, std::string *output);
@@ -43,6 +46,11 @@ int main()
 
     if (ResourceManager::CreateTexture("crowbar_cyl")->LoadFromUCTEXFile("./res/textures/cyl.uctex")) printf("loaded texture crowbar_cyj\n");
     if (ResourceManager::CreateTexture("crowbar_head")->LoadFromUCTEXFile("./res/textures/cyl.uctex")) printf("loaded texture crowbar_head\n");
+
+    Scene *s = ResourceManager::CreateScene("main");
+    Engine::CurrentScene = "main";
+
+    Camera *cam = s->CreateObject<Camera>();
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(0, 0, 0.1, 1);

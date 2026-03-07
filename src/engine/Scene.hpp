@@ -3,6 +3,10 @@
 
 #include <vector>
 #include <concepts>
+#include <exception>
+#include <stdexcept>
+#include <iterator>
+#include <algorithm>
 
 class Engine;
 class ResourceManager;
@@ -26,13 +30,27 @@ class Scene final
 
     public:
         template<std::derived_from<GameObject> T>
-        bool HasObject(T *obj);
+        bool HasObject(T *obj) { return std::ranges::contains(objects, obj); }
 
         template<std::derived_from<GameObject> T, typename... Args>
-        T *CreateObject(Args&&... args);
+        T *CreateObject(Args&&... args)
+        {
+            T *ret = new T(this, std::forward<Args>(args)...);
+
+            objects.push_back(ret);
+            
+            return ret;
+        }
 
         template<std::derived_from<GameObject> T>
-        void DeleteObject(T *obj);
+        void DeleteObject(T *obj)
+        {
+            if (!HasObject(obj)) throw std::runtime_error("this scene doesn't have this object");
+
+            objects.erase(std::remove(objects.begin(), objects.end(), obj), objects.end());
+
+            delete obj;
+        }
 
         Camera *GetCurrentCamera(); // can return nullptr.
         void SetCurrentCamera(Camera *cam);

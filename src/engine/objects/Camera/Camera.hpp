@@ -5,8 +5,12 @@
 
 #include "../NonRenderable/NonRenderable.hpp"
 
+class Scene;
+
 class Camera final : public NonRenderable
 {
+    friend class Scene;
+
     private:
         Camera(Scene *s, Transform t);
         Camera(Scene *s);

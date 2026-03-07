@@ -3,8 +3,12 @@
 
 #include "../GameObject/GameObject.hpp"
 
+class Scene;
+
 class NonRenderable : public GameObject
 {
+    friend class Scene;
+
     protected:
         NonRenderable(Scene *s, Transform t);
         NonRenderable(Scene *s);
