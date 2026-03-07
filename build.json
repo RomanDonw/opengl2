@@ -62,7 +62,7 @@
             "src/engine/objects/GameObject/GameObjectTransform.cpp",
 
             "src/engine/objects/Camera/Camera.cpp",
-            "src/engine/objects/Pivot/Pivot.cpp",
+            "src/engine/objects/Entity/Entity.cpp",
 
             "src/engine/Engine.cpp",
             "src/engine/ResourceManager.cpp",

@@ -13,6 +13,7 @@
 
 #include "engine/objects/GameObject/GameObject.hpp"
 #include "engine/objects/Camera/Camera.hpp"
+#include "engine/objects/Entity/Entity.hpp"
 
 const unsigned short FPS = 100;
 
@@ -41,7 +42,11 @@ int main()
         if (!sh->LinkShaderProgram(&log)) std::cout << "Error linking shader program: " << std::endl << log << std::endl;
     }
 
-    if (ResourceManager::CreateMesh("crowbar_cyl")->LoadFromUCMESHFile("./res/models/cyl.ucmesh")) printf("loaded model crowbar_cyl\n");
+    if (ResourceManager::CreateMesh("crowbar_cyl")->LoadFromUCMESHFile("./res/models/cyl.ucmesh"))
+    {
+        
+        printf("loaded model crowbar_cyl\n");
+    }
     if (ResourceManager::CreateMesh("crowbar_head")->LoadFromUCMESHFile("./res/models/head.ucmesh")) printf("loaded model crowbar_head\n");
 
     if (ResourceManager::CreateTexture("crowbar_cyl")->LoadFromUCTEXFile("./res/textures/cyl.uctex")) printf("loaded texture crowbar_cyj\n");
@@ -51,6 +56,15 @@ int main()
     Engine::CurrentScene = "main";
 
     Camera *cam = s->CreateObject<Camera>();
+    s->SetCurrentCamera(cam);
+
+    Entity *ent = s->CreateObject<Entity>(Transform({0, 0, -5}));
+    ent->usedShaderProgram = "default";
+
+    Surface surf;
+    surf.mesh = "crowbar_cyl";
+    surf.texture = "crowbar_cyl";
+    ent->surfaces.push_back(surf);
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(0, 0, 0.1, 1);

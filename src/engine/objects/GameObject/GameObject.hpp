@@ -33,10 +33,10 @@ class GameObject
         virtual void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt);
 
     public:
-        const GameObjectType type = GAMEOBJECT;
+        const GameObjectType type = GameObjectType::GAMEOBJECT;
         GameObjectTransform transform;
-        bool enableRender = true;
-        std::string usedShaderProgram = "";
+        //bool enableRender = true;
+        //std::string usedShaderProgram = "";
 
         GameObject *GetParent(); // can return nullptr.
         size_t SetParent(GameObject *new_parent, bool save_global_pos = true);

@@ -24,25 +24,7 @@ GameObject::~GameObject()
 
 void GameObject::Update(double delta) {}
 
-void GameObject::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt)
-{
-    if (!enableRender) return;
-
-    ShaderProgram *sp = ResourceManager::GetShaderProgram(usedShaderProgram);
-    if (!sp) return;
-
-    sp->UseThisProgram();
-
-    sp->SetUniformMatrix4x4("projection", *proj);
-    sp->SetUniformMatrix4x4("view", *view);
-
-    sp->SetUniformVector3("cameraPosition", camt->GetPosition());
-    sp->SetUniformVector3("cameraRotation", glm::eulerAngles(camt->GetRotation()));
-
-    sp->SetUniformVector3("cameraFront", camt->GetFront());
-    sp->SetUniformVector3("cameraUp", camt->GetUp());
-    sp->SetUniformVector3("cameraRight", camt->GetRight());
-}
+void GameObject::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt) {}
 
 // === PUBLIC ===
 

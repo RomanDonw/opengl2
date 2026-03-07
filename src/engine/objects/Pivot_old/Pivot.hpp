@@ -15,6 +15,7 @@ class Pivot : public GameObject
 
         ~Pivot();
 
+        void Update(double delta) override;
         void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt) override;
 
     public:

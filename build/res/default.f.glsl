@@ -10,10 +10,10 @@ uniform vec4 color;
 uniform bool hasTexture;
 uniform sampler2D texture;
 
-uniform bool fogEnabled;
+/*uniform bool fogEnabled;
 uniform float fogStartDistance;
 uniform float fogEndDistance;
-uniform vec3 fogColor;
+uniform vec3 fogColor;*/
 
 uniform vec3 cameraPosition;
 uniform vec3 cameraRotation;

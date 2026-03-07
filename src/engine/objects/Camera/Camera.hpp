@@ -3,11 +3,12 @@
 
 #include "../../external/glm.hpp"
 
-#include "../Pivot/Pivot.hpp"
+//#include "../Pivot/Pivot.hpp"
+#include "../GameObject/GameObject.hpp"
 
 class Scene;
 
-class Camera final : public Pivot
+class Camera final : public GameObject
 {
     friend class Scene;
 
@@ -18,6 +19,8 @@ class Camera final : public Pivot
         ~Camera();
 
     public:
+        const GameObjectType type = GameObjectType::CAMERA;
+
         float FOV = glm::radians(60.0f);
         float nearDistance = 0.1;
         float farDistance = 1000;
