@@ -4,7 +4,7 @@
 
 // === PRIVATE ===
 
-void Transform2D::OnTransformChanged() {}
+void Transform2D::OnTransformChanged() { rotation = glm::mod(rotation, glm::radians(360.0f)); }
 
 // === PUBLIC ===
 

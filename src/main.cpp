@@ -19,11 +19,20 @@ const unsigned short FPS = 100;
 
 bool readtextfile(std::string filename, std::string *output);
 
+void scrollCallback(GLFWwindow *w, double xoff, double yoff);
+void updateCam(GLFWwindow *w, Camera *c, double delta);
+
+const unsigned short WWIDTH = 1200;
+const unsigned short WHEIGHT = 700;
+
 int main()
 {
-    if (!Engine::Init(1200, 700)) return 1;
+    if (!Engine::Init(WWIDTH, WHEIGHT)) return 1;
 
     GLFWwindow *window = Engine::GetWindow();
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetScrollCallback(window, scrollCallback);
 
     ShaderProgram *sh = ResourceManager::CreateShaderProgram("default");
 
@@ -77,6 +86,11 @@ int main()
         {
             prev_time = glfwGetTime();
 
+            ent->surfaces[0].textureTransform.Translate(glm::vec2(0, delta * 0.5f));
+            ent->surfaces[0].textureTransform.Rotate(0.1 * delta);
+
+            updateCam(window, cam, delta);
+
             Engine::Update(delta);
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -92,6 +106,59 @@ int main()
     Engine::Shutdown();
 
     return 0;
+}
+
+const float MOUSE_SENSITIVITY = 0.1;
+const float DEFAULT_CAMERA_SPEED = 3;
+float cameraSpeed = DEFAULT_CAMERA_SPEED;
+
+void scrollCallback(GLFWwindow *w, double xoff, double yoff)
+{
+    cameraSpeed += yoff / 5;
+    if (cameraSpeed < 0) cameraSpeed = 0;
+}
+
+void updateCam(GLFWwindow *window, Camera *cam, double delta)
+{
+    static double lastX = WWIDTH / 2, lastY = WHEIGHT / 2;
+
+    float speed;
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) speed = cameraSpeed * 2.0;
+    else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) speed = cameraSpeed / 2.0;
+    else speed = cameraSpeed;
+
+    Transform *t = &cam->transform;
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) t->Translate(t->GetFront() * glm::vec3(speed * delta));
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) t->Translate(-t->GetFront() * glm::vec3(speed * delta));
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) t->Translate(-t->GetRight() * glm::vec3(speed * delta));
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) t->Translate(t->GetRight() * glm::vec3(speed * delta));
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) t->Translate(glm::vec3(0, speed * delta, 0));
+    if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) t->Translate(glm::vec3(0, -speed * delta, 0));
+
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) cameraSpeed = DEFAULT_CAMERA_SPEED;
+
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+
+    float mxoff = -glm::radians((mouseX - lastX) * MOUSE_SENSITIVITY);
+    float myoff = -glm::radians((mouseY - lastY) * MOUSE_SENSITIVITY);
+    {
+        glm::quat delta_pitch = glm::angleAxis(myoff, glm::vec3(1, 0, 0));
+        glm::quat delta_yaw = glm::angleAxis(mxoff, glm::vec3(0, 1, 0));
+
+        glm::quat new_rotation = delta_yaw * t->GetRotation() * delta_pitch;
+
+        glm::vec3 front = new_rotation * glm::vec3(0, 0, -1);
+        glm::vec3 front_xz = glm::normalize(glm::vec3(front.x, 0, front.z));
+
+        if (glm::dot(front, front_xz) >= glm::cos(glm::radians(60.0f))) t->SetRotation(new_rotation);
+        else t->Rotate(delta_yaw);
+    }
+
+    lastX = mouseX;
+    lastY = mouseY;
 }
 
 bool readtextfile(std::string filename, std::string *output)
