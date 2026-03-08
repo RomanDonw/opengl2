@@ -1,14 +1,15 @@
 #include "Transform.hpp"
 
 #include <sstream>
+#include <limits>
 
 // === PRIVATE ===
 
 void Transform::wrapscale()
 {
-    if (scale.x <= 0) scale.x = 1;
-    if (scale.y <= 0) scale.y = 1;
-    if (scale.z <= 0) scale.z = 1;
+    if (scale.x <= 0) scale.x = std::numeric_limits<float>::min();//1;
+    if (scale.y <= 0) scale.y = std::numeric_limits<float>::min();//1;
+    if (scale.z <= 0) scale.z = std::numeric_limits<float>::min();//1;
 }
 
 void Transform::OnTransformChanged() {}

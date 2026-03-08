@@ -55,7 +55,7 @@ int main()
     if (ResourceManager::CreateMesh("crowbar_head")->LoadFromUCMESHFile("./res/models/head.ucmesh")) printf("loaded model crowbar_head\n");
 
     if (ResourceManager::CreateTexture("crowbar_cyl")->LoadFromUCTEXFile("./res/textures/cyl.uctex")) printf("loaded texture crowbar_cyj\n");
-    if (ResourceManager::CreateTexture("crowbar_head")->LoadFromUCTEXFile("./res/textures/cyl.uctex")) printf("loaded texture crowbar_head\n");
+    if (ResourceManager::CreateTexture("crowbar_head")->LoadFromUCTEXFile("./res/textures/head.uctex")) printf("loaded texture crowbar_head\n");
 
     Scene *s = ResourceManager::CreateScene("main");
     Engine::CurrentScene = "main";
@@ -63,12 +63,16 @@ int main()
     Camera *cam = s->CreateObject<Camera>();
     s->SetCurrentCamera(cam);
 
-    Entity *ent = s->CreateObject<Entity>(Transform({0, 0, -5}));
+    Entity *ent = s->CreateObject<Entity>(Transform({0, 0, -5}, glm::quat(glm::vec3(0)), glm::vec3(0.1)));
     ent->usedShaderProgram = "default";
 
     Surface surf;
     surf.mesh = "crowbar_cyl";
     surf.texture = "crowbar_cyl";
+    ent->surfaces.push_back(surf);
+
+    surf.mesh = "crowbar_head";
+    surf.texture = "crowbar_head";
     ent->surfaces.push_back(surf);
 
     glEnable(GL_DEPTH_TEST);
