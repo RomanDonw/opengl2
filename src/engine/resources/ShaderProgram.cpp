@@ -219,6 +219,15 @@ bool ShaderProgram::SetUniformVector4(std::string name, glm::vec4 value)
     return true;
 }
 
+bool ShaderProgram::SetUniformMatrix3x3(std::string name, glm::mat3 value)
+{
+    if (!HasUniform(name)) return false;
+
+    glUniformMatrix3fv(glGetUniformLocation(shaderProgram, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+
+    return true;
+}
+
 bool ShaderProgram::SetUniformMatrix4x4(std::string name, glm::mat4 value)
 {
     if (!HasUniform(name)) return false;

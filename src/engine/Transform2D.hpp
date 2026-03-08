@@ -10,7 +10,7 @@ class Transform2D
     protected:
         glm::vec2 position = glm::vec2(0.0f);
         float rotation = 0;
-        glm::vec2 scale = glm::vec2(0.0f);
+        glm::vec2 scale = glm::vec2(1.0f);
 
         virtual void OnTransformChanged();
 

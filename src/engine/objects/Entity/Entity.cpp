@@ -66,6 +66,8 @@ void Entity::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transfor
         glActiveTexture(GL_TEXTURE0);
         sp->SetUniformInteger("hasTexture", texture ? GL_TRUE : GL_FALSE);
 
+        sp->SetUniformMatrix3x3("textureTransformation", surface.textureTransform.GetTransformationMatrix());
+
         sp->SetUniformMatrix4x4("model", GetGlobalTransform().GetTransformationMatrix() * surface.transform.GetTransformationMatrix());
         sp->SetUniformVector4("color", color * surface.color);
 

@@ -53,6 +53,7 @@ class ShaderProgram final
         bool SetUniformFloat(std::string name, float value);
         bool SetUniformVector3(std::string name, glm::vec3 value);
         bool SetUniformVector4(std::string name, glm::vec4 value);
+        bool SetUniformMatrix3x3(std::string name, glm::mat3 value);
         bool SetUniformMatrix4x4(std::string name, glm::mat4 value);
 };
 

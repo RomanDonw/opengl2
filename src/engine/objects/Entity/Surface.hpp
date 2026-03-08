@@ -6,6 +6,7 @@
 #include <string>
 
 #include "../../Transform.hpp"
+#include "../../Transform2D.hpp"
 
 enum
 {
@@ -24,6 +25,7 @@ struct
 
     std::string mesh = "";
     std::string texture = "";
+    Transform2D textureTransform = Transform2D();
 } typedef Surface;
 
 #endif
