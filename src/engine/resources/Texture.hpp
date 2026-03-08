@@ -27,8 +27,8 @@ class Texture final
         bool LoadFromUCTEXFile(std::string filename);
 
         bool SetTextureIntParameter(GLenum param, GLint value);
-        void SetDefaultParametres();
-        void SetLinearSmoothing();
+        //void SetDefaultParametres();
+        //void SetLinearSmoothing();
 };
 
 #endif

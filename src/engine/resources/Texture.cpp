@@ -157,6 +157,12 @@ bool Texture::LoadFromUCTEXFile(std::string filename)
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     glBindTexture(GL_TEXTURE_2D, 0);
     fclose(f);
 
@@ -174,7 +180,7 @@ bool Texture::SetTextureIntParameter(GLenum param, GLint value)
     return true;
 }
 
-void Texture::SetDefaultParametres()
+/*void Texture::SetDefaultParametres()
 {
     SetTextureIntParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     SetTextureIntParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -187,4 +193,4 @@ void Texture::SetLinearSmoothing()
 {
     SetTextureIntParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     SetTextureIntParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-}
+}*/

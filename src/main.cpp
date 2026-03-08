@@ -42,11 +42,7 @@ int main()
         if (!sh->LinkShaderProgram(&log)) std::cout << "Error linking shader program: " << std::endl << log << std::endl;
     }
 
-    if (ResourceManager::CreateMesh("crowbar_cyl")->LoadFromUCMESHFile("./res/models/cyl.ucmesh"))
-    {
-        
-        printf("loaded model crowbar_cyl\n");
-    }
+    if (ResourceManager::CreateMesh("crowbar_cyl")->LoadFromUCMESHFile("./res/models/cyl.ucmesh")) printf("loaded model crowbar_cyl\n");
     if (ResourceManager::CreateMesh("crowbar_head")->LoadFromUCMESHFile("./res/models/head.ucmesh")) printf("loaded model crowbar_head\n");
 
     if (ResourceManager::CreateTexture("crowbar_cyl")->LoadFromUCTEXFile("./res/textures/cyl.uctex")) printf("loaded texture crowbar_cyj\n");
@@ -67,7 +63,7 @@ int main()
     ent->surfaces.push_back(surf);
 
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0, 0, 0.1, 1);
+    glClearColor(0.5, 0.5, 0.5, 1);
 
     glfwSetTime(0);
     double prev_time = glfwGetTime();
