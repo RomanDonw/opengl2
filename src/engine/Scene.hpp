@@ -9,13 +9,11 @@
 #include <algorithm>
 
 class Engine;
-class ResourceManager;
 class GameObject;
 class Camera;
 
 class Scene final
 {
-    friend class ResourceManager;
     friend class Engine;
 
     private:

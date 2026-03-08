@@ -4,8 +4,6 @@
 #include "resources/Texture.hpp"
 #include "resources/ShaderProgram.hpp"
 
-#include "Scene.hpp"
-
 // === PRIVATE ===
 
 ResourceManager::~ResourceManager() { DeleteAll(); }
@@ -17,7 +15,6 @@ void ResourceManager::DeleteAll()
     for (std::pair<std::string, Mesh *> pair : meshes) DeleteMesh(pair.first);
     for (std::pair<std::string, Texture *> pair : textures) DeleteTexture(pair.first);
     for (std::pair<std::string, ShaderProgram *> pair : shprogs) DeleteShaderProgram(pair.first);
-    for (std::pair<std::string, Scene *> pair : scenes) DeleteScene(pair.first);
 }
 
 // === Mesh ===
@@ -101,33 +98,5 @@ bool ResourceManager::DeleteShaderProgram(std::string name)
 
     delete GetShaderProgram(name);
     shprogs.erase(name);
-    return true;
-}
-
-// === Scene ===
-
-bool ResourceManager::HasScene(std::string name) { return scenes.contains(name) && name.length() != 0; }
-
-Scene *ResourceManager::CreateScene(std::string name)
-{
-    if (HasScene(name) || name.length() == 0) return nullptr;
-
-    Scene *ret = new Scene();
-    scenes.insert({name, ret});
-    return ret;
-}
-
-Scene *ResourceManager::GetScene(std::string name)
-{
-    if (!HasScene(name) || name.length() == 0) return nullptr;
-    return scenes.at(name);
-}
-
-bool ResourceManager::DeleteScene(std::string name)
-{
-    if (!HasScene(name) || name.length() == 0) return false;
-
-    delete GetScene(name);
-    scenes.erase(name);
     return true;
 }

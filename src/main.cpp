@@ -57,7 +57,7 @@ int main()
     if (ResourceManager::CreateTexture("crowbar_cyl")->LoadFromUCTEXFile("./res/textures/cyl.uctex")) printf("loaded texture crowbar_cyj\n");
     if (ResourceManager::CreateTexture("crowbar_head")->LoadFromUCTEXFile("./res/textures/head.uctex")) printf("loaded texture crowbar_head\n");
 
-    Scene *s = ResourceManager::CreateScene("main");
+    Scene *s = Engine::CreateScene("main");
     Engine::CurrentScene = "main";
 
     Camera *cam = s->CreateObject<Camera>();

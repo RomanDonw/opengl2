@@ -35,8 +35,6 @@ class GameObject
     public:
         const GameObjectType type = GameObjectType::GAMEOBJECT;
         GameObjectTransform transform;
-        //bool enableRender = true;
-        //std::string usedShaderProgram = "";
 
         GameObject *GetParent(); // can return nullptr.
         size_t SetParent(GameObject *new_parent, bool save_global_pos = true);

@@ -8,7 +8,7 @@
 
 // === PRIVATE ===
 
-Engine::~Engine() { Shutdown(); }
+Engine::~Engine() { Shutdown(); DeleteAllScenes(); }
 
 void Engine::resizecallback(GLFWwindow *w, int width, int height) { if (width > 0 && height > 0) glViewport(0, 0, width, height); }
 
@@ -44,7 +44,7 @@ bool Engine::Update(double delta)
 {
     if (!inited) return false;
 
-    if (ResourceManager::HasScene(CurrentScene)) ResourceManager::GetScene(CurrentScene)->Update(delta);
+    if (Engine::HasScene(CurrentScene)) Engine::GetScene(CurrentScene)->Update(delta);
 
     return true;
 }
@@ -67,7 +67,38 @@ bool Engine::Render()
     glfwGetWindowSize(window, &w, &h);
     if (w <= 0 || h <= 0) return false;
 
-    if (ResourceManager::HasScene(CurrentScene)) ResourceManager::GetScene(CurrentScene)->Render();
+    if (Engine::HasScene(CurrentScene)) Engine::GetScene(CurrentScene)->Render();
 
     return true;
+}
+
+bool Engine::HasScene(std::string name) { return scenes.contains(name) && name.length() != 0; }
+
+Scene *Engine::CreateScene(std::string name)
+{
+    if (HasScene(name) || name.length() == 0) return nullptr;
+
+    Scene *ret = new Scene();
+    scenes.insert({name, ret});
+    return ret;
+}
+
+Scene *Engine::GetScene(std::string name)
+{
+    if (!HasScene(name) || name.length() == 0) return nullptr;
+    return scenes.at(name);
+}
+
+bool Engine::DeleteScene(std::string name)
+{
+    if (!HasScene(name) || name.length() == 0) return false;
+
+    delete GetScene(name);
+    scenes.erase(name);
+    return true;
+}
+
+void Engine::DeleteAllScenes()
+{
+    for (std::pair<std::string, Scene *> pair : scenes) DeleteScene(pair.first);
 }
