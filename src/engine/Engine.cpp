@@ -44,7 +44,7 @@ bool Engine::Update(double delta)
 {
     if (!inited) return false;
 
-    if (Engine::HasScene(CurrentScene)) Engine::GetScene(CurrentScene)->Update(delta);
+    if (Engine::HasScene(currscene)) Engine::GetScene(currscene)->Update(delta);
 
     return true;
 }
@@ -67,7 +67,7 @@ bool Engine::Render()
     glfwGetWindowSize(window, &w, &h);
     if (w <= 0 || h <= 0) return false;
 
-    if (Engine::HasScene(CurrentScene)) Engine::GetScene(CurrentScene)->Render();
+    if (Engine::HasScene(currscene)) Engine::GetScene(currscene)->Render();
 
     return true;
 }
@@ -101,4 +101,18 @@ bool Engine::DeleteScene(std::string name)
 void Engine::DeleteAllScenes()
 {
     for (std::pair<std::string, Scene *> pair : scenes) DeleteScene(pair.first);
+}
+
+std::string Engine::GetCurrentScene() { return currscene; }
+
+void Engine::SetCurrentScene(std::string name)
+{
+    if (name == currscene) return;
+
+    if (HasScene(currscene)) GetScene(currscene)->OnSceneUnload();
+
+    if (!HasScene(name)) { currscene = ""; return; }
+
+    GetScene(name)->OnSceneLoad();
+    currscene = name;
 }

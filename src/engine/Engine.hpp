@@ -23,11 +23,10 @@ class Engine final
 
         static void resizecallback(GLFWwindow *w, int width, int height);
 
+        static inline std::string currscene = "";
         static inline std::unordered_map<std::string, Scene *> scenes = std::unordered_map<std::string, Scene *>();
 
     public:
-        static inline std::string CurrentScene = "";
-
         static bool Init(unsigned short windowWidth, unsigned short windowHeight);
         static bool Shutdown();
 
@@ -39,6 +38,9 @@ class Engine final
         static Scene *GetScene(std::string name); // can return nullptr.
         static bool DeleteScene(std::string name);
         static void DeleteAllScenes();
+
+        static std::string GetCurrentScene();
+        static void SetCurrentScene(std::string name);
 
         static bool Update(double delta);
         static bool Render();

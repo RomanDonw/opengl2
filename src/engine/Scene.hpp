@@ -26,6 +26,9 @@ class Scene final
         void Render();
         void Update(double delta);
 
+        void OnSceneLoad();
+        void OnSceneUnload();
+
     public:
         template<std::derived_from<GameObject> T>
         bool HasObject(T *obj) { return std::ranges::contains(objects, obj); }

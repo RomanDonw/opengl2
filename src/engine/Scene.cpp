@@ -10,6 +10,7 @@ Scene::Scene() {}
 Scene::~Scene()
 {
     for (GameObject *obj : objects) DeleteObject(obj);
+    if (Engine::GetScene(Engine::GetCurrentScene()) == this) Engine::SetCurrentScene("");
 }
 
 void Scene::Update(double delta)
@@ -26,6 +27,9 @@ void Scene::Render()
 
     for (GameObject *obj : objects) obj->Render(&proj, &view, &currcam->transform);
 }
+
+void Scene::OnSceneLoad() {}
+void Scene::OnSceneUnload() {}
 
 // === PUBLIC ===
 
