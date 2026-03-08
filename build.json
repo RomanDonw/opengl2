@@ -67,6 +67,7 @@
             "src/engine/Engine.cpp",
             "src/engine/ResourceManager.cpp",
             "src/engine/Transform.cpp",
+            "src/engine/Transform2D.cpp",
 
             "src/main.cpp"
         ]

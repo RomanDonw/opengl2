@@ -15,26 +15,26 @@ void Transform::OnTransformChanged() {}
 
 // === PUBLIC ===
 
-Transform::Transform(glm::vec3 pos, glm::quat rot, glm::vec3 scl)
+Transform::Transform(glm::vec3 pos, glm::quat rot, glm::vec3 scl) : position(pos), rotation(rot), scale(scl)
 {
-    position = pos;
+    /*position = pos;
     rotation = rot;
-    scale = scl;
+    scale = scl;*/
 
     wrapscale();
     OnTransformChanged();
 }
 
-Transform::Transform(glm::vec3 pos, glm::quat rot)
+Transform::Transform(glm::vec3 pos, glm::quat rot) : position(pos), rotation(rot)
 {
-    position = pos;
-    rotation = rot;
+    /*position = pos;
+    rotation = rot;*/
     OnTransformChanged();
 }
 
-Transform::Transform(glm::vec3 pos)
+Transform::Transform(glm::vec3 pos) : position(pos)
 {
-    position = pos;
+    //position = pos;
     OnTransformChanged();
 }
 
@@ -69,7 +69,8 @@ glm::vec3 Transform::GetRight() const { return rotation * glm::vec3(1, 0, 0); }
 // ================================
 
 glm::mat4 Transform::GetTransformationMatrix() const
-{ return glm::scale(glm::translate(glm::mat4(1), position) * GetRotationMatrix(), scale); }
+//{ return glm::scale(glm::translate(glm::mat4(1), position) * GetRotationMatrix(), scale); }
+{ return glm::scale(glm::translate(glm::mat4(1), position) * glm::toMat4(rotation), scale); }
 
 // ================================
 
