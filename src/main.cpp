@@ -34,6 +34,8 @@ int main()
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetScrollCallback(window, scrollCallback);
 
+    glfwSetCursorPos(window, WWIDTH / 2.0f, WHEIGHT / 2.0f);
+
     ShaderProgram *sh = ResourceManager::CreateShaderProgram("default");
 
     {
@@ -57,18 +59,26 @@ int main()
     if (ResourceManager::CreateTexture("crowbar_cyl")->LoadFromUCTEXFile("./res/textures/cyl.uctex")) printf("loaded texture crowbar_cyj\n");
     if (ResourceManager::CreateTexture("crowbar_head")->LoadFromUCTEXFile("./res/textures/head.uctex")) printf("loaded texture crowbar_head\n");
 
+    if (ResourceManager::CreateMesh("cube")->LoadFromUCMESHFile("./res/models/cube.ucmesh")) printf("loaded model cube\n");
+
     Scene *s = Engine::CreateScene("main");
     Engine::SetCurrentScene("main");
     s->fog.enabled = true;
     s->fog.startDistance = 0;
     s->fog.endDistance = 16;
-    s->fog.color = glm::vec3(0.5, 0.5, 0.5);
+    s->fog.color = glm::vec3(106 / 255.0f, 117 / 255.0f, 129 / 255.0f);
 
     Camera *cam = s->CreateObject<Camera>();
     s->SetCurrentCamera(cam);
 
-    Entity *ent = s->CreateObject<Entity>(Transform({0, 0, -5}, glm::quat(glm::vec3(0)), glm::vec3(0.1)));
+    Entity *ent = s->CreateObject<Entity>();
+    ent->SetParent(cam, false);
     ent->usedShaderProgram = "default";
+    ent->transform = Transform(glm::vec3(0.0933556, -0.160361, -0.179554), glm::vec3(-3.04567, -0.648789, 3.12098), glm::vec3(0.01));
+
+    Entity *cube = s->CreateObject<Entity>(Transform({0, 0, -5}, glm::quat(glm::vec3(0)), glm::vec3(0.1)));
+    cube->usedShaderProgram = "default";
+    cube->color = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 
     Surface surf;
     surf.mesh = "crowbar_cyl";
@@ -79,8 +89,15 @@ int main()
     surf.texture = "crowbar_head";
     ent->surfaces.push_back(surf);
 
+    surf.mesh = "cube";
+    surf.texture = "testcube";
+    cube->surfaces.push_back(surf);
+
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0.5, 0.5, 0.5, 1);
+    //glClearColor(0.5, 0.5, 0.5, 1);
+    glClearColor(s->fog.color.x, s->fog.color.y, s->fog.color.z, 1);
+
+    float speed = 1;
 
     glfwSetTime(0);
     double prev_time = glfwGetTime();
@@ -98,6 +115,27 @@ int main()
             ent->surfaces[0].textureTransform.Rotate(0.1 * delta);
 
             updateCam(window, cam, delta);
+
+            /*
+            if (Engine::IsKeyPressed(GLFW_KEY_UP)) ent->transform.Translate(-glm::vec3(0, 0, 1.0f) * (float)delta * speed);
+            if (Engine::IsKeyPressed(GLFW_KEY_DOWN)) ent->transform.Translate(glm::vec3(0, 0, 1.0f) * (float)delta * speed);
+            if (Engine::IsKeyPressed(GLFW_KEY_RIGHT)) ent->transform.Translate(glm::vec3(1.0f, 0, 0) * (float)delta * speed);
+            if (Engine::IsKeyPressed(GLFW_KEY_LEFT)) ent->transform.Translate(-glm::vec3(1.0f, 0, 0) * (float)delta * speed);
+            if (Engine::IsKeyPressed(GLFW_KEY_KP_ADD)) ent->transform.Translate(glm::vec3(0, 1.0f, 0) * (float)delta * speed);
+            if (Engine::IsKeyPressed(GLFW_KEY_KP_SUBTRACT)) ent->transform.Translate(-glm::vec3(0, 1.0f, 0) * (float)delta * speed);
+
+            if (Engine::IsKeyPressed(GLFW_KEY_KP_1)) ent->transform.Rotate(-glm::radians(glm::vec3(90.0f, 0, 0)) * (float)delta * speed);
+            if (Engine::IsKeyPressed(GLFW_KEY_KP_7)) ent->transform.Rotate(glm::radians(glm::vec3(90.0f, 0, 0)) * (float)delta * speed);
+            if (Engine::IsKeyPressed(GLFW_KEY_KP_8)) ent->transform.Rotate(-glm::radians(glm::vec3(0, 90.0f, 0)) * (float)delta * speed);
+            if (Engine::IsKeyPressed(GLFW_KEY_KP_2)) ent->transform.Rotate(glm::radians(glm::vec3(0, 90.0f, 0)) * (float)delta * speed);
+            if (Engine::IsKeyPressed(GLFW_KEY_KP_9)) ent->transform.Rotate(-glm::radians(glm::vec3(0, 0, 90.0f)) * (float)delta * speed);
+            if (Engine::IsKeyPressed(GLFW_KEY_KP_3)) ent->transform.Rotate(glm::radians(glm::vec3(0, 0, 90.0f)) * (float)delta * speed);
+
+            if (Engine::IsKeyPressed(GLFW_KEY_KP_0)) std::cout << ent->transform.ToString() << std::endl;
+
+            if (Engine::IsKeyPressed(GLFW_KEY_KP_4)) speed -= 0.01;
+            if (Engine::IsKeyPressed(GLFW_KEY_KP_5)) speed = 1;
+            if (Engine::IsKeyPressed(GLFW_KEY_KP_6)) speed += 0.01;*/
 
             Engine::Update(delta);
 
@@ -131,21 +169,21 @@ void updateCam(GLFWwindow *window, Camera *cam, double delta)
     static double lastX = WWIDTH / 2, lastY = WHEIGHT / 2;
 
     float speed;
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) speed = cameraSpeed * 2.0;
-    else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) speed = cameraSpeed / 2.0;
+    if (Engine::IsKeyPressed(GLFW_KEY_LEFT_SHIFT)) speed = cameraSpeed * 2.0;
+    else if (Engine::IsKeyPressed(GLFW_KEY_LEFT_CONTROL)) speed = cameraSpeed / 2.0;
     else speed = cameraSpeed;
 
     Transform *t = &cam->transform;
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) t->Translate(t->GetFront() * glm::vec3(speed * delta));
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) t->Translate(-t->GetFront() * glm::vec3(speed * delta));
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) t->Translate(-t->GetRight() * glm::vec3(speed * delta));
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) t->Translate(t->GetRight() * glm::vec3(speed * delta));
+    if (Engine::IsKeyPressed(GLFW_KEY_W)) t->Translate(t->GetFront() * glm::vec3(speed * delta));
+    if (Engine::IsKeyPressed(GLFW_KEY_S)) t->Translate(-t->GetFront() * glm::vec3(speed * delta));
+    if (Engine::IsKeyPressed(GLFW_KEY_A)) t->Translate(-t->GetRight() * glm::vec3(speed * delta));
+    if (Engine::IsKeyPressed(GLFW_KEY_D)) t->Translate(t->GetRight() * glm::vec3(speed * delta));
 
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) t->Translate(glm::vec3(0, speed * delta, 0));
-    if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) t->Translate(glm::vec3(0, -speed * delta, 0));
+    if (Engine::IsKeyPressed(GLFW_KEY_SPACE)) t->Translate(glm::vec3(0, speed * delta, 0));
+    if (Engine::IsKeyPressed(GLFW_KEY_LEFT_ALT)) t->Translate(glm::vec3(0, -speed * delta, 0));
 
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) cameraSpeed = DEFAULT_CAMERA_SPEED;
+    if (Engine::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE)) cameraSpeed = DEFAULT_CAMERA_SPEED;
 
     double mouseX, mouseY;
     glfwGetCursorPos(window, &mouseX, &mouseY);
@@ -175,8 +213,6 @@ bool readtextfile(std::string filename, std::string *output)
     char buffer[BUFFER_SIZE];
 
     std::ostringstream oss;
-
-    //if (!std::filesystem::is_regular_file(filename)) return false;
 
     FILE *f = fopen(filename.c_str(), "r");
     if (!f) return false;

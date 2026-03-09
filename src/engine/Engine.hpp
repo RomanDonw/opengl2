@@ -32,6 +32,8 @@ class Engine final
 
         static GLFWwindow *GetWindow(); // can return nullptr.
         static glm::uvec2 GetWindowSize();
+        static bool IsKeyPressed(unsigned short keycode);
+        static bool IsMouseButtonPressed(unsigned char button);
 
         static bool HasScene(std::string name);
         static Scene *CreateScene(std::string name); // can return nullptr.

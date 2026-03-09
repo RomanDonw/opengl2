@@ -59,6 +59,20 @@ glm::uvec2 Engine::GetWindowSize()
     return glm::uvec2(w, h);
 }
 
+bool Engine::IsKeyPressed(unsigned short keycode)
+{
+    if (!inited) throw std::runtime_error("engine isn't initialized");
+
+    return glfwGetKey(window, keycode) == GLFW_PRESS;
+}
+
+bool Engine::IsMouseButtonPressed(unsigned char button)
+{
+    if (!inited) throw std::runtime_error("engine isn't initialized");
+
+    return glfwGetMouseButton(window, button) == GLFW_PRESS;
+}
+
 bool Engine::Render()
 {
     if (!inited) return false;
