@@ -20,10 +20,12 @@ const unsigned short FPS = 100;
 bool readtextfile(std::string filename, std::string *output);
 
 void scrollCallback(GLFWwindow *w, double xoff, double yoff);
-void updateCam(GLFWwindow *w, Camera *c, double delta);
+void updateCam(GLFWwindow *w, Camera *c, double delta, Entity *crowbar);
 
 const unsigned short WWIDTH = 1200;
 const unsigned short WHEIGHT = 700;
+
+const glm::vec3 crowbar_rot = glm::vec3(-3.04567, -0.648789, 3.12098);
 
 int main()
 {
@@ -65,7 +67,7 @@ int main()
     Engine::SetCurrentScene("main");
     s->fog.enabled = true;
     s->fog.startDistance = 0;
-    s->fog.endDistance = 16;
+    s->fog.endDistance = 8;
     s->fog.color = glm::vec3(106 / 255.0f, 117 / 255.0f, 129 / 255.0f);
 
     Camera *cam = s->CreateObject<Camera>();
@@ -74,7 +76,7 @@ int main()
     Entity *ent = s->CreateObject<Entity>();
     ent->SetParent(cam, false);
     ent->usedShaderProgram = "default";
-    ent->transform = Transform(glm::vec3(0.0933556, -0.160361, -0.179554), glm::vec3(-3.04567, -0.648789, 3.12098), glm::vec3(0.01));
+    ent->transform = Transform(glm::vec3(0.0933556, -0.160361, -0.179554), crowbar_rot, glm::vec3(0.01));
 
     Entity *cube = s->CreateObject<Entity>(Transform({0, 0, -5}, glm::quat(glm::vec3(0)), glm::vec3(0.1)));
     cube->usedShaderProgram = "default";
@@ -94,7 +96,6 @@ int main()
     cube->surfaces.push_back(surf);
 
     glEnable(GL_DEPTH_TEST);
-    //glClearColor(0.5, 0.5, 0.5, 1);
     glClearColor(s->fog.color.x, s->fog.color.y, s->fog.color.z, 1);
 
     float speed = 1;
@@ -105,7 +106,7 @@ int main()
     {
         double delta = glfwGetTime() - prev_time;
 
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
+        if (Engine::IsKeyPressed(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(window, true);
 
         if (delta >= 1.0 / FPS)
         {
@@ -114,28 +115,7 @@ int main()
             ent->surfaces[0].textureTransform.Translate(glm::vec2(0, delta * 0.5f));
             ent->surfaces[0].textureTransform.Rotate(0.1 * delta);
 
-            updateCam(window, cam, delta);
-
-            /*
-            if (Engine::IsKeyPressed(GLFW_KEY_UP)) ent->transform.Translate(-glm::vec3(0, 0, 1.0f) * (float)delta * speed);
-            if (Engine::IsKeyPressed(GLFW_KEY_DOWN)) ent->transform.Translate(glm::vec3(0, 0, 1.0f) * (float)delta * speed);
-            if (Engine::IsKeyPressed(GLFW_KEY_RIGHT)) ent->transform.Translate(glm::vec3(1.0f, 0, 0) * (float)delta * speed);
-            if (Engine::IsKeyPressed(GLFW_KEY_LEFT)) ent->transform.Translate(-glm::vec3(1.0f, 0, 0) * (float)delta * speed);
-            if (Engine::IsKeyPressed(GLFW_KEY_KP_ADD)) ent->transform.Translate(glm::vec3(0, 1.0f, 0) * (float)delta * speed);
-            if (Engine::IsKeyPressed(GLFW_KEY_KP_SUBTRACT)) ent->transform.Translate(-glm::vec3(0, 1.0f, 0) * (float)delta * speed);
-
-            if (Engine::IsKeyPressed(GLFW_KEY_KP_1)) ent->transform.Rotate(-glm::radians(glm::vec3(90.0f, 0, 0)) * (float)delta * speed);
-            if (Engine::IsKeyPressed(GLFW_KEY_KP_7)) ent->transform.Rotate(glm::radians(glm::vec3(90.0f, 0, 0)) * (float)delta * speed);
-            if (Engine::IsKeyPressed(GLFW_KEY_KP_8)) ent->transform.Rotate(-glm::radians(glm::vec3(0, 90.0f, 0)) * (float)delta * speed);
-            if (Engine::IsKeyPressed(GLFW_KEY_KP_2)) ent->transform.Rotate(glm::radians(glm::vec3(0, 90.0f, 0)) * (float)delta * speed);
-            if (Engine::IsKeyPressed(GLFW_KEY_KP_9)) ent->transform.Rotate(-glm::radians(glm::vec3(0, 0, 90.0f)) * (float)delta * speed);
-            if (Engine::IsKeyPressed(GLFW_KEY_KP_3)) ent->transform.Rotate(glm::radians(glm::vec3(0, 0, 90.0f)) * (float)delta * speed);
-
-            if (Engine::IsKeyPressed(GLFW_KEY_KP_0)) std::cout << ent->transform.ToString() << std::endl;
-
-            if (Engine::IsKeyPressed(GLFW_KEY_KP_4)) speed -= 0.01;
-            if (Engine::IsKeyPressed(GLFW_KEY_KP_5)) speed = 1;
-            if (Engine::IsKeyPressed(GLFW_KEY_KP_6)) speed += 0.01;*/
+            updateCam(window, cam, delta, ent);
 
             Engine::Update(delta);
 
@@ -164,9 +144,10 @@ void scrollCallback(GLFWwindow *w, double xoff, double yoff)
     if (cameraSpeed < 0) cameraSpeed = 0;
 }
 
-void updateCam(GLFWwindow *window, Camera *cam, double delta)
+void updateCam(GLFWwindow *window, Camera *cam, double delta, Entity *crowbar)
 {
     static double lastX = WWIDTH / 2, lastY = WHEIGHT / 2;
+    static float offset = 0;
 
     float speed;
     if (Engine::IsKeyPressed(GLFW_KEY_LEFT_SHIFT)) speed = cameraSpeed * 2.0;
@@ -175,10 +156,10 @@ void updateCam(GLFWwindow *window, Camera *cam, double delta)
 
     Transform *t = &cam->transform;
 
-    if (Engine::IsKeyPressed(GLFW_KEY_W)) t->Translate(t->GetFront() * glm::vec3(speed * delta));
-    if (Engine::IsKeyPressed(GLFW_KEY_S)) t->Translate(-t->GetFront() * glm::vec3(speed * delta));
-    if (Engine::IsKeyPressed(GLFW_KEY_A)) t->Translate(-t->GetRight() * glm::vec3(speed * delta));
-    if (Engine::IsKeyPressed(GLFW_KEY_D)) t->Translate(t->GetRight() * glm::vec3(speed * delta));
+    if (Engine::IsKeyPressed(GLFW_KEY_W)) { t->Translate(t->GetFront() * glm::vec3(speed * delta)); offset += 0.05; }
+    if (Engine::IsKeyPressed(GLFW_KEY_S)) { t->Translate(-t->GetFront() * glm::vec3(speed * delta)); offset += 0.05; }
+    if (Engine::IsKeyPressed(GLFW_KEY_A)) { t->Translate(-t->GetRight() * glm::vec3(speed * delta)); offset += 0.05; }
+    if (Engine::IsKeyPressed(GLFW_KEY_D)) { t->Translate(t->GetRight() * glm::vec3(speed * delta)); offset += 0.05; }
 
     if (Engine::IsKeyPressed(GLFW_KEY_SPACE)) t->Translate(glm::vec3(0, speed * delta, 0));
     if (Engine::IsKeyPressed(GLFW_KEY_LEFT_ALT)) t->Translate(glm::vec3(0, -speed * delta, 0));
@@ -202,6 +183,10 @@ void updateCam(GLFWwindow *window, Camera *cam, double delta)
         if (glm::dot(front, front_xz) >= glm::cos(glm::radians(60.0f))) t->SetRotation(new_rotation);
         else t->Rotate(delta_yaw);
     }
+
+    crowbar->transform.SetRotation(crowbar_rot + glm::vec3(glm::sin(offset) * 0.03f, 0.0f, 0.0f));
+    //if (offset >= glm::radians(360.0f)) offs
+    offset = glm::mod(offset, glm::radians(360.0f));
 
     lastX = mouseX;
     lastY = mouseY;
