@@ -24,7 +24,7 @@ GameObject::~GameObject()
 
 void GameObject::Update(double delta) {}
 
-void GameObject::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt) {}
+void GameObject::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog) {}
 
 // === PUBLIC ===
 

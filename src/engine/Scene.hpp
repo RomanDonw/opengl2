@@ -8,6 +8,8 @@
 #include <iterator>
 #include <algorithm>
 
+#include "FogRenderSettings.hpp"
+
 class Engine;
 class GameObject;
 class Camera;
@@ -30,6 +32,8 @@ class Scene final
         void OnSceneUnload();
 
     public:
+        FogRenderSettings fog;
+
         template<std::derived_from<GameObject> T>
         bool HasObject(T *obj) { return std::ranges::contains(objects, obj); }
 

@@ -10,10 +10,10 @@ uniform vec4 color;
 uniform bool hasTexture;
 uniform sampler2D texture;
 
-/*uniform bool fogEnabled;
+uniform bool fogEnabled;
 uniform float fogStartDistance;
 uniform float fogEndDistance;
-uniform vec3 fogColor;*/
+uniform vec3 fogColor;
 
 uniform vec3 cameraPosition;
 uniform vec3 cameraRotation;
@@ -26,12 +26,10 @@ void main()
 {
     vec4 vertcol = (hasTexture ? texture2D(texture, texturePosition) : vec4(1.0)) * color;
 
-    FragColor = vertcol;
-
-    /*vec4 vertcol = (hasTexture ? texture2D(texture, texturePosition) : vec4(1.0)) * color;
+    //FragColor = vertcol;
 
     float dist = length(globalVertexPosition - cameraPosition);
     float fog_int_factor = min(1, max(0, (dist - fogStartDistance) / (fogEndDistance - fogStartDistance)));
 
-    FragColor = mix(vertcol, vec4(fogColor, 1), fog_int_factor);*/
+    FragColor = mix(vertcol, vec4(fogColor, 1), fog_int_factor);
 }

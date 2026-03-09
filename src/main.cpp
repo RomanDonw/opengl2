@@ -59,6 +59,10 @@ int main()
 
     Scene *s = Engine::CreateScene("main");
     Engine::SetCurrentScene("main");
+    s->fog.enabled = true;
+    s->fog.startDistance = 0;
+    s->fog.endDistance = 16;
+    s->fog.color = glm::vec3(0.5, 0.5, 0.5);
 
     Camera *cam = s->CreateObject<Camera>();
     s->SetCurrentCamera(cam);

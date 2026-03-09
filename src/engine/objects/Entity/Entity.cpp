@@ -12,8 +12,10 @@ Entity::Entity(Scene *s) : GameObject(s) {}
 
 Entity::~Entity() {}
 
-void Entity::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt)
+void Entity::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog)
 {
+    //GameObject::Render(proj, view, camt, fog);
+
     if (!enableRender) return;
 
     ShaderProgram *sp = ResourceManager::GetShaderProgram(usedShaderProgram);
@@ -30,6 +32,11 @@ void Entity::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transfor
     sp->SetUniformVector3("cameraFront", camt->GetFront());
     sp->SetUniformVector3("cameraUp", camt->GetUp());
     sp->SetUniformVector3("cameraRight", camt->GetRight());
+
+    sp->SetUniformInteger("fogEnabled", (fog->enabled && fog->startDistance >= 0 && fog->endDistance > 0) ? GL_TRUE : GL_FALSE);
+    sp->SetUniformFloat("fogStartDistance", fog->startDistance);
+    sp->SetUniformFloat("fogEndDistance", fog->endDistance);
+    sp->SetUniformVector3("fogColor", fog->color);
 
     for (Surface surface : surfaces)
     {

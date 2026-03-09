@@ -25,7 +25,7 @@ void Scene::Render()
     glm::mat4 proj = currcam->GetProjectionMatrix(Engine::GetWindowSize());
     glm::mat4 view = currcam->GetViewMatrix();
 
-    for (GameObject *obj : objects) obj->Render(&proj, &view, &currcam->transform);
+    for (GameObject *obj : objects) obj->Render(&proj, &view, &currcam->transform, &fog);
 }
 
 void Scene::OnSceneLoad() {}

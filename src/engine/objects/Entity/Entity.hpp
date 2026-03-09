@@ -16,7 +16,7 @@ class Entity : public GameObject
 
         ~Entity();
 
-        void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt) override;
+        void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog) override;
 
     public:
         const GameObjectType type = GameObjectType::ENTITY;

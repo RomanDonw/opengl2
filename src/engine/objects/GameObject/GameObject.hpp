@@ -7,6 +7,8 @@
 #include "GameObjectTypes.hpp"
 #include "GameObjectTransform.hpp"
 
+#include "../../FogRenderSettings.hpp"
+
 class Scene;
 
 class GameObject
@@ -30,7 +32,7 @@ class GameObject
         std::vector<GameObject *> children = std::vector<GameObject *>();
 
         virtual void Update(double delta);
-        virtual void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt);
+        virtual void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog);
 
     public:
         const GameObjectType type = GameObjectType::GAMEOBJECT;
