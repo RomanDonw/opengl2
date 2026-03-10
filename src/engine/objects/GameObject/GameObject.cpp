@@ -26,6 +26,9 @@ void GameObject::Update(double delta) {}
 
 void GameObject::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog) {}
 
+void GameObject::OnSceneLoad() {}
+void GameObject::OnSceneUnload() {}
+
 // === PUBLIC ===
 
 GameObject *GameObject::GetParent() { return parent; }
