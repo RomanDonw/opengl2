@@ -28,13 +28,24 @@ void Scene::Render()
     for (GameObject *obj : objects) obj->Render(&proj, &view, &currcam->transform, &fog);
 }
 
-void Scene::OnSceneLoad() {}
-void Scene::OnSceneUnload() {}
+void Scene::OnSceneLoad()
+{
+    for (GameObject *obj : objects) obj->OnSceneLoad();
+}
+
+void Scene::OnSceneUnload()
+{
+    for (GameObject *obj : objects) obj->OnSceneUnload();
+}
 
 // === PUBLIC ===
 
 Camera *Scene::GetCurrentCamera() { return currcam; }
-void Scene::SetCurrentCamera(Camera *camera) { currcam = camera; }
+void Scene::SetCurrentCamera(Camera *camera)
+{
+    if (!HasObject(camera)) throw std::runtime_error("this scene doesn't have this object");
+    currcam = camera;
+}
 /*{
     if (!camera) { currcam = nullptr; return; }
 
