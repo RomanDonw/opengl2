@@ -2,6 +2,7 @@
 
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
+#include "audio/AudioDevice.hpp"
 
 #include <exception>
 #include <stdexcept>
@@ -72,6 +73,24 @@ bool Engine::IsMouseButtonPressed(unsigned char button)
 
     return glfwGetMouseButton(window, button) == GLFW_PRESS;
 }
+
+AudioDevice *Engine::GetCurrentAudioDevice() { return currdev; }
+
+void Engine::SetCurrentAudioDevice(AudioDevice *device)
+{
+    currdev = device;
+
+    if (currdev)
+    {
+        alcMakeContextCurrent(currdev->context);
+
+        if (alcIsExtensionPresent(currdev->device, "ALC_EXT_EFX") == AL_FALSE) throw std::runtime_error("can't detect EFX extension on current device");
+        if (!initEFX()) throw std::runtime_error("failed to initialize EFX extension on current device");
+    }
+    else alcMakeContextCurrent(NULL);
+}
+
+void Engine::SetDistanceModel(ALenum model) { alDistanceModel(model); }
 
 bool Engine::Render()
 {

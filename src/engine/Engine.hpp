@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 class Scene;
+class AudioDevice;
 
 class Engine final
 {
@@ -20,6 +21,7 @@ class Engine final
         static inline bool inited = false;
 
         static inline GLFWwindow *window = nullptr;
+        static inline AudioDevice *currdev = nullptr;
 
         static void resizecallback(GLFWwindow *w, int width, int height);
 
@@ -34,6 +36,11 @@ class Engine final
         static glm::uvec2 GetWindowSize();
         static bool IsKeyPressed(unsigned short keycode);
         static bool IsMouseButtonPressed(unsigned char button);
+
+        static AudioDevice *GetCurrentAudioDevice(); // can return nullptr.
+        static void SetCurrentAudioDevice(AudioDevice *device); // can accept nullptr.
+
+        static void SetDistanceModel(ALenum model);
 
         static bool HasScene(std::string name);
         static Scene *CreateScene(std::string name); // can return nullptr.
