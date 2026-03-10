@@ -15,6 +15,9 @@
 #include "engine/objects/Camera/Camera.hpp"
 #include "engine/objects/Entity/Entity.hpp"
 
+#include "engine/audio/AudioDevice.hpp"
+#include "engine/audio/AudioEffectProperties.hpp"
+
 const unsigned short FPS = 100;
 
 bool readtextfile(std::string filename, std::string *output);
@@ -37,6 +40,9 @@ int main()
     glfwSetScrollCallback(window, scrollCallback);
 
     glfwSetCursorPos(window, WWIDTH / 2.0f, WHEIGHT / 2.0f);
+
+    AudioDevice dev = AudioDevice(NULL);
+    Engine::SetCurrentAudioDevice(&dev);
 
     ShaderProgram *sh = ResourceManager::CreateShaderProgram("default");
 

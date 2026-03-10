@@ -57,6 +57,7 @@
             "src/engine/resources/ShaderProgram.cpp",
 
             "src/engine/audio/AudioDevice.cpp",
+            "src/engine/audio/AudioEffectProperties.cpp",
 
             "src/engine/objects/GameObject/GameObject.cpp",
             "src/engine/objects/GameObject/GameObjectTransform.cpp",
