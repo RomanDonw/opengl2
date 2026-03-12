@@ -90,7 +90,7 @@ void Engine::SetCurrentAudioDevice(AudioDevice *device)
     else alcMakeContextCurrent(NULL);
 }
 
-void Engine::SetDistanceModel(ALenum model) { alDistanceModel(model); }
+void Engine::SetAudioDistanceModel(ALenum model) { alDistanceModel(model); }
 
 bool Engine::Render()
 {

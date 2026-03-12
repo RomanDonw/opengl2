@@ -3,6 +3,7 @@
 #include "resources/Mesh.hpp"
 #include "resources/Texture.hpp"
 #include "resources/ShaderProgram.hpp"
+#include "resources/AudioClip.hpp"
 
 // === PRIVATE ===
 
@@ -15,6 +16,7 @@ void ResourceManager::DeleteAll()
     for (std::pair<std::string, Mesh *> pair : meshes) DeleteMesh(pair.first);
     for (std::pair<std::string, Texture *> pair : textures) DeleteTexture(pair.first);
     for (std::pair<std::string, ShaderProgram *> pair : shprogs) DeleteShaderProgram(pair.first);
+    for (std::pair<std::string, AudioClip *> pair : clips) DeleteAudioClip(pair.first);
 }
 
 // === Mesh ===
@@ -98,5 +100,33 @@ bool ResourceManager::DeleteShaderProgram(std::string name)
 
     delete GetShaderProgram(name);
     shprogs.erase(name);
+    return true;
+}
+
+// === AudioClip ===
+
+bool ResourceManager::HasAudioClip(std::string name) { return clips.contains(name) && name.length() != 0; }
+
+AudioClip *ResourceManager::CreateAudioClip(std::string name)
+{
+    if (HasAudioClip(name) || name.length() == 0) return nullptr;
+
+    AudioClip *ret = new AudioClip();
+    clips.insert({name, ret});
+    return ret;
+}
+
+AudioClip *ResourceManager::GetAudioClip(std::string name)
+{
+    if (!HasAudioClip(name) || name.length() == 0) return nullptr;
+    return clips.at(name);
+}
+
+bool ResourceManager::DeleteAudioClip(std::string name)
+{
+    if (!HasAudioClip(name) || name.length() == 0) return false;
+
+    delete GetAudioClip(name);
+    clips.erase(name);
     return true;
 }

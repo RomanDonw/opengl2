@@ -55,6 +55,7 @@
             "src/engine/resources/Mesh.cpp",
             "src/engine/resources/Texture.cpp",
             "src/engine/resources/ShaderProgram.cpp",
+            "src/engine/resources/AudioClip.cpp",
 
             "src/engine/audio/AudioDevice.cpp",
             "src/engine/audio/AudioEffectProperties.cpp",
@@ -64,6 +65,7 @@
 
             "src/engine/objects/Camera/Camera.cpp",
             "src/engine/objects/Entity/Entity.cpp",
+            "src/engine/objects/AudioSource/AudioSource.cpp",
 
             "src/engine/Scene.cpp",
             "src/engine/Engine.cpp",

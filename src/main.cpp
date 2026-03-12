@@ -9,11 +9,13 @@
 #include "engine/resources/Mesh.hpp"
 #include "engine/resources/ShaderProgram.hpp"
 #include "engine/resources/Texture.hpp"
+#include "engine/resources/AudioClip.hpp"
 #include "engine/Scene.hpp"
 
 #include "engine/objects/GameObject/GameObject.hpp"
 #include "engine/objects/Camera/Camera.hpp"
 #include "engine/objects/Entity/Entity.hpp"
+#include "engine/objects/AudioSource/AudioSource.hpp"
 
 #include "engine/audio/AudioDevice.hpp"
 #include "engine/audio/AudioEffectProperties.hpp"
@@ -44,6 +46,8 @@ int main()
     AudioDevice dev = AudioDevice(NULL);
     Engine::SetCurrentAudioDevice(&dev);
 
+    Engine::SetAudioDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
+
     ShaderProgram *sh = ResourceManager::CreateShaderProgram("default");
 
     {
@@ -69,6 +73,9 @@ int main()
 
     if (ResourceManager::CreateMesh("cube")->LoadFromUCMESHFile("./res/models/cube.ucmesh")) printf("loaded model cube\n");
 
+    AudioClip *zapsfx = ResourceManager::CreateAudioClip("zapsfx");
+    if (zapsfx->LoadFromUCSOUNDFile("./res/sounds/zapmachine.ucsound")) printf("loaded zapmachine sound\n");
+
     Scene *s = Engine::CreateScene("main");
     Engine::SetCurrentScene("main");
     s->fog.enabled = true;
@@ -88,6 +95,19 @@ int main()
     cube->usedShaderProgram = "default";
     cube->color = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 
+    Entity *cube2 = s->CreateObject<Entity>(Transform({-2.5, 0, -2.5}));
+    cube2->usedShaderProgram = "default";
+    cube2->color = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+
+    AudioSource *src = s->CreateObject<AudioSource>();
+    src->SetParent(cube2, false);
+    src->SetCurrentClip(zapsfx);
+    src->SetLooping(true);
+    src->SetSourceFloat(AL_REFERENCE_DISTANCE, 0);
+    src->SetSourceFloat(AL_MAX_DISTANCE, 8);
+    src->SetSourceFloat(AL_GAIN, 1);
+    src->Play();
+
     Surface surf;
     surf.mesh = "crowbar_cyl";
     surf.texture = "crowbar_cyl";
@@ -100,6 +120,7 @@ int main()
     surf.mesh = "cube";
     surf.texture = "testcube";
     cube->surfaces.push_back(surf);
+    cube2->surfaces.push_back(surf);
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(s->fog.color.x, s->fog.color.y, s->fog.color.z, 1);
@@ -120,6 +141,8 @@ int main()
 
             ent->surfaces[0].textureTransform.Translate(glm::vec2(0, delta * 0.5f));
             ent->surfaces[0].textureTransform.Rotate(0.1 * delta);
+
+            cube2->transform.Translate({1.0f * delta, 0, 1.0f * delta});
 
             updateCam(window, cam, delta, ent);
 

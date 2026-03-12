@@ -16,7 +16,7 @@ class Camera final : public GameObject
         Camera(Scene *s, Transform t);
         Camera(Scene *s);
 
-        ~Camera();
+        ~Camera() override;
 
     public:
         const GameObjectType type = GameObjectType::CAMERA;

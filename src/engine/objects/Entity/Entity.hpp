@@ -14,7 +14,7 @@ class Entity : public GameObject
         Entity(Scene *s, Transform t);
         Entity(Scene *s);
 
-        ~Entity();
+        ~Entity() override;
 
         void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog) override;
 

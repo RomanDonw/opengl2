@@ -40,7 +40,7 @@ class Engine final
         static AudioDevice *GetCurrentAudioDevice(); // can return nullptr.
         static void SetCurrentAudioDevice(AudioDevice *device); // can accept nullptr.
 
-        static void SetDistanceModel(ALenum model);
+        static void SetAudioDistanceModel(ALenum model);
 
         static bool HasScene(std::string name);
         static Scene *CreateScene(std::string name); // can return nullptr.

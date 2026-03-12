@@ -46,7 +46,3 @@ void Scene::SetCurrentCamera(Camera *camera)
     if (!HasObject(camera)) throw std::runtime_error("this scene doesn't have this object");
     currcam = camera;
 }
-/*{
-    if (!camera) { currcam = nullptr; return; }
-
-}*/
