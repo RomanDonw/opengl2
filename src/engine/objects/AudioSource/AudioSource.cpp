@@ -2,6 +2,7 @@
 
 #include "../../resources/AudioClip.hpp"
 #include "../../Engine.hpp"
+#include "../../audio/AudioEffectSlot.hpp"
 
 // === PRIVATE ===
 
@@ -28,7 +29,13 @@ void AudioSource::rewind() { alSourceRewind(source); }
 AudioSource::AudioSource(Scene *s, Transform t) : GameObject(s, t) { constructor(); }
 AudioSource::AudioSource(Scene *s) : GameObject(s) { constructor(); }
 
-AudioSource::~AudioSource() { SetCurrentClip(nullptr); }
+AudioSource::~AudioSource()
+{
+    SetCurrentClip(nullptr);
+    if (attachedslot) attachedslot->RemoveSource(this);
+
+    alDeleteSources(1, &source);
+}
 
 // ========================================================================================================================
 
@@ -58,6 +65,8 @@ void AudioSource::OnSceneUnload()
 // ========================================================================================================================
 
 // === PUBLIC ===
+
+AudioEffectSlot *AudioSource::GetAttachedSlot() { return attachedslot; }
 
 AudioClip *AudioSource::GetCurrentClip() { return currclip; }
 

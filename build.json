@@ -59,6 +59,7 @@
 
             "src/engine/audio/AudioDevice.cpp",
             "src/engine/audio/AudioEffectProperties.cpp",
+            "src/engine/audio/AudioEffectSlot.cpp",
 
             "src/engine/objects/GameObject/GameObject.cpp",
             "src/engine/objects/GameObject/GameObjectTransform.cpp",

@@ -20,6 +20,7 @@
 
 #include "engine/audio/AudioDevice.hpp"
 #include "engine/audio/AudioEffectProperties.hpp"
+#include "engine/audio/AudioEffectSlot.hpp"
 
 const unsigned short FPS = 100;
 
@@ -103,9 +104,26 @@ int main()
     cube2->usedShaderProgram = "default";
     cube2->color = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
 
+    AudioEffectSlot reverb = AudioEffectSlot();
+    {
+        AudioEffectProperties p;
+        p.SetEffectType(AL_EFFECT_EAXREVERB);
+
+        p.SetEffectFloat(AL_EAXREVERB_DENSITY, 1);
+        p.SetEffectFloat(AL_EAXREVERB_DIFFUSION, 0.9);
+        p.SetEffectFloat(AL_EAXREVERB_GAIN, 0.3);
+        p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, 5);
+        p.SetEffectFloat(AL_EAXREVERB_DECAY_HFRATIO, 0.7);
+        p.SetEffectFloat(AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, 0.1);
+
+        reverb.ApplyEffect(p);
+    }
+
     AudioSource *src = s->CreateObject<AudioSource>();
+    reverb.AddSource(src);
     src->SetParent(cube2, false);
     src->SetCurrentClip(zapsfx);
+
     src->SetLooping(true);
     src->SetSourceFloat(AL_REFERENCE_DISTANCE, 0);
     src->SetSourceFloat(AL_MAX_DISTANCE, 8);
@@ -146,7 +164,7 @@ int main()
             ent->surfaces[0].textureTransform.Translate(glm::vec2(0, delta * 0.5f));
             ent->surfaces[0].textureTransform.Rotate(0.1 * delta);
 
-            cube2->transform.Translate({1.0f * delta, 0, 1.0f * delta});
+            //cube2->transform.Translate({1.0f * delta, 0, 1.0f * delta});
 
             updateCam(window, cam, delta, ent);
 

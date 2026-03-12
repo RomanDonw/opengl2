@@ -8,6 +8,7 @@
 
 class Scene;
 class AudioClip;
+class AudioEffectSlot;
 
 enum
 {
@@ -22,6 +23,7 @@ class AudioSource final : public GameObject
 {
     friend class Scene;
     friend class AudioClip;
+    friend class AudioEffectSlot;
 
     private:
         ALuint source;
@@ -30,6 +32,7 @@ class AudioSource final : public GameObject
         bool freezed = false;
         
         AudioClip *currclip = nullptr;
+        AudioEffectSlot *attachedslot = nullptr;
 
         void constructor();
         void updatesrcpos();
@@ -50,7 +53,7 @@ class AudioSource final : public GameObject
         void SetLooping(bool loop);
 
         AudioSourceState GetState();
-        //AudioEffectSlot *GetAttachedSlot();
+        AudioEffectSlot *GetAttachedSlot();
 
         AudioClip *GetCurrentClip();
         void SetCurrentClip(AudioClip *clip);
