@@ -1,6 +1,7 @@
 #include "AudioSource.hpp"
 
 #include "../../resources/AudioClip.hpp"
+#include "../../Engine.hpp"
 
 // === PRIVATE ===
 
@@ -10,6 +11,8 @@ void AudioSource::constructor()
 
     alSourcei(source, AL_BUFFER, 0);
     SetLooping(false);
+
+    if (Engine::GetScene(Engine::GetCurrentScene()) != scene) locked = true;
 }
 
 void AudioSource::updatesrcpos()
@@ -38,12 +41,16 @@ void AudioSource::OnGlobalTransformChanged()
 
 void AudioSource::OnSceneLoad()
 {
+    GameObject::OnSceneLoad();
+
     locked = false;
     if (freezed) { Play(); freezed = false; }
 }
 
 void AudioSource::OnSceneUnload()
 {
+    GameObject::OnSceneUnload();
+
     if (GetState() == PLAYING) { Pause(); freezed = true; }
     locked = true;
 }

@@ -16,6 +16,7 @@
 #include "engine/objects/Camera/Camera.hpp"
 #include "engine/objects/Entity/Entity.hpp"
 #include "engine/objects/AudioSource/AudioSource.hpp"
+#include "engine/objects/AudioListener/AudioListener.hpp"
 
 #include "engine/audio/AudioDevice.hpp"
 #include "engine/audio/AudioEffectProperties.hpp"
@@ -85,6 +86,9 @@ int main()
 
     Camera *cam = s->CreateObject<Camera>();
     s->SetCurrentCamera(cam);
+
+    AudioListener *listener = s->CreateObject<AudioListener>();
+    listener->SetParent(cam, false);
 
     Entity *ent = s->CreateObject<Entity>();
     ent->SetParent(cam, false);

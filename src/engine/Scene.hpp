@@ -13,10 +13,12 @@
 class Engine;
 class GameObject;
 class Camera;
+class AudioListener;
 
 class Scene final
 {
     friend class Engine;
+    friend class AudioListener;
 
     private:
         Scene();
@@ -24,6 +26,7 @@ class Scene final
 
         std::vector<GameObject *> objects;
         Camera *currcam = nullptr;
+        bool hasAudioListener = false;
 
         void Render();
         void Update(double delta);

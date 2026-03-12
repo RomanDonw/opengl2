@@ -66,6 +66,7 @@
             "src/engine/objects/Camera/Camera.cpp",
             "src/engine/objects/Entity/Entity.cpp",
             "src/engine/objects/AudioSource/AudioSource.cpp",
+            "src/engine/objects/AudioListener/AudioListener.cpp",
 
             "src/engine/Scene.cpp",
             "src/engine/Engine.cpp",
