@@ -78,6 +78,9 @@ int main()
     AudioClip *zapsfx = ResourceManager::CreateAudioClip("zapsfx");
     if (zapsfx->LoadFromUCSOUNDFile("./res/sounds/zapmachine.ucsound")) printf("loaded zapmachine sound\n");
 
+    AudioClip *alienbuildersfx = ResourceManager::CreateAudioClip("alienbuildersfx");
+    if (alienbuildersfx->LoadFromUCSOUNDFile("./res/sounds/alien_builder.ucsound")) printf("loaded alienbuilder sound\n");
+
     Scene *s = Engine::CreateScene("main");
     Engine::SetCurrentScene("main");
     s->fog.enabled = true;
@@ -109,12 +112,54 @@ int main()
         AudioEffectProperties p;
         p.SetEffectType(AL_EFFECT_EAXREVERB);
 
-        p.SetEffectFloat(AL_EAXREVERB_DENSITY, 1);
+        /*
+        p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, 3.76);
+        p.SetEffectFloat(AL_EAXREVERB_DECAY_HFRATIO, 0.56);
+        p.SetEffectFloat(AL_EAXREVERB_GAIN, 0.32);
+        p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_GAIN, 0.05);
+        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_GAIN, 1.26);
+        p.SetEffectFloat(AL_EAXREVERB_AIR_ABSORPTION_GAINHF, 0.994);
+        */
+
+        /*
+        p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, 2.12);
+        p.SetEffectFloat(AL_EAXREVERB_DECAY_HFRATIO, 0.8);
+        p.SetEffectFloat(AL_EAXREVERB_GAIN, 0.25);
+        p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_GAIN, 0.1);
+        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_GAIN, 0.8);
         p.SetEffectFloat(AL_EAXREVERB_DIFFUSION, 0.9);
-        p.SetEffectFloat(AL_EAXREVERB_GAIN, 0.3);
-        p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, 5);
-        p.SetEffectFloat(AL_EAXREVERB_DECAY_HFRATIO, 0.7);
-        p.SetEffectFloat(AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, 0.1);
+        */
+
+        /*
+        p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, 3.76);
+
+        p.SetEffectFloat(AL_EAXREVERB_DECAY_HFRATIO, 0.56);
+
+        p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_GAIN, 0.05);
+        p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_DELAY, 0.02);
+
+        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_GAIN, 1.26);
+        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_DELAY, 0.03);
+
+        p.SetEffectFloat(AL_EAXREVERB_AIR_ABSORPTION_GAINHF, 0.994);
+
+        p.SetEffectFloat(AL_EAXREVERB_DIFFUSION, 1);
+        p.SetEffectFloat(AL_EAXREVERB_DENSITY, 1);*/
+
+        p.SetEffectFloat(AL_EAXREVERB_DENSITY, 0);       // Чуть меньше плотности для "зернистости"
+        p.SetEffectFloat(AL_EAXREVERB_DIFFUSION, 0.7f);      // Чтобы слышались отдельные отражения от стен
+        p.SetEffectFloat(AL_EAXREVERB_GAIN, 0.4f);           // Реверб в HL1 был довольно громким
+        p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, 4.5f);     // Увеличим хвост, зал реактора ОГРОМНЫЙ
+        p.SetEffectFloat(AL_EAXREVERB_DECAY_HFRATIO, 0.0f); // Срезаем верха в хвосте (фишка HL1)
+        p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_GAIN, 0.15f);
+        p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_DELAY, 0.04f); // Большая задержка из-за масштаба
+        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_GAIN, 1.5f);   // Усиливаем основное эхо
+        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_DELAY, 0.05f);
+
+        // КРИТИЧЕСКИ ВАЖНО ДЛЯ "ТОГО САМОГО" ЗВУКА:
+        p.SetEffectFloat(AL_EAXREVERB_MODULATION_DEPTH, 0.2f);
+        p.SetEffectFloat(AL_EAXREVERB_MODULATION_TIME, 0.4f);
+        p.SetEffectFloat(AL_EAXREVERB_HFREFERENCE, 4500.0f);
 
         reverb.ApplyEffect(p);
     }
@@ -122,7 +167,7 @@ int main()
     AudioSource *src = s->CreateObject<AudioSource>();
     reverb.AddSource(src);
     src->SetParent(cube2, false);
-    src->SetCurrentClip(zapsfx);
+    src->SetCurrentClip(alienbuildersfx);
 
     src->SetLooping(true);
     src->SetSourceFloat(AL_REFERENCE_DISTANCE, 0);
@@ -167,6 +212,9 @@ int main()
             //cube2->transform.Translate({1.0f * delta, 0, 1.0f * delta});
 
             updateCam(window, cam, delta, ent);
+
+            if (Engine::IsKeyPressed(GLFW_KEY_F)) src->Pause();
+            else if (src->GetState() != AudioSourceState::PLAYING) src->Play();
 
             Engine::Update(delta);
 
