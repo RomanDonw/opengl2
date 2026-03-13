@@ -74,6 +74,7 @@ int main()
     if (ResourceManager::CreateTexture("crowbar_head")->LoadFromUCTEXFile("./res/textures/head.uctex")) printf("loaded texture crowbar_head\n");
 
     if (ResourceManager::CreateMesh("cube")->LoadFromUCMESHFile("./res/models/cube.ucmesh")) printf("loaded model cube\n");
+    if (ResourceManager::CreateMesh("hl1_reactor_demo")->LoadFromUCMESHFile("./res/models/hl1_reactor_demo.ucmesh")) printf("loaded model hl1_reactor_demo\n");
 
     AudioClip *zapsfx = ResourceManager::CreateAudioClip("zapsfx");
     if (zapsfx->LoadFromUCSOUNDFile("./res/sounds/zapmachine.ucsound")) printf("loaded zapmachine sound\n");
@@ -107,59 +108,27 @@ int main()
     cube2->usedShaderProgram = "default";
     cube2->color = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
 
+    Entity *hl1_reactor_demo = s->CreateObject<Entity>();
+    hl1_reactor_demo->usedShaderProgram = "default";
+
     AudioEffectSlot reverb = AudioEffectSlot();
     {
         AudioEffectProperties p;
         p.SetEffectType(AL_EFFECT_EAXREVERB);
 
-        /*
-        p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, 3.76);
-        p.SetEffectFloat(AL_EAXREVERB_DECAY_HFRATIO, 0.56);
-        p.SetEffectFloat(AL_EAXREVERB_GAIN, 0.32);
-        p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_GAIN, 0.05);
-        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_GAIN, 1.26);
-        p.SetEffectFloat(AL_EAXREVERB_AIR_ABSORPTION_GAINHF, 0.994);
-        */
+        p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, 10);
+        p.SetEffectFloat(AL_EAXREVERB_DENSITY, 0);
+        p.SetEffectFloat(AL_EAXREVERB_DIFFUSION, 0);
+        p.SetEffectFloat(AL_EAXREVERB_GAIN, 0.4);
+        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_DELAY, 0.08);
 
-        /*
-        p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, 2.12);
-        p.SetEffectFloat(AL_EAXREVERB_DECAY_HFRATIO, 0.8);
-        p.SetEffectFloat(AL_EAXREVERB_GAIN, 0.25);
-        p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_GAIN, 0.1);
-        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_GAIN, 0.8);
-        p.SetEffectFloat(AL_EAXREVERB_DIFFUSION, 0.9);
-        */
+        p.SetEffectFloat(AL_EAXREVERB_GAINLF, 0.8);
+        p.SetEffectFloat(AL_EAXREVERB_DECAY_LFRATIO, 0.8);
 
-        /*
-        p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, 3.76);
+        p.SetEffectFloat(AL_EAXREVERB_ECHO_TIME, 0.25);
+        p.SetEffectFloat(AL_EAXREVERB_ECHO_DEPTH, 0.5);
 
-        p.SetEffectFloat(AL_EAXREVERB_DECAY_HFRATIO, 0.56);
-
-        p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_GAIN, 0.05);
-        p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_DELAY, 0.02);
-
-        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_GAIN, 1.26);
-        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_DELAY, 0.03);
-
-        p.SetEffectFloat(AL_EAXREVERB_AIR_ABSORPTION_GAINHF, 0.994);
-
-        p.SetEffectFloat(AL_EAXREVERB_DIFFUSION, 1);
-        p.SetEffectFloat(AL_EAXREVERB_DENSITY, 1);*/
-
-        p.SetEffectFloat(AL_EAXREVERB_DENSITY, 0);       // Чуть меньше плотности для "зернистости"
-        p.SetEffectFloat(AL_EAXREVERB_DIFFUSION, 0.7f);      // Чтобы слышались отдельные отражения от стен
-        p.SetEffectFloat(AL_EAXREVERB_GAIN, 0.4f);           // Реверб в HL1 был довольно громким
-        p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, 4.5f);     // Увеличим хвост, зал реактора ОГРОМНЫЙ
-        p.SetEffectFloat(AL_EAXREVERB_DECAY_HFRATIO, 0.0f); // Срезаем верха в хвосте (фишка HL1)
-        p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_GAIN, 0.15f);
-        p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_DELAY, 0.04f); // Большая задержка из-за масштаба
-        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_GAIN, 1.5f);   // Усиливаем основное эхо
-        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_DELAY, 0.05f);
-
-        // КРИТИЧЕСКИ ВАЖНО ДЛЯ "ТОГО САМОГО" ЗВУКА:
-        p.SetEffectFloat(AL_EAXREVERB_MODULATION_DEPTH, 0.2f);
-        p.SetEffectFloat(AL_EAXREVERB_MODULATION_TIME, 0.4f);
-        p.SetEffectFloat(AL_EAXREVERB_HFREFERENCE, 4500.0f);
+        p.SetEffectFloat(AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, 1);
 
         reverb.ApplyEffect(p);
     }
@@ -171,7 +140,7 @@ int main()
 
     src->SetLooping(true);
     src->SetSourceFloat(AL_REFERENCE_DISTANCE, 0);
-    src->SetSourceFloat(AL_MAX_DISTANCE, 8);
+    src->SetSourceFloat(AL_MAX_DISTANCE, 16);
     src->SetSourceFloat(AL_GAIN, 1);
     src->Play();
 
@@ -188,6 +157,11 @@ int main()
     surf.texture = "testcube";
     cube->surfaces.push_back(surf);
     cube2->surfaces.push_back(surf);
+
+    surf.mesh = "hl1_reactor_demo";
+    surf.texture = "";
+    surf.culling = NoCulling;
+    hl1_reactor_demo->surfaces.push_back(surf);
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(s->fog.color.x, s->fog.color.y, s->fog.color.z, 1);
