@@ -42,8 +42,6 @@ class Scene final
         template<std::derived_from<GameObject> T>
         bool HasObject(T *obj)
         {
-            //if (!objects.contains(obj->order)) return false;
-            //return std::ranges::contains(objects.at(obj->order), obj);
             bool ret = false;
             ForEachAllObjects([&](GameObject *o) -> bool
             {
@@ -81,7 +79,7 @@ class Scene final
 
 
         Camera *GetCurrentCamera(); // can return nullptr.
-        void SetCurrentCamera(Camera *cam);
+        void SetCurrentCamera(Camera *cam); // can be nullptr.
 
 
         template<std::derived_from<GameObject> T>

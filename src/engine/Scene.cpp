@@ -9,18 +9,12 @@
 Scene::Scene() { objects.insert({0, std::vector<GameObject *>()}); }
 Scene::~Scene()
 {
-    //for (GameObject *obj : objects) DeleteObject(obj);
     ForEachAllObjects([&](GameObject *obj) -> bool { DeleteObject(obj); return true; });
 
     if (Engine::GetScene(Engine::GetCurrentScene()) == this) Engine::SetCurrentScene("");
 }
 
-void Scene::Update(double delta)
-{
-    //for (GameObject *obj : objects) obj->Update(delta);
-    ForEachAllObjects([&](GameObject *obj) -> bool { obj->Update(delta); return true; });
-}
-
+void Scene::Update(double delta) { ForEachAllObjects([&](GameObject *obj) -> bool { obj->Update(delta); return true; }); }
 void Scene::Render()
 {
     if (!currcam) return;
@@ -28,9 +22,6 @@ void Scene::Render()
     glm::mat4 proj = currcam->GetProjectionMatrix(Engine::GetWindowSize());
     glm::mat4 view = currcam->GetViewMatrix();
 
-    //for (GameObject *obj : objects) obj->Render(&proj, &view, &currcam->transform, &fog);
-    //ForEachAllObjects([&](GameObject *obj) -> bool { obj->Render(&proj, &view, &currcam->transform, &fog); return true; });
-    //for (std::pair<int32_t, std::vector<GameObject *>> pair : objects)
     ForEachAllOrders([&](std::vector<GameObject *> layer) -> bool
     {
         glClear(GL_DEPTH_BUFFER_BIT);
@@ -39,17 +30,8 @@ void Scene::Render()
     });
 }
 
-void Scene::OnSceneLoad()
-{
-    //for (GameObject *obj : objects) obj->OnSceneLoad();
-    ForEachAllObjects([&](GameObject *obj) -> bool { obj->OnSceneLoad(); return true; });
-}
-
-void Scene::OnSceneUnload()
-{
-    //for (GameObject *obj : objects) obj->OnSceneUnload();
-    ForEachAllObjects([&](GameObject *obj) -> bool { obj->OnSceneUnload(); return true; });
-}
+void Scene::OnSceneLoad() { ForEachAllObjects([&](GameObject *obj) -> bool { obj->OnSceneLoad(); return true; }); }
+void Scene::OnSceneUnload() { ForEachAllObjects([&](GameObject *obj) -> bool { obj->OnSceneUnload(); return true; }); }
 
 // === PUBLIC ===
 
