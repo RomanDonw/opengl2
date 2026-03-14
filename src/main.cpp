@@ -86,7 +86,7 @@ int main()
     Engine::SetCurrentScene("main");
     s->fog.enabled = true;
     s->fog.startDistance = 0;
-    s->fog.endDistance = 8;
+    s->fog.endDistance = 32;
     s->fog.color = glm::vec3(106 / 255.0f, 117 / 255.0f, 129 / 255.0f);
 
     Camera *cam = s->CreateObject<Camera>();
@@ -172,6 +172,7 @@ int main()
     double prev_time = glfwGetTime();
     while (!glfwWindowShouldClose(window))
     {
+        glfwPollEvents();
         double delta = glfwGetTime() - prev_time;
 
         if (Engine::IsKeyPressed(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(window, true);
@@ -198,8 +199,6 @@ int main()
 
             glfwSwapBuffers(window);
         }
-
-        glfwPollEvents();
     }
 
     Engine::Shutdown();
