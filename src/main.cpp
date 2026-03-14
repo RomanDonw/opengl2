@@ -97,13 +97,10 @@ int main()
     listener->SetParent(cam, false);
 
     Entity *ent = s->CreateObject<Entity>();
-    printf("\n\n%p\n\n", ent);
     ent->SetParent(cam, false);
     ent->usedShaderProgram = "default";
     ent->transform = Transform(glm::vec3(0.0933556, -0.160361, -0.179554), crowbar_rot, glm::vec3(0.01));
-    s->SetObjectOrder(ent, 1024);
-
-    printf("%d\n", s->GetObjectOrder(ent));
+    s->SetObjectOrder(ent, 1);
 
     Entity *cube = s->CreateObject<Entity>(Transform({0, 0, -5}, glm::quat(glm::vec3(0)), glm::vec3(0.1)));
     cube->usedShaderProgram = "default";

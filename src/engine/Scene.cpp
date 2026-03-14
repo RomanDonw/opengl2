@@ -30,11 +30,13 @@ void Scene::Render()
 
     //for (GameObject *obj : objects) obj->Render(&proj, &view, &currcam->transform, &fog);
     //ForEachAllObjects([&](GameObject *obj) -> bool { obj->Render(&proj, &view, &currcam->transform, &fog); return true; });
-    for (std::pair<int32_t, std::vector<GameObject *>> pair : objects)
+    //for (std::pair<int32_t, std::vector<GameObject *>> pair : objects)
+    ForEachAllOrders([&](std::vector<GameObject *> layer) -> bool
     {
         glClear(GL_DEPTH_BUFFER_BIT);
-        for (GameObject *obj : pair.second) obj->Render(&proj, &view, &currcam->transform, &fog);
-    }
+        for (GameObject *obj : layer) obj->Render(&proj, &view, &currcam->transform, &fog);
+        return true;
+    });
 }
 
 void Scene::OnSceneLoad()
