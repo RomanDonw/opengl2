@@ -30,8 +30,8 @@ bool readtextfile(std::string filename, std::string *output);
 void scrollCallback(GLFWwindow *w, double xoff, double yoff);
 void updateCam(GLFWwindow *w, Camera *c, double delta, Entity *crowbar);
 
-const unsigned short WWIDTH = 1200;
-const unsigned short WHEIGHT = 700;
+const unsigned short WWIDTH = 1280;
+const unsigned short WHEIGHT = 720;
 
 const glm::vec3 crowbar_rot = glm::vec3(-3.04567, -0.648789, 3.12098);
 

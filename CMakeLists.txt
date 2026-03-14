@@ -22,6 +22,7 @@ target_include_directories(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include"
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglfw3.a")
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglad.a")
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libJolt.dll.a")
+target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libvsgImGui.dll.a")
 
 # link dynamic libs.
 
