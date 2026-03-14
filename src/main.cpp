@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <sstream>
 
+#include "engine/Utils.hpp"
 #include "engine/Engine.hpp"
 
 #include "engine/ResourceManager.hpp"
@@ -219,7 +220,7 @@ void scrollCallback(GLFWwindow *w, double xoff, double yoff)
 void updateCam(GLFWwindow *window, Camera *cam, double delta, Entity *crowbar)
 {
     static double lastX = WWIDTH / 2, lastY = WHEIGHT / 2;
-    static float offset = 0;
+    static float cwoffset = 0;
 
     float speed;
     if (Engine::IsKeyPressed(GLFW_KEY_LEFT_SHIFT)) speed = cameraSpeed * 2.0;
@@ -227,14 +228,19 @@ void updateCam(GLFWwindow *window, Camera *cam, double delta, Entity *crowbar)
     else speed = cameraSpeed;
 
     Transform *t = &cam->transform;
+    glm::vec3 old_pos = t->GetPosition();
 
-    if (Engine::IsKeyPressed(GLFW_KEY_W)) { t->Translate(t->GetFront() * glm::vec3(speed * delta)); offset += 0.05; }
-    if (Engine::IsKeyPressed(GLFW_KEY_S)) { t->Translate(-t->GetFront() * glm::vec3(speed * delta)); offset += 0.05; }
-    if (Engine::IsKeyPressed(GLFW_KEY_A)) { t->Translate(-t->GetRight() * glm::vec3(speed * delta)); offset += 0.05; }
-    if (Engine::IsKeyPressed(GLFW_KEY_D)) { t->Translate(t->GetRight() * glm::vec3(speed * delta)); offset += 0.05; }
+    if (Engine::IsKeyPressed(GLFW_KEY_W)) { t->Translate(t->GetFront() * glm::vec3(speed * delta)); }
+    if (Engine::IsKeyPressed(GLFW_KEY_S)) { t->Translate(-t->GetFront() * glm::vec3(speed * delta)); }
+    if (Engine::IsKeyPressed(GLFW_KEY_A)) { t->Translate(-t->GetRight() * glm::vec3(speed * delta)); }
+    if (Engine::IsKeyPressed(GLFW_KEY_D)) { t->Translate(t->GetRight() * glm::vec3(speed * delta)); }
 
     if (Engine::IsKeyPressed(GLFW_KEY_SPACE)) t->Translate(glm::vec3(0, speed * delta, 0));
     if (Engine::IsKeyPressed(GLFW_KEY_LEFT_ALT)) t->Translate(glm::vec3(0, -speed * delta, 0));
+
+    glm::vec3 deltapos = t->GetPosition() - old_pos;
+    cwoffset += glm::length(Utils::normalize(deltapos)) * glm::radians(11.25f / 4);
+    cwoffset = glm::mod(cwoffset, glm::radians(360.0f));
 
     if (Engine::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE)) cameraSpeed = DEFAULT_CAMERA_SPEED;
 
@@ -256,9 +262,7 @@ void updateCam(GLFWwindow *window, Camera *cam, double delta, Entity *crowbar)
         else t->Rotate(delta_yaw);
     }
 
-    crowbar->transform.SetRotation(crowbar_rot + glm::vec3(glm::sin(offset) * 0.03f, 0.0f, 0.0f));
-    //if (offset >= glm::radians(360.0f)) offs
-    offset = glm::mod(offset, glm::radians(360.0f));
+    crowbar->transform.SetRotation(crowbar_rot + glm::vec3(glm::sin(cwoffset) * 0.03f, 0.0f, 0.0f));
 
     lastX = mouseX;
     lastY = mouseY;
