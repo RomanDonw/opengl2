@@ -16,6 +16,9 @@ class GameObject
     friend class GameObjectTransform;
     friend class Scene;
 
+    private:
+        int32_t order; // can be changed only by Scene!
+
     protected:
         virtual void OnLocalTransformChanged();
         virtual void OnParentTransformChanged();

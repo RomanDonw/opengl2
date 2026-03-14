@@ -6,16 +6,19 @@
 
 // === PRIVATE ===
 
-Scene::Scene() {}
+Scene::Scene() { objects.insert({0, std::vector<GameObject *>()}); }
 Scene::~Scene()
 {
-    for (GameObject *obj : objects) DeleteObject(obj);
+    //for (GameObject *obj : objects) DeleteObject(obj);
+    ForEachAllObjects([&](GameObject *obj) -> bool { DeleteObject(obj); return true; });
+
     if (Engine::GetScene(Engine::GetCurrentScene()) == this) Engine::SetCurrentScene("");
 }
 
 void Scene::Update(double delta)
 {
-    for (GameObject *obj : objects) obj->Update(delta);
+    //for (GameObject *obj : objects) obj->Update(delta);
+    ForEachAllObjects([&](GameObject *obj) -> bool { obj->Update(delta); return true; });
 }
 
 void Scene::Render()
@@ -25,20 +28,41 @@ void Scene::Render()
     glm::mat4 proj = currcam->GetProjectionMatrix(Engine::GetWindowSize());
     glm::mat4 view = currcam->GetViewMatrix();
 
-    for (GameObject *obj : objects) obj->Render(&proj, &view, &currcam->transform, &fog);
+    //for (GameObject *obj : objects) obj->Render(&proj, &view, &currcam->transform, &fog);
+    //ForEachAllObjects([&](GameObject *obj) -> bool { obj->Render(&proj, &view, &currcam->transform, &fog); return true; });
+    for (std::pair<int32_t, std::vector<GameObject *>> pair : objects)
+    {
+        glClear(GL_DEPTH_BUFFER_BIT);
+        for (GameObject *obj : pair.second) obj->Render(&proj, &view, &currcam->transform, &fog);
+    }
 }
 
 void Scene::OnSceneLoad()
 {
-    for (GameObject *obj : objects) obj->OnSceneLoad();
+    //for (GameObject *obj : objects) obj->OnSceneLoad();
+    ForEachAllObjects([&](GameObject *obj) -> bool { obj->OnSceneLoad(); return true; });
 }
 
 void Scene::OnSceneUnload()
 {
-    for (GameObject *obj : objects) obj->OnSceneUnload();
+    //for (GameObject *obj : objects) obj->OnSceneUnload();
+    ForEachAllObjects([&](GameObject *obj) -> bool { obj->OnSceneUnload(); return true; });
 }
 
 // === PUBLIC ===
+
+void Scene::ForEachAllObjects(std::function<bool (GameObject *)> callback)
+{
+    for (std::pair<int32_t, std::vector<GameObject *>> pair : objects)
+    {
+        for (GameObject *obj : pair.second) if (!callback(obj)) return;
+    }
+}
+
+void Scene::ForEachAllOrders(std::function<bool (std::vector<GameObject *>)> callback)
+{
+    for (std::pair<int32_t, std::vector<GameObject *>> pair : objects) if (!callback(pair.second)) return;
+}
 
 Camera *Scene::GetCurrentCamera() { return currcam; }
 void Scene::SetCurrentCamera(Camera *camera)
