@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.23)
 project(opengl2)
 
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp" "src/*.hpp")
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "src/*.cpp" "src/*.hpp" "src/*.h")
 
 add_executable(opengl2 ${SOURCES})
 
@@ -22,7 +22,6 @@ target_include_directories(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include"
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglfw3.a")
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglad.a")
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libJolt.dll.a")
-target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libvsgImGui.dll.a")
 
 # link dynamic libs.
 
