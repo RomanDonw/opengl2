@@ -5,6 +5,7 @@
 #include "external/opengl.hpp"
 #include "external/openal.hpp"
 #include "external/physics.hpp"
+#include "external/imgui.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -53,6 +54,8 @@ class Engine final
 
         static bool Update(double delta);
         static bool Render();
+        static bool BeginRenderUI();
+        static bool EndRenderUI();
 };
 
 #endif

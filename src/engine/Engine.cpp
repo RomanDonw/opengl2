@@ -1,11 +1,11 @@
 #include "Engine.hpp"
 
+#include <exception>
+#include <stdexcept>
+
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
 #include "audio/AudioDevice.hpp"
-
-#include <exception>
-#include <stdexcept>
 
 // === PRIVATE ===
 
@@ -23,6 +23,12 @@ bool Engine::Init(unsigned short windowWidth, unsigned short windowHeight)
 
     glfwSetWindowSizeCallback(window, resizecallback);
 
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init();
+
     inited = true;
     return true;
 }
@@ -30,6 +36,10 @@ bool Engine::Init(unsigned short windowWidth, unsigned short windowHeight)
 bool Engine::Shutdown()
 {
     if (!inited) return false;
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     glfwMakeContextCurrent(NULL);
     glfwTerminate();
@@ -148,4 +158,25 @@ void Engine::SetCurrentScene(std::string name)
 
     GetScene(name)->OnSceneLoad();
     currscene = name;
+}
+
+bool Engine::BeginRenderUI()
+{
+    if (!inited) return false;
+
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    return true;
+}
+
+bool Engine::EndRenderUI()
+{
+    if (!inited) return false;
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    return true;
 }
