@@ -35,13 +35,107 @@ const unsigned short WHEIGHT = 720;
 
 const glm::vec3 crowbar_rot = glm::vec3(-3.04567, -0.648789, 3.12098);
 
+double lastX = WWIDTH / 2, lastY = WHEIGHT / 2;
+
+struct
+{
+    float density = 1;
+    float diffusion = 1;
+
+    float gain = 0.32;
+    float gainhf = 0.89;
+    float gainlf = 0;
+
+    float decaytime = 1.49;
+    float decayhfratio = 0.83;
+    float decaylfratio = 1;
+
+    float reflectionsgain = 0.05;
+    float reflectionsdelay = 0.007;
+
+    float latereverbgain = 1.26;
+    float latereverbdelay = 0.011;
+    
+    float echotime = 0.25;
+    float echodepth = 0;
+
+    float modulationtime = 0.25;
+    float modulationdepth = 0;
+
+    float airabsorptiongainhf = 0.994;
+
+    float hfreference = 5000;
+    float lfreference = 250;
+
+    float roomrollofffactor = 0;
+
+    bool decayhf_limit = true;
+} typedef EAXReverbEffectSettings;
+
+void applyeaxreverbeffecttoslot(const EAXReverbEffectSettings *setts, AudioEffectSlot *slot)
+{
+    AudioEffectProperties p;
+    p.SetEffectType(AL_EFFECT_EAXREVERB);
+
+
+
+    /*p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, 10);
+    p.SetEffectFloat(AL_EAXREVERB_DENSITY, 0);
+    p.SetEffectFloat(AL_EAXREVERB_DIFFUSION, 0);
+    p.SetEffectFloat(AL_EAXREVERB_GAIN, 0.4);
+    p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_DELAY, 0.08);
+
+    p.SetEffectFloat(AL_EAXREVERB_GAINLF, 0.8);
+    p.SetEffectFloat(AL_EAXREVERB_DECAY_LFRATIO, 0.8);
+
+    p.SetEffectFloat(AL_EAXREVERB_ECHO_TIME, 0.25);
+    p.SetEffectFloat(AL_EAXREVERB_ECHO_DEPTH, 0.5);
+
+    p.SetEffectFloat(AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, 1);*/
+
+    p.SetEffectFloat(AL_EAXREVERB_DENSITY, setts->density);
+    p.SetEffectFloat(AL_EAXREVERB_DIFFUSION, setts->diffusion);
+
+    p.SetEffectFloat(AL_EAXREVERB_GAIN, setts->gain);
+    p.SetEffectFloat(AL_EAXREVERB_GAINHF, setts->gainhf);
+    p.SetEffectFloat(AL_EAXREVERB_GAINLF, setts->gainlf);
+
+    p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, setts->decaytime);
+    p.SetEffectFloat(AL_EAXREVERB_DECAY_HFRATIO, setts->decayhfratio);
+    p.SetEffectFloat(AL_EAXREVERB_DECAY_LFRATIO, setts->decaylfratio);
+
+    p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_GAIN, setts->reflectionsgain);
+    p.SetEffectFloat(AL_EAXREVERB_REFLECTIONS_DELAY, setts->reflectionsdelay);
+
+    p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_GAIN, setts->latereverbgain);
+    p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_DELAY, setts->latereverbdelay);
+
+    p.SetEffectFloat(AL_EAXREVERB_ECHO_TIME, setts->echotime);
+    p.SetEffectFloat(AL_EAXREVERB_ECHO_DEPTH, setts->echodepth);
+
+    p.SetEffectFloat(AL_EAXREVERB_MODULATION_TIME, setts->modulationtime);
+    p.SetEffectFloat(AL_EAXREVERB_MODULATION_DEPTH, setts->modulationdepth);
+
+    p.SetEffectFloat(AL_EAXREVERB_AIR_ABSORPTION_GAINHF, setts->airabsorptiongainhf);
+
+    p.SetEffectFloat(AL_EAXREVERB_HFREFERENCE, setts->hfreference);
+    p.SetEffectFloat(AL_EAXREVERB_LFREFERENCE, setts->lfreference);
+
+    p.SetEffectFloat(AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, setts->roomrollofffactor);
+
+    p.SetEffectInt(AL_EAXREVERB_DECAY_HFLIMIT, setts->decayhf_limit ? AL_TRUE : AL_FALSE);
+
+    slot->ApplyEffect(p);
+}
+
 int main()
 {
     if (!Engine::Init(WWIDTH, WHEIGHT)) return 1;
 
     GLFWwindow *window = Engine::GetWindow();
+    ImGUI::GetIO().IniFilename = nullptr;
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetScrollCallback(window, scrollCallback);
 
     glfwSetCursorPos(window, WWIDTH / 2.0f, WHEIGHT / 2.0f);
@@ -114,26 +208,8 @@ int main()
     hl1_reactor_demo->usedShaderProgram = "default";
 
     AudioEffectSlot reverb = AudioEffectSlot();
-    {
-        AudioEffectProperties p;
-        p.SetEffectType(AL_EFFECT_EAXREVERB);
-
-        p.SetEffectFloat(AL_EAXREVERB_DECAY_TIME, 10);
-        p.SetEffectFloat(AL_EAXREVERB_DENSITY, 0);
-        p.SetEffectFloat(AL_EAXREVERB_DIFFUSION, 0);
-        p.SetEffectFloat(AL_EAXREVERB_GAIN, 0.4);
-        p.SetEffectFloat(AL_EAXREVERB_LATE_REVERB_DELAY, 0.08);
-
-        p.SetEffectFloat(AL_EAXREVERB_GAINLF, 0.8);
-        p.SetEffectFloat(AL_EAXREVERB_DECAY_LFRATIO, 0.8);
-
-        p.SetEffectFloat(AL_EAXREVERB_ECHO_TIME, 0.25);
-        p.SetEffectFloat(AL_EAXREVERB_ECHO_DEPTH, 0.5);
-
-        p.SetEffectFloat(AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, 1);
-
-        reverb.ApplyEffect(p);
-    }
+    EAXReverbEffectSettings reverbsetts;
+    applyeaxreverbeffecttoslot(&reverbsetts, &reverb);
 
     AudioSource *src = s->CreateObject<AudioSource>();
     reverb.AddSource(src);
@@ -169,6 +245,9 @@ int main()
     glClearColor(s->fog.color.x, s->fog.color.y, s->fog.color.z, 1);
 
     float speed = 1;
+    bool captured = false;
+
+    bool autoapplyeffect = false;
 
     glfwSetTime(0);
     double prev_time = glfwGetTime();
@@ -178,6 +257,23 @@ int main()
         double delta = glfwGetTime() - prev_time;
 
         if (Engine::IsKeyPressed(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(window, true);
+
+        // capture mouse.
+        if (Engine::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT) && !captured)
+        {
+            captured = true;
+            glfwSetCursorPos(window, WWIDTH / 2.0f, WHEIGHT / 2.0f);
+            lastX = WWIDTH / 2.0f;
+            lastY = WHEIGHT / 2.0f;
+
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
+        else if (!Engine::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT) && captured)
+        {
+            captured = false;
+
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
 
         if (delta >= 1.0 / FPS)
         {
@@ -198,6 +294,67 @@ int main()
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             Engine::Render();
+
+            Engine::BeginRenderUI();
+
+            ImGUI::Begin("EAX Reverb. settings");
+            ImGUI::SetWindowSize(ImVec2(600, 620));
+
+            ImGUI::SliderFloat("Density", &reverbsetts.density, 0, 1);
+            ImGUI::SliderFloat("Diffusion", &reverbsetts.diffusion, 0, 1);
+
+            ImGUI::Separator();
+
+            ImGUI::SliderFloat("Gain", &reverbsetts.gain, 0, 1);
+            ImGUI::SliderFloat("Gain HF", &reverbsetts.gainhf, 0, 1);
+            ImGUI::SliderFloat("Gain LF", &reverbsetts.gainlf, 0, 1);
+
+            ImGUI::Separator();
+
+            ImGUI::SliderFloat("Decay Time", &reverbsetts.decaytime, 0, 20);
+            ImGUI::SliderFloat("Decay HF Ratio", &reverbsetts.decayhfratio, 0.1, 2);
+            ImGUI::SliderFloat("Decay LF Ratio", &reverbsetts.decaylfratio, 0.1, 2);
+
+            ImGUI::Separator();
+
+            ImGUI::SliderFloat("Reflections Gain", &reverbsetts.reflectionsgain, 0, 3.16);
+            ImGUI::SliderFloat("Reflections Delay", &reverbsetts.reflectionsdelay, 0, 0.3);
+
+            ImGUI::Separator();
+
+            ImGUI::SliderFloat("Late Reverb. Delay", &reverbsetts.latereverbdelay, 0, 0.1);
+            ImGUI::SliderFloat("Late Reverb. Gain", &reverbsetts.latereverbgain, 0, 10);
+
+            ImGUI::Separator();
+
+            ImGUI::SliderFloat("Echo Time", &reverbsetts.echotime, 0.075, 0.25);
+            ImGUI::SliderFloat("Echo Depth", &reverbsetts.echodepth, 0, 1);
+
+            ImGUI::Separator();
+
+            ImGUI::SliderFloat("Modulation Time", &reverbsetts.modulationtime, 0.04, 4);
+            ImGUI::SliderFloat("Modulation Depth", &reverbsetts.modulationdepth, 0, 1);
+
+            ImGUI::Separator();
+
+            ImGUI::SliderFloat("HF Reference", &reverbsetts.hfreference, 1000, 20000);
+            ImGUI::SliderFloat("LF Reference", &reverbsetts.lfreference, 20, 1000);
+
+            ImGUI::Separator();
+
+            ImGUI::SliderFloat("Room Rolloff Factor", &reverbsetts.roomrollofffactor, 0, 10);
+            ImGUI::SliderFloat("Air Absorption Gain HF", &reverbsetts.airabsorptiongainhf, 0.892, 1);
+            ImGUI::Checkbox("Decay HF Limit", &reverbsetts.decayhf_limit);
+
+            ImGUI::Separator();
+
+            ImGUI::Checkbox("Auto apply effect", &autoapplyeffect);
+            if (autoapplyeffect) applyeaxreverbeffecttoslot(&reverbsetts, &reverb);
+            else if (ImGUI::Button("Apply effect")) applyeaxreverbeffecttoslot(&reverbsetts, &reverb);
+
+            ImGUI::End();
+
+            Engine::EndRenderUI();
 
             glfwSwapBuffers(window);
         }
@@ -220,7 +377,6 @@ void scrollCallback(GLFWwindow *w, double xoff, double yoff)
 
 void updateCam(GLFWwindow *window, Camera *cam, double delta, Entity *crowbar)
 {
-    static double lastX = WWIDTH / 2, lastY = WHEIGHT / 2;
     static float cwoffset = 0;
 
     float speed;
@@ -245,28 +401,31 @@ void updateCam(GLFWwindow *window, Camera *cam, double delta, Entity *crowbar)
 
     if (Engine::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE)) cameraSpeed = DEFAULT_CAMERA_SPEED;
 
-    double mouseX, mouseY;
-    glfwGetCursorPos(window, &mouseX, &mouseY);
-
-    float mxoff = -glm::radians((mouseX - lastX) * MOUSE_SENSITIVITY);
-    float myoff = -glm::radians((mouseY - lastY) * MOUSE_SENSITIVITY);
+    if (!ImGUI::GetIO().WantCaptureMouse && Engine::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
     {
-        glm::quat delta_pitch = glm::angleAxis(myoff, glm::vec3(1, 0, 0));
-        glm::quat delta_yaw = glm::angleAxis(mxoff, glm::vec3(0, 1, 0));
+        double mouseX, mouseY;
+        glfwGetCursorPos(window, &mouseX, &mouseY);
 
-        glm::quat new_rotation = delta_yaw * t->GetRotation() * delta_pitch;
+        float mxoff = -glm::radians((mouseX - lastX) * MOUSE_SENSITIVITY);
+        float myoff = -glm::radians((mouseY - lastY) * MOUSE_SENSITIVITY);
+        {
+            glm::quat delta_pitch = glm::angleAxis(myoff, glm::vec3(1, 0, 0));
+            glm::quat delta_yaw = glm::angleAxis(mxoff, glm::vec3(0, 1, 0));
 
-        glm::vec3 front = new_rotation * glm::vec3(0, 0, -1);
-        glm::vec3 front_xz = glm::normalize(glm::vec3(front.x, 0, front.z));
+            glm::quat new_rotation = delta_yaw * t->GetRotation() * delta_pitch;
 
-        if (glm::dot(front, front_xz) >= glm::cos(glm::radians(60.0f))) t->SetRotation(new_rotation);
-        else t->Rotate(delta_yaw);
+            glm::vec3 front = new_rotation * glm::vec3(0, 0, -1);
+            glm::vec3 front_xz = glm::normalize(glm::vec3(front.x, 0, front.z));
+
+            if (glm::dot(front, front_xz) >= glm::cos(glm::radians(60.0f))) t->SetRotation(new_rotation);
+            else t->Rotate(delta_yaw);
+        }
+
+        lastX = mouseX;
+        lastY = mouseY;
     }
 
     crowbar->transform.SetRotation(crowbar_rot + glm::vec3(glm::sin(cwoffset) * 0.03f, 0.0f, 0.0f));
-
-    lastX = mouseX;
-    lastY = mouseY;
 }
 
 bool readtextfile(std::string filename, std::string *output)
