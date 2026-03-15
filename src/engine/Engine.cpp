@@ -24,7 +24,7 @@ bool Engine::Init(unsigned short windowWidth, unsigned short windowHeight)
     glfwSetWindowSizeCallback(window, resizecallback);
 
     IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+    ImGUI::CreateContext();
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
@@ -39,7 +39,7 @@ bool Engine::Shutdown()
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+    ImGUI::DestroyContext();
 
     glfwMakeContextCurrent(NULL);
     glfwTerminate();
@@ -166,7 +166,7 @@ bool Engine::BeginRenderUI()
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+    ImGUI::NewFrame();
 
     return true;
 }
@@ -175,8 +175,8 @@ bool Engine::EndRenderUI()
 {
     if (!inited) return false;
 
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    ImGUI::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGUI::GetDrawData());
 
     return true;
 }
