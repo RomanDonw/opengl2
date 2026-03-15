@@ -138,7 +138,7 @@ int main()
     //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetScrollCallback(window, scrollCallback);
 
-    glfwSetCursorPos(window, WWIDTH / 2.0f, WHEIGHT / 2.0f);
+    glfwSetCursorPos(window, Engine::GetWindowSize().x / 2.0f, Engine::GetWindowSize().y / 2.0f);
 
     AudioDevice dev = AudioDevice(NULL);
     Engine::SetCurrentAudioDevice(&dev);
@@ -262,9 +262,11 @@ int main()
         if (Engine::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT) && !captured)
         {
             captured = true;
-            glfwSetCursorPos(window, WWIDTH / 2.0f, WHEIGHT / 2.0f);
-            lastX = WWIDTH / 2.0f;
-            lastY = WHEIGHT / 2.0f;
+
+            glm::vec2 sz = Engine::GetWindowSize();
+            glfwSetCursorPos(window, sz.x / 2.0f, sz.y / 2.0f);
+            lastX = sz.x / 2.0f;
+            lastY = sz.y / 2.0f;
 
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
@@ -286,8 +288,8 @@ int main()
 
             updateCam(window, cam, delta, ent);
 
-            if (Engine::IsKeyPressed(GLFW_KEY_F)) src->Pause();
-            else if (src->GetState() != AudioSourceState::PLAYING) src->Play();
+            //if (Engine::IsKeyPressed(GLFW_KEY_F)) src->Pause();
+            //else if (src->GetState() != AudioSourceState::PLAYING) src->Play();
 
             Engine::Update(delta);
 
@@ -297,8 +299,9 @@ int main()
 
             Engine::BeginRenderUI();
 
+            ImGUI::SetNextWindowSize(ImVec2(600, 620), ImGuiCond_FirstUseEver);
             ImGUI::Begin("EAX Reverb. settings");
-            ImGUI::SetWindowSize(ImVec2(600, 620));
+            //ImGUI::SetWindowSize(ImVec2(600, 620));
 
             ImGUI::SliderFloat("Density", &reverbsetts.density, 0, 1);
             ImGUI::SliderFloat("Diffusion", &reverbsetts.diffusion, 0, 1);
@@ -351,6 +354,15 @@ int main()
             ImGUI::Checkbox("Auto apply effect", &autoapplyeffect);
             if (autoapplyeffect) applyeaxreverbeffecttoslot(&reverbsetts, &reverb);
             else if (ImGUI::Button("Apply effect")) applyeaxreverbeffecttoslot(&reverbsetts, &reverb);
+
+            ImGUI::End();
+
+            ImGUI::SetNextWindowSize(ImVec2(200, 60), ImGuiCond_FirstUseEver);
+            ImGUI::Begin("AudioSource control");
+
+            if (ImGUI::Button("Pause")) src->Pause();
+            ImGUI::SameLine();
+            if (ImGUI::Button("Resume")) src->Play();
 
             ImGUI::End();
 
