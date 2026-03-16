@@ -215,11 +215,11 @@ int main()
     AudioSource *src = s->CreateObject<AudioSource>();
     reverb.AddSource(src);
     src->SetParent(cube2, false);
-    src->SetCurrentClip(alienbuildersfx);
+    src->SetCurrentClip(zapsfx);
 
     src->SetLooping(true);
-    src->SetSourceFloat(AL_REFERENCE_DISTANCE, 0);
-    src->SetSourceFloat(AL_MAX_DISTANCE, 16);
+    src->SetSourceFloat(AL_REFERENCE_DISTANCE, 8);
+    src->SetSourceFloat(AL_MAX_DISTANCE, 32);
     src->SetSourceFloat(AL_GAIN, 1);
     src->Play();
 
@@ -249,6 +249,8 @@ int main()
     bool captured = false;
 
     bool autoapplyeffect = false;
+    float pitch = 1;
+    float gain = 1;
 
     glfwSetTime(0);
     double prev_time = glfwGetTime();
@@ -359,12 +361,21 @@ int main()
 
             ImGUI::End();
 
-            ImGUI::SetNextWindowSize(ImVec2(200, 60), ImGuiCond_FirstUseEver);
+            ImGUI::SetNextWindowSize(ImVec2(300, 100), ImGuiCond_FirstUseEver);
             ImGUI::Begin("AudioSource control");
 
+            if (ImGUI::Button("Play/Resume")) src->Play();
+            ImGUI::SameLine();
             if (ImGUI::Button("Pause")) src->Pause();
             ImGUI::SameLine();
-            if (ImGUI::Button("Resume")) src->Play();
+            if (ImGUI::Button("Stop")) src->Stop();
+            ImGUI::SameLine();
+            if (ImGUI::Button("Rewind")) src->Rewind();
+
+            ImGUI::SliderFloat("Pitch", &pitch, 0, 2);
+            ImGUI::SliderFloat("Gain", &gain, 0, 1);
+            src->SetSourceFloat(AL_PITCH, pitch);
+            src->SetSourceFloat(AL_GAIN, gain);
 
             ImGUI::End();
 
