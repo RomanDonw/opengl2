@@ -218,10 +218,9 @@ int main()
     src->SetCurrentClip(zapsfx);
 
     src->SetLooping(true);
-    src->SetSourceFloat(AL_REFERENCE_DISTANCE, 8);
-    src->SetSourceFloat(AL_MAX_DISTANCE, 32);
-    src->SetSourceFloat(AL_GAIN, 1);
-    src->Play();
+    //src->SetSourceFloat(AL_REFERENCE_DISTANCE, 8);
+    //src->SetSourceFloat(AL_MAX_DISTANCE, 32);
+    //src->SetSourceFloat(AL_GAIN, 1);
 
     Surface surf;
     surf.mesh = "crowbar_cyl";
@@ -251,6 +250,10 @@ int main()
     bool autoapplyeffect = false;
     float pitch = 1;
     float gain = 1;
+    float refdist = 8;
+    float maxdist = 32;
+
+    src->Play();
 
     glfwSetTime(0);
     double prev_time = glfwGetTime();
@@ -329,8 +332,8 @@ int main()
 
             ImGUI::Separator();
 
-            ImGUI::SliderFloat("Late Reverb. Delay", &reverbsetts.latereverbdelay, 0, 0.1);
             ImGUI::SliderFloat("Late Reverb. Gain", &reverbsetts.latereverbgain, 0, 10);
+            ImGUI::SliderFloat("Late Reverb. Delay", &reverbsetts.latereverbdelay, 0, 0.1);
 
             ImGUI::Separator();
 
@@ -361,7 +364,7 @@ int main()
 
             ImGUI::End();
 
-            ImGUI::SetNextWindowSize(ImVec2(300, 100), ImGuiCond_FirstUseEver);
+            ImGUI::SetNextWindowSize(ImVec2(400, 150), ImGuiCond_FirstUseEver);
             ImGUI::Begin("AudioSource control");
 
             if (ImGUI::Button("Play/Resume")) src->Play();
@@ -374,8 +377,13 @@ int main()
 
             ImGUI::SliderFloat("Pitch", &pitch, 0, 2);
             ImGUI::SliderFloat("Gain", &gain, 0, 1);
+            ImGUI::DragFloat("Reference Distance", &refdist, 0.1, 0, std::numeric_limits<float>().max());
+            ImGUI::DragFloat("Max Distance", &maxdist, 0.1, 0, std::numeric_limits<float>().max());
+
             src->SetSourceFloat(AL_PITCH, pitch);
             src->SetSourceFloat(AL_GAIN, gain);
+            src->SetSourceFloat(AL_REFERENCE_DISTANCE, refdist);
+            src->SetSourceFloat(AL_MAX_DISTANCE, maxdist);
 
             ImGUI::End();
 
