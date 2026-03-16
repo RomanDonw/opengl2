@@ -24,6 +24,8 @@ class AudioEffectSlot
 
         void ApplyEffect(AudioEffectProperties effect);
 
+        void SetSlotGain(float gain);
+
         bool HasAttachedSource(AudioSource *source);
         std::vector<AudioSource *> GetAttachedSources();
         bool AddSource(AudioSource *source);

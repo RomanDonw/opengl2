@@ -18,6 +18,8 @@ AudioEffectSlot::~AudioEffectSlot()
 
 void AudioEffectSlot::ApplyEffect(AudioEffectProperties effect) { alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, effect.effect); }
 
+void AudioEffectSlot::SetSlotGain(float gain) { alAuxiliaryEffectSlotf(slot, AL_EFFECTSLOT_GAIN, gain); }
+
 bool AudioEffectSlot::HasAttachedSource(AudioSource *source) { return std::ranges::contains(attachedsources, source); }
 std::vector<AudioSource *> AudioEffectSlot::GetAttachedSources() { return attachedsources; }
 bool AudioEffectSlot::AddSource(AudioSource *source)
