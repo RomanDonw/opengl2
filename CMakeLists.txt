@@ -24,24 +24,4 @@ target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglad.a
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libJolt.dll.a")
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a")
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libmysofa.a")
-#target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libopenal.a")
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libopenal.dll.a")
-
-# link dynamic libs.
-
-#target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/OpenAL32.dll")
-#target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/soft_oal.dll")
-
-# copy .dll files after building executeable.
-
-add_custom_command(TARGET opengl2 POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_CURRENT_SOURCE_DIR}/lib/OpenAL32.dll"
-        $<TARGET_FILE_DIR:opengl2>
-)
-
-add_custom_command(TARGET opengl2 POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_CURRENT_SOURCE_DIR}/lib/soft_oal.dll"
-        $<TARGET_FILE_DIR:opengl2>
-)
