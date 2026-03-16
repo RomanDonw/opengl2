@@ -9,6 +9,7 @@
 class Scene;
 class AudioClip;
 class AudioEffectSlot;
+class TemporaryAudioSource;
 
 enum
 {
@@ -19,11 +20,12 @@ enum
     STOPPED = 4
 } typedef AudioSourceState;
 
-class AudioSource final : public GameObject
+class AudioSource : public GameObject
 {
     friend class Scene;
     friend class AudioClip;
     friend class AudioEffectSlot;
+    friend class TemporaryAudioSource;
 
     private:
         ALuint source;
@@ -47,6 +49,8 @@ class AudioSource final : public GameObject
         void OnSceneUnload() override;
 
     public:
+        const GameObjectType type = GameObjectType::AUDIOSOURCE;
+
         void SetSourceFloat(ALenum option, float value);
 
         bool IsLooped();

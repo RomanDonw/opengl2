@@ -18,6 +18,7 @@
 #include "engine/objects/Entity/Entity.hpp"
 #include "engine/objects/AudioSource/AudioSource.hpp"
 #include "engine/objects/AudioListener/AudioListener.hpp"
+#include "engine/objects/TemporaryAudioSource/TemporaryAudioSource.hpp"
 
 #include "engine/audio/AudioDevice.hpp"
 #include "engine/audio/AudioEffectProperties.hpp"
@@ -300,6 +301,7 @@ int main()
             Engine::BeginRenderUI();
 
             ImGUI::SetNextWindowSize(ImVec2(600, 620), ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
             ImGUI::Begin("EAX Reverb. settings");
             //ImGUI::SetWindowSize(ImVec2(600, 620));
 
@@ -363,6 +365,22 @@ int main()
             if (ImGUI::Button("Pause")) src->Pause();
             ImGUI::SameLine();
             if (ImGUI::Button("Resume")) src->Play();
+
+            ImGUI::End();
+
+            ImGUI::SetNextWindowSize(ImVec2(250, 60), ImGuiCond_FirstUseEver);
+            ImGUI::Begin("Test functions");
+
+            if (ImGUI::Button("Spawn new TemporaryAudioSource"))
+            {
+                TemporaryAudioSource *tmpsrc = s->CreateObject<TemporaryAudioSource>();
+                tmpsrc->SetParent(cam, false);
+
+                tmpsrc->SetSourceFloat(AL_GAIN, 0.2);
+
+                tmpsrc->SetCurrentClip(ResourceManager::GetAudioClip("zapsfx"));
+                tmpsrc->Play();
+            }
 
             ImGUI::End();
 

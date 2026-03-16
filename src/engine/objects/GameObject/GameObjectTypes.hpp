@@ -7,7 +7,8 @@ enum
     CAMERA = 1,
     ENTITY = 2,
     AUDIOSOURCE = 3,
-    AUDIOLISTENER = 4
+    AUDIOLISTENER = 4,
+    TEMPORARYAUDIOSOURCE = 5
 } typedef GameObjectType;
 
 #endif
