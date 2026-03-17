@@ -1,16 +1,48 @@
 #include "Entity.hpp"
 
+#include "../../Scene.hpp"
 #include "../../ResourceManager.hpp"
 
 #include "../../resources/Mesh.hpp"
 #include "../../resources/Texture.hpp"
 #include "../../resources/ShaderProgram.hpp"
 
-Entity::Entity(Scene *s, Transform t) : GameObject(s, t) {}
+#include "../../Utils.hpp"
 
-Entity::Entity(Scene *s) : GameObject(s) {}
+// === PRIVATE ===
 
-Entity::~Entity() {}
+void Entity::constructor()
+{
+    rb = scene->world->createRigidBody(Utils::transformtorp3dtransform(transform));
+    SetEnabledGravity(false);
+}
+
+// === PROTECTED ===
+
+Entity::Entity(Scene *s, Transform t) : GameObject(s, t) { constructor(); }
+
+Entity::Entity(Scene *s) : GameObject(s) { constructor(); }
+
+Entity::~Entity()
+{
+    scene->world->destroyRigidBody(rb);
+}
+
+void Entity::OnGlobalTransformChanged()
+{
+    GameObject::OnGlobalTransformChanged();
+
+    rb->setTransform(Utils::transformtorp3dtransform(GetGlobalTransform()));
+}
+
+void Entity::AfterUpdate()
+{
+    //GameObject::AfterUpdate();
+
+    glm::vec3 scale = transform.GetScale();
+    transform = Utils::rp3dtransformtotransform(rb->getTransform()).GlobalToLocal(GetParentGlobalTransform());
+    transform.SetScale(scale);
+}
 
 void Entity::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog)
 {
@@ -81,3 +113,11 @@ void Entity::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transfor
         mesh->RenderMesh();
     }
 }
+
+// === PUBLIC ===
+
+bool Entity::IsGravityEnabled() const { return rb->isGravityEnabled(); }
+void Entity::SetEnabledGravity(bool state) { rb->enableGravity(state); }
+
+glm::vec3 Entity::GetLinearVelocity() const { return Utils::rp3dvec3toglmvec3(rb->getLinearVelocity()); }
+void Entity::SetLinearVelocity(glm::vec3 v) { rb->setLinearVelocity(Utils::glmvec3torp3dvec3(v)); }

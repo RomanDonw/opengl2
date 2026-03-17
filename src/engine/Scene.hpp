@@ -19,11 +19,15 @@ class GameObject;
 class Camera;
 class AudioListener;
 
+class Entity;
+
 class Scene final
 {
     friend class Engine;
     friend class AudioListener;
-    friend class GameObject;
+
+    //friend class GameObject;
+    friend class Entity;
 
     private:
         Scene();
@@ -104,6 +108,11 @@ class Scene final
             objects.at(order).push_back(obj);
             obj->order = order;
         }
+
+        glm::vec3 GetGravity();
+        void SetGravity(glm::vec3 v);
+
+        //rp3d::PhysicsWorld *GetPhysicsWorld() const;
 };
 
 #endif

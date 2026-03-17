@@ -3,6 +3,8 @@
 #include "objects/GameObject/GameObject.hpp"
 #include "objects/Camera/Camera.hpp"
 
+#include "Utils.hpp"
+
 // === PRIVATE ===
 
 Scene::Scene()
@@ -21,7 +23,15 @@ Scene::~Scene()
     Engine::phys->destroyPhysicsWorld(world);
 }
 
-void Scene::Update(double delta) { ForEachAllObjects([&](GameObject *obj) -> bool { obj->Update(delta); return true; }); }
+void Scene::Update(double delta)
+{
+    ForEachAllObjects([&](GameObject *obj) -> bool { obj->Update(delta); return true; });
+
+    world->update(delta);
+
+    ForEachAllObjects([&](GameObject *obj) -> bool { obj->AfterUpdate(); return true; });
+}
+
 void Scene::Render()
 {
     if (!currcam) return;
@@ -61,3 +71,8 @@ void Scene::SetCurrentCamera(Camera *camera)
     if (!HasObject(camera)) throw std::runtime_error("this scene doesn't have this object");
     currcam = camera;
 }
+
+glm::vec3 Scene::GetGravity() { return Utils::rp3dvec3toglmvec3(world->getGravity()); }
+void Scene::SetGravity(glm::vec3 v) { world->setGravity(Utils::glmvec3torp3dvec3(v)); }
+
+//rp3d::PhysicsWorld *Scene::GetPhysicsWorld() const { return world; }

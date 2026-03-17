@@ -24,6 +24,8 @@ GameObject::~GameObject()
 
 void GameObject::Update(double delta) {}
 
+void GameObject::AfterUpdate() {}
+
 void GameObject::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog) {}
 
 void GameObject::OnSceneLoad() {}

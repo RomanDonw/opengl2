@@ -2,6 +2,8 @@
 #define UTILS_HPP
 
 #include "external/glm.hpp"
+#include "external/physics.hpp"
+#include "Transform.hpp"
 
 #include <string>
 
@@ -22,6 +24,15 @@ namespace Utils
     glm::vec3 normalize(glm::vec3 v);
     glm::vec3 wrapangles(glm::vec3 euler);
     std::string tostring(glm::vec3 v);
+
+    glm::vec3 rp3dvec3toglmvec3(rp3d::Vector3 v);
+    rp3d::Vector3 glmvec3torp3dvec3(glm::vec3 v);
+
+    glm::quat rp3dquattoglmquat(rp3d::Quaternion q);
+    rp3d::Quaternion glmquattorp3dquat(glm::quat q);
+
+    Transform rp3dtransformtotransform(rp3d::Transform t);
+    rp3d::Transform transformtorp3dtransform(Transform t);
 }
 
 #endif

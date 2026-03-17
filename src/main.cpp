@@ -204,6 +204,7 @@ int main()
     Entity *cube2 = s->CreateObject<Entity>(Transform({-2.5, 0, -2.5}));
     cube2->usedShaderProgram = "default";
     cube2->color = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+    //cube2->SetEnabledGravity(true);
 
     Entity *hl1_reactor_demo = s->CreateObject<Entity>();
     hl1_reactor_demo->usedShaderProgram = "default";
@@ -252,6 +253,8 @@ int main()
     float gain = 1;
     float refdist = 8;
     float maxdist = 32;
+
+    bool enabledgravity = false;
 
     src->Play();
 
@@ -387,7 +390,7 @@ int main()
 
             ImGUI::End();
 
-            ImGUI::SetNextWindowSize(ImVec2(250, 60), ImGuiCond_FirstUseEver);
+            ImGUI::SetNextWindowSize(ImVec2(400, 200), ImGuiCond_FirstUseEver);
             ImGUI::Begin("Test functions");
 
             if (ImGUI::Button("Spawn new TemporaryAudioSource"))
@@ -400,6 +403,11 @@ int main()
                 tmpsrc->SetCurrentClip(ResourceManager::GetAudioClip("zapsfx"));
                 tmpsrc->Play();
             }
+
+            ImGUI::Checkbox("Yellow cube gravity", &enabledgravity);
+            cube2->SetEnabledGravity(enabledgravity);
+
+            if (ImGUI::Button("Reset yellow cube velocity")) cube2->SetLinearVelocity(glm::vec3(0.0f));
 
             ImGUI::End();
 

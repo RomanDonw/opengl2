@@ -35,6 +35,7 @@ class GameObject
         std::vector<GameObject *> children = std::vector<GameObject *>();
 
         virtual void Update(double delta);
+        virtual void AfterUpdate();
         virtual void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog);
 
         virtual void OnSceneLoad();
