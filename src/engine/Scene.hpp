@@ -10,6 +10,8 @@
 #include <map>
 #include <functional>
 
+#include "Engine.hpp"
+
 #include "FogRenderSettings.hpp"
 
 class Engine;
@@ -21,10 +23,13 @@ class Scene final
 {
     friend class Engine;
     friend class AudioListener;
+    friend class GameObject;
 
     private:
         Scene();
         ~Scene();
+
+        rp3d::PhysicsWorld *world;
 
         std::map<int32_t, std::vector<GameObject *>, std::less<int32_t>> objects;
         Camera *currcam = nullptr;

@@ -2,16 +2,23 @@
 
 #include "objects/GameObject/GameObject.hpp"
 #include "objects/Camera/Camera.hpp"
-#include "Engine.hpp"
 
 // === PRIVATE ===
 
-Scene::Scene() { objects.insert({0, std::vector<GameObject *>()}); }
+Scene::Scene()
+{
+    objects.insert({0, std::vector<GameObject *>()});
+
+    world = Engine::phys->createPhysicsWorld();
+}
+
 Scene::~Scene()
 {
     ForEachAllObjects([&](GameObject *obj) -> bool { DeleteObject(obj); return true; });
 
     if (Engine::GetScene(Engine::GetCurrentScene()) == this) Engine::SetCurrentScene("");
+
+    Engine::phys->destroyPhysicsWorld(world);
 }
 
 void Scene::Update(double delta) { ForEachAllObjects([&](GameObject *obj) -> bool { obj->Update(delta); return true; }); }

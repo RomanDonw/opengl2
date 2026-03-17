@@ -9,7 +9,8 @@
 
 // === PRIVATE ===
 
-Engine::~Engine() { Shutdown(); DeleteAllScenes(); }
+//Engine::~Engine() { Shutdown(); DeleteAllScenes(); }
+Engine::~Engine() { Shutdown(); }
 
 void Engine::resizecallback(GLFWwindow *w, int width, int height) { if (width > 0 && height > 0) glViewport(0, 0, width, height); }
 
@@ -29,6 +30,8 @@ bool Engine::Init(unsigned short windowWidth, unsigned short windowHeight)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
 
+    phys = new rp3d::PhysicsCommon(&physalloc);
+
     inited = true;
     return true;
 }
@@ -36,6 +39,9 @@ bool Engine::Init(unsigned short windowWidth, unsigned short windowHeight)
 bool Engine::Shutdown()
 {
     if (!inited) return false;
+
+    delete phys;
+    phys = nullptr;
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

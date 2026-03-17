@@ -10,11 +10,15 @@
 #include <string>
 #include <unordered_map>
 
+#include "physics/PhysicsHeapAllocator.hpp"
+
 class Scene;
 class AudioDevice;
 
 class Engine final
 {
+    friend class Scene;
+
     private:
         Engine() = delete;
         ~Engine();
@@ -23,6 +27,10 @@ class Engine final
 
         static inline GLFWwindow *window = nullptr;
         static inline AudioDevice *currdev = nullptr;
+
+        //static inline rp3d::PhysicsCommon phys = rp3d::PhysicsCommon();
+        static inline PhysicsHeapAllocator physalloc = PhysicsHeapAllocator();
+        static inline rp3d::PhysicsCommon *phys = nullptr;
 
         static void resizecallback(GLFWwindow *w, int width, int height);
 
