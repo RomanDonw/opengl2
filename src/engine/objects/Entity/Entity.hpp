@@ -7,11 +7,19 @@
 
 class Scene;
 
+enum
+{
+    STATIC = 0,
+    DYNAMIC = 1
+} typedef EntityRigidBodyType;
+
 class Entity : public GameObject
 {
     friend class Scene;
 
     private:
+        bool lockphystransupdate = false; // this flag need to prevert double updating of physics transform when entity`s transform updates after scene physics update.
+
         void constructor();
 
     protected:
@@ -33,6 +41,13 @@ class Entity : public GameObject
         std::string usedShaderProgram = "";
         glm::vec4 color = glm::vec4(1.0f);
         std::vector<Surface> surfaces = std::vector<Surface>();
+
+        size_t SetParent(GameObject *new_parent, bool save_global_pos = true) override;
+
+        EntityRigidBodyType GetRigidBodyType();
+        void SetRigidBodyType(EntityRigidBodyType type);
+
+        // doesn't work with static (default) rigidbody type.
 
         bool IsGravityEnabled() const;
         void SetEnabledGravity(bool state);

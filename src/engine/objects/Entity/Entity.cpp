@@ -1,5 +1,8 @@
 #include "Entity.hpp"
 
+#include <exception>
+#include <stdexcept>
+
 #include "../../Scene.hpp"
 #include "../../ResourceManager.hpp"
 
@@ -14,24 +17,21 @@
 void Entity::constructor()
 {
     rb = scene->world->createRigidBody(Utils::transformtorp3dtransform(transform));
-    SetEnabledGravity(false);
+    SetRigidBodyType(EntityRigidBodyType::STATIC);
 }
 
 // === PROTECTED ===
 
 Entity::Entity(Scene *s, Transform t) : GameObject(s, t) { constructor(); }
-
 Entity::Entity(Scene *s) : GameObject(s) { constructor(); }
 
-Entity::~Entity()
-{
-    scene->world->destroyRigidBody(rb);
-}
+Entity::~Entity() { scene->world->destroyRigidBody(rb); }
 
 void Entity::OnGlobalTransformChanged()
 {
     GameObject::OnGlobalTransformChanged();
 
+    if (lockphystransupdate) { lockphystransupdate = false; return; }
     rb->setTransform(Utils::transformtorp3dtransform(GetGlobalTransform()));
 }
 
@@ -39,9 +39,11 @@ void Entity::AfterUpdate()
 {
     //GameObject::AfterUpdate();
 
-    glm::vec3 scale = transform.GetScale();
-    transform = Utils::rp3dtransformtotransform(rb->getTransform()).GlobalToLocal(GetParentGlobalTransform());
-    transform.SetScale(scale);
+    if (GetRigidBodyType() == EntityRigidBodyType::STATIC) return;
+
+    Transform newt = Utils::rp3dtransformtotransform(rb->getTransform());
+    lockphystransupdate = true;
+    transform = Transform(newt.GetPosition(), newt.GetRotation(), transform.GetScale());
 }
 
 void Entity::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog)
@@ -115,6 +117,68 @@ void Entity::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transfor
 }
 
 // === PUBLIC ===
+
+size_t Entity::SetParent(GameObject *new_parent, bool save_global_pos)
+{
+    if (GetRigidBodyType() == EntityRigidBodyType::STATIC) return GameObject::SetParent(new_parent, save_global_pos);
+    return -1;
+}
+
+EntityRigidBodyType Entity::GetRigidBodyType()
+{
+    switch (rb->getType())
+    {
+        case rp3d::BodyType::STATIC:
+            return EntityRigidBodyType::STATIC;
+        
+        case rp3d::BodyType::DYNAMIC:
+            return EntityRigidBodyType::DYNAMIC;
+
+        default:
+            throw std::runtime_error("unsupported type of rigidbody");
+    }
+}
+
+void Entity::SetRigidBodyType(EntityRigidBodyType type)
+{
+    if (GetRigidBodyType() == type) return;
+
+    switch (type)
+    {
+        case EntityRigidBodyType::DYNAMIC:
+            rb->setType(rp3d::BodyType::DYNAMIC);
+
+            GameObject::SetParent(nullptr, true);
+            SetEnabledGravity(false);
+
+            break;
+
+        case EntityRigidBodyType::STATIC:
+            rb->setType(rp3d::BodyType::STATIC);
+
+            break;
+    }
+}
+
+//bool Entity::HasRigidBody() { return rb; }
+
+/*
+void Entity::ToggleRigidBody(bool state)
+{
+    if (HasRigidBody() == state) return;
+
+    if (state)
+    {
+        GameObject::SetParent(nullptr);
+        rb = scene->world->createRigidBody(Utils::transformtorp3dtransform(transform));
+        SetEnabledGravity(false);
+    }
+    else
+    {
+        scene->world->destroyRigidBody(rb);
+        rb = nullptr;
+    }
+}*/
 
 bool Entity::IsGravityEnabled() const { return rb->isGravityEnabled(); }
 void Entity::SetEnabledGravity(bool state) { rb->enableGravity(state); }
