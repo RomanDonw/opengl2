@@ -148,7 +148,7 @@ void Entity::SetRigidBodyType(EntityRigidBodyType type)
         case EntityRigidBodyType::DYNAMIC:
             rb->setType(rp3d::BodyType::DYNAMIC);
 
-            GameObject::SetParent(nullptr, true);
+            GameObject::SetParent(nullptr, true); // deattach from parent, because dynamic physics body must be in world coordinate system.
             SetEnabledGravity(false);
 
             break;
@@ -159,26 +159,6 @@ void Entity::SetRigidBodyType(EntityRigidBodyType type)
             break;
     }
 }
-
-//bool Entity::HasRigidBody() { return rb; }
-
-/*
-void Entity::ToggleRigidBody(bool state)
-{
-    if (HasRigidBody() == state) return;
-
-    if (state)
-    {
-        GameObject::SetParent(nullptr);
-        rb = scene->world->createRigidBody(Utils::transformtorp3dtransform(transform));
-        SetEnabledGravity(false);
-    }
-    else
-    {
-        scene->world->destroyRigidBody(rb);
-        rb = nullptr;
-    }
-}*/
 
 bool Entity::IsGravityEnabled() const { return rb->isGravityEnabled(); }
 void Entity::SetEnabledGravity(bool state) { rb->enableGravity(state); }
