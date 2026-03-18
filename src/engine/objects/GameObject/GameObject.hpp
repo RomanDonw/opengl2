@@ -46,7 +46,7 @@ class GameObject
         GameObjectTransform transform;
 
         GameObject *GetParent(); // can return nullptr.
-        size_t SetParent(GameObject *new_parent, bool save_global_pos = true);
+        virtual size_t SetParent(GameObject *new_parent, bool save_global_pos = true);
 
         Scene *GetScene();
 
