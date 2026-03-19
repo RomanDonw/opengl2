@@ -48,7 +48,7 @@ size_t RigidBody::SetParent(GameObject *new_parent, bool save_global_pos)
     return -1;
 }
 
-RigidBodyType RigidBody::GetRigidBodyType()
+RigidBodyType RigidBody::GetRigidBodyType() const
 {
     switch (rb->getType())
     {

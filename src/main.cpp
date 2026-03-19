@@ -205,7 +205,7 @@ int main()
     cube2->usedShaderProgram = "default";
     cube2->color = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
     cube2->SetRigidBodyType(DYNAMIC);
-    cube2->SetEnabledGravity(true);
+    cube2->SetEnabledGravity(false);
     //std::cout << cube2->SetParent(cube) << std::endl;
 
     Entity *hl1_reactor_demo = s->CreateObject<Entity>();

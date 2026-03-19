@@ -3,14 +3,18 @@
 
 #include "../../external/physics.hpp"
 
+#include <vector>
+
 #include "../GameObject/GameObject.hpp"
 #include "RigidBodyType.hpp"
 
 class Scene;
+class Collider;
 
 class RigidBody : virtual public GameObject
 {
     friend class Scene;
+    friend class Collider;
 
     private:
         bool lockphystransupdate = false; // this flag need to prevert double updating of physics transform when rigidbody`s transform updates after scene physics update.
@@ -19,6 +23,8 @@ class RigidBody : virtual public GameObject
 
     protected:
         rp3d::RigidBody *rb;
+        //std::vector<Collider *> colliders;
+
 
         RigidBody(Scene *s, Transform t);
         RigidBody(Scene *s);
@@ -33,7 +39,7 @@ class RigidBody : virtual public GameObject
 
         size_t SetParent(GameObject *new_parent, bool save_global_pos = true) override;
 
-        RigidBodyType GetRigidBodyType();
+        RigidBodyType GetRigidBodyType() const;
         void SetRigidBodyType(RigidBodyType type);
 
         bool IsGravityEnabled() const;

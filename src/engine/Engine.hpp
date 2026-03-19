@@ -14,6 +14,7 @@
 
 class Scene;
 class AudioDevice;
+class Collider;
 
 class Engine final
 {
@@ -28,7 +29,6 @@ class Engine final
         static inline GLFWwindow *window = nullptr;
         static inline AudioDevice *currdev = nullptr;
 
-        //static inline rp3d::PhysicsCommon phys = rp3d::PhysicsCommon();
         static inline PhysicsHeapAllocator physalloc = PhysicsHeapAllocator();
         static inline rp3d::PhysicsCommon *phys = nullptr;
 
