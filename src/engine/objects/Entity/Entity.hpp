@@ -1,8 +1,7 @@
 #ifndef ENITTY_HPP
 #define ENTITY_HPP
 
-#include "../GameObject/GameObject.hpp"
-#include "Surface.hpp"
+#include "../Model/Model.hpp"
 #include "../../external/physics.hpp"
 
 class Scene;
@@ -13,7 +12,7 @@ enum
     DYNAMIC = 1
 } typedef EntityRigidBodyType;
 
-class Entity : public GameObject
+class Entity : public Model
 {
     friend class Scene;
 
@@ -32,15 +31,9 @@ class Entity : public GameObject
 
         void OnGlobalTransformChanged() override;
         void AfterUpdate() override;
-        void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog) override;
 
     public:
         const GameObjectType type = GameObjectType::ENTITY;
-
-        bool enableRender = true;
-        std::string usedShaderProgram = "";
-        glm::vec4 color = glm::vec4(1.0f);
-        std::vector<Surface> surfaces = std::vector<Surface>();
 
         size_t SetParent(GameObject *new_parent, bool save_global_pos = true) override;
 

@@ -3,12 +3,16 @@
 
 enum
 {
-    GAMEOBJECT = 0,
-    CAMERA = 1,
-    ENTITY = 2,
-    AUDIOSOURCE = 3,
-    AUDIOLISTENER = 4,
-    TEMPORARYAUDIOSOURCE = 5
+    GAMEOBJECT,
+    CAMERA,
+
+    AUDIOSOURCE,
+    AUDIOLISTENER,
+    TEMPORARYAUDIOSOURCE,
+
+    MODEL,
+    RIGIDBODY,
+    ENTITY
 } typedef GameObjectType;
 
 #endif
