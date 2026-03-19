@@ -15,19 +15,15 @@
 #include "FogRenderSettings.hpp"
 
 class Engine;
-class GameObject;
 class Camera;
 class AudioListener;
-
-class Entity;
+class RigidBody;
 
 class Scene final
 {
     friend class Engine;
     friend class AudioListener;
-
-    //friend class GameObject;
-    friend class Entity;
+    friend class RigidBody;
 
     private:
         Scene();
