@@ -18,6 +18,7 @@ class Engine;
 class Camera;
 class AudioListener;
 class RigidBody;
+class GameObject;
 
 class Scene final
 {

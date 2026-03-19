@@ -205,8 +205,8 @@ int main()
     cube2->usedShaderProgram = "default";
     cube2->color = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
     cube2->SetRigidBodyType(DYNAMIC);
-    //cube2->SetEnabledGravity(true);
-    std::cout << cube2->SetParent(cube) << std::endl;
+    cube2->SetEnabledGravity(true);
+    //std::cout << cube2->SetParent(cube) << std::endl;
 
     Entity *hl1_reactor_demo = s->CreateObject<Entity>();
     hl1_reactor_demo->usedShaderProgram = "default";
@@ -255,8 +255,6 @@ int main()
     float gain = 1;
     float refdist = 8;
     float maxdist = 32;
-
-    bool enabledgravity = false;
 
     src->Play();
 
@@ -406,8 +404,10 @@ int main()
                 tmpsrc->Play();
             }
 
-            //ImGUI::Checkbox("Yellow cube gravity", &enabledgravity);
-            //cube2->SetEnabledGravity(enabledgravity);
+            //ImGUI::Checkbox("Yellow cube gravity", &enablegravity);
+
+            //if (ImGUI::Button("Enable yellow cube gravity")) cube2->SetEnabledGravity(true);
+            //if (ImGUI::Button("Disable yellow cube gravity")) cube2->SetEnabledGravity(false);
 
             if (ImGUI::Button("Reset yellow cube velocity")) cube2->SetLinearVelocity(glm::vec3(0.0f));
 
