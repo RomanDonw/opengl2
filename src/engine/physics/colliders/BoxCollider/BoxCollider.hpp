@@ -18,6 +18,8 @@ class BoxCollider final : public Collider
         ~BoxCollider() override;
 
     public:
+        const ColliderType type = ColliderType::BOX;
+
         glm::vec3 GetHalfExtents() const;
         void SetHalfExtents(glm::vec3 halfExtents);
 };

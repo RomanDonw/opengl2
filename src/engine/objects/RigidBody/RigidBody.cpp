@@ -6,6 +6,8 @@
 #include "../../Scene.hpp"
 #include "../../Utils.hpp"
 
+#include "../../physics/colliders/Collider/Collider.hpp"
+
 // === PRIVATE ===
 
 void RigidBody::constructor()
@@ -59,7 +61,7 @@ RigidBodyType RigidBody::GetRigidBodyType() const
             return RigidBodyType::DYNAMIC;
 
         default:
-            throw std::runtime_error("unsupported type of rigidbody");
+            throw std::runtime_error("undefined type of rigidbody");
     }
 }
 
@@ -73,7 +75,7 @@ void RigidBody::SetRigidBodyType(RigidBodyType type)
             rb->setType(rp3d::BodyType::DYNAMIC);
 
             GameObject::SetParent(nullptr, true); // deattach from parent, because dynamic physics body must be in world coordinate system.
-            //SetEnabledGravity(false);
+            //SetGravityEnabled(false);
 
             break;
 
@@ -85,7 +87,27 @@ void RigidBody::SetRigidBodyType(RigidBodyType type)
 }
 
 bool RigidBody::IsGravityEnabled() const { return rb->isGravityEnabled(); }
-void RigidBody::SetEnabledGravity(bool state) { rb->enableGravity(state); }
+void RigidBody::SetGravityEnabled(bool state) { rb->enableGravity(state); }
 
 glm::vec3 RigidBody::GetLinearVelocity() const { return Utils::rp3dvec3toglmvec3(rb->getLinearVelocity()); }
 void RigidBody::SetLinearVelocity(glm::vec3 v) { rb->setLinearVelocity(Utils::glmvec3torp3dvec3(v)); }
+
+float RigidBody::GetMass() const { return rb->getMass(); }
+void RigidBody::SetMass(float mass) { rb->setMass(mass); }
+
+bool RigidBody::HasCollider(Collider *c) { return std::ranges::contains(colliders, c); }
+
+void RigidBody::RemoveCollider(Collider *c)
+{
+    if (!HasCollider(c)) throw std::runtime_error("this rigidbody doesn't has this collider");
+    colliders.erase(std::remove(colliders.begin(), colliders.end(), c), colliders.end());
+    delete c;
+}
+
+Collider *RigidBody::GetCollider(size_t index)
+{
+    if (index >= colliders.size()) return nullptr;
+    return colliders[index];
+}
+
+std::vector<Collider *> RigidBody::GetAllColliders() { return colliders; }

@@ -14,11 +14,12 @@
 
 class Scene;
 class AudioDevice;
-class Collider;
+class RigidBody;
 
 class Engine final
 {
     friend class Scene;
+    friend class RigidBody;
 
     private:
         Engine() = delete;

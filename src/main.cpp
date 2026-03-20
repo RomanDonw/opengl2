@@ -20,6 +20,8 @@
 #include "engine/objects/AudioListener/AudioListener.hpp"
 #include "engine/objects/TemporaryAudioSource/TemporaryAudioSource.hpp"
 
+#include "engine/physics/colliders/colliders.hpp"
+
 #include "engine/audio/AudioDevice.hpp"
 #include "engine/audio/AudioEffectProperties.hpp"
 #include "engine/audio/AudioEffectSlot.hpp"
@@ -205,11 +207,19 @@ int main()
     cube2->usedShaderProgram = "default";
     cube2->color = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
     cube2->SetRigidBodyType(DYNAMIC);
-    cube2->SetEnabledGravity(false);
+    cube2->SetGravityEnabled(true);
+    cube2->AddCollider<BoxCollider>(Transform(), glm::vec3(1));
     //std::cout << cube2->SetParent(cube) << std::endl;
+
+    Entity *ground = s->CreateObject<Entity>(Transform({-2.5, -10, -2.5}));
+    ground->transform.SetScale({10, 0.5, 10});
+    ground->usedShaderProgram = "default";
+    ground->color = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+    ground->AddCollider<BoxCollider>(Transform(), glm::vec3(10, 0.5, 10));
 
     Entity *hl1_reactor_demo = s->CreateObject<Entity>();
     hl1_reactor_demo->usedShaderProgram = "default";
+    hl1_reactor_demo->transform.SetPosition({10, 0, 0});
 
     AudioEffectSlot reverb = AudioEffectSlot();
     EAXReverbEffectSettings reverbsetts;
@@ -238,6 +248,7 @@ int main()
     surf.texture = "testcube";
     cube->surfaces.push_back(surf);
     cube2->surfaces.push_back(surf);
+    ground->surfaces.push_back(surf);
 
     surf.mesh = "hl1_reactor_demo";
     surf.texture = "";
@@ -406,8 +417,8 @@ int main()
 
             //ImGUI::Checkbox("Yellow cube gravity", &enablegravity);
 
-            //if (ImGUI::Button("Enable yellow cube gravity")) cube2->SetEnabledGravity(true);
-            //if (ImGUI::Button("Disable yellow cube gravity")) cube2->SetEnabledGravity(false);
+            //if (ImGUI::Button("Enable yellow cube gravity")) cube2->SetGravityEnabled(true);
+            //if (ImGUI::Button("Disable yellow cube gravity")) cube2->SetGravityEnabled(false);
 
             if (ImGUI::Button("Reset yellow cube velocity")) cube2->SetLinearVelocity(glm::vec3(0.0f));
 
