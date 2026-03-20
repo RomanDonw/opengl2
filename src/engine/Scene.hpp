@@ -3,10 +3,6 @@
 
 #include <vector>
 #include <concepts>
-#include <exception>
-#include <stdexcept>
-#include <iterator>
-#include <algorithm>
 #include <map>
 #include <functional>
 
@@ -60,49 +56,20 @@ class Scene final
             
             return ret;
         }
+        
+        void DeleteObject(GameObject *obj);
 
-        template<GameObjectConcept T>
-        void DeleteObject(T *obj)
-        {
-            if (!HasObject(obj)) throw std::runtime_error("this scene doesn't have this object");
-
-            std::vector<GameObject *> *group = &objects.at(obj->order);
-            group->erase(std::remove(group->begin(), group->end(), obj), group->end());
-            if (!group->size()) objects.erase(obj->order);
-
-            delete obj;
-        }
+        int32_t GetObjectOrder(GameObject *obj);
+        void SetObjectOrder(GameObject *obj, int32_t order);
 
         void ForEachAllObjects(std::function<bool (GameObject *)> callback);
         void ForEachAllOrders(std::function<bool (std::vector<GameObject *>)> callback);
 
-
         Camera *GetCurrentCamera(); // can return nullptr.
         void SetCurrentCamera(Camera *cam); // can be nullptr.
 
-
-        template<std::derived_from<GameObject> T>
-        int32_t GetObjectOrder(T *obj) { return obj->order; }
-
-        template<std::derived_from<GameObject> T>
-        void SetObjectOrder(T *obj, int32_t order)
-        {
-            if (!HasObject(obj)) throw std::runtime_error("this scene doesn't have this object");
-            if (order == obj->order) return;
-
-            std::vector<GameObject *> *group = &objects.at(obj->order);
-            group->erase(std::remove(group->begin(), group->end(), obj), group->end());
-            if (!group->size()) objects.erase(obj->order);
-
-            if (!objects.contains(order)) objects.insert({order, std::vector<GameObject *>()});
-            objects.at(order).push_back(obj);
-            obj->order = order;
-        }
-
         glm::vec3 GetGravity();
         void SetGravity(glm::vec3 v);
-
-        //rp3d::PhysicsWorld *GetPhysicsWorld() const;
 };
 
 #endif

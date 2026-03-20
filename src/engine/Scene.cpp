@@ -1,5 +1,10 @@
 #include "Scene.hpp"
 
+#include <iterator>
+#include <algorithm>
+#include <exception>
+#include <stdexcept>
+
 #include "objects/GameObject/GameObject.hpp"
 #include "objects/Camera/Camera.hpp"
 
@@ -52,6 +57,8 @@ void Scene::OnSceneUnload() { ForEachAllObjects([&](GameObject *obj) -> bool { o
 
 // === PUBLIC ===
 
+// ============================================================================================================
+
 bool Scene::HasObject(GameObject *obj)
 {
     bool ret = false;
@@ -62,6 +69,37 @@ bool Scene::HasObject(GameObject *obj)
     });
     return ret;
 }
+
+void Scene::DeleteObject(GameObject *obj)
+{
+    if (!HasObject(obj)) throw std::runtime_error("this scene doesn't have this object");
+
+    std::vector<GameObject *> *group = &objects.at(obj->order);
+    group->erase(std::remove(group->begin(), group->end(), obj), group->end());
+    if (!group->size()) objects.erase(obj->order);
+
+    delete obj;
+}
+
+// ============================================================================================================
+
+int32_t Scene::GetObjectOrder(GameObject *obj) { return obj->order; }
+
+void Scene::SetObjectOrder(GameObject *obj, int32_t order)
+{
+    if (!HasObject(obj)) throw std::runtime_error("this scene doesn't have this object");
+    if (order == obj->order) return;
+
+    std::vector<GameObject *> *group = &objects.at(obj->order);
+    group->erase(std::remove(group->begin(), group->end(), obj), group->end());
+    if (!group->size()) objects.erase(obj->order);
+
+    if (!objects.contains(order)) objects.insert({order, std::vector<GameObject *>()});
+    objects.at(order).push_back(obj);
+    obj->order = order;
+}
+
+// ============================================================================================================
 
 void Scene::ForEachAllObjects(std::function<bool (GameObject *)> callback)
 {
@@ -76,6 +114,8 @@ void Scene::ForEachAllOrders(std::function<bool (std::vector<GameObject *>)> cal
     for (std::pair<int32_t, std::vector<GameObject *>> pair : objects) if (!callback(pair.second)) return;
 }
 
+// ============================================================================================================
+
 Camera *Scene::GetCurrentCamera() { return currcam; }
 void Scene::SetCurrentCamera(Camera *camera)
 {
@@ -85,5 +125,3 @@ void Scene::SetCurrentCamera(Camera *camera)
 
 glm::vec3 Scene::GetGravity() { return Utils::rp3dvec3toglmvec3(world->getGravity()); }
 void Scene::SetGravity(glm::vec3 v) { world->setGravity(Utils::glmvec3torp3dvec3(v)); }
-
-//rp3d::PhysicsWorld *Scene::GetPhysicsWorld() const { return world; }
