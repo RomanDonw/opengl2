@@ -30,6 +30,15 @@ class Collider // interface class.
         ColliderTransform transform;
 
         RigidBody *GetRigidBody() const;
+
+        float GetBounciness() const;
+        void SetBounciness(float bounciness);
+
+        float GetFrictionCoefficient() const;
+        void SetFrictionCoefficient(float coefficient);
+
+        float GetMassDensity() const;
+        void SetMassDensity(float density);
 };
 
 #endif

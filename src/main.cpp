@@ -210,22 +210,25 @@ int main()
     cube2->color = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
     cube2->SetRigidBodyType(DYNAMIC);
     cube2->SetGravityEnabled(true);
-    cube2->AddCollider<BoxCollider>(Transform(), glm::vec3(1));
     cube2->SetMass(10);
+    BoxCollider *cube2coll = cube2->AddCollider<BoxCollider>(Transform(), glm::vec3(1));
+    cube2coll->SetFrictionCoefficient(1);
 
-    Entity *ground = s->CreateObject<Entity>(Transform({-2.5, -10, -2.5}, glm::quat(glm::radians(glm::vec3(20, 0, 0)))));
+    Entity *ground = s->CreateObject<Entity>(Transform({-2.5, -10, -2.5}, glm::quat(glm::radians(glm::vec3(10, 0, 0)))));
     ground->transform.SetScale({10, 0.5, 10});
     ground->usedShaderProgram = "default";
     ground->color = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
     BoxCollider *groundc = ground->AddCollider<BoxCollider>(Transform(), glm::vec3(10, 0.5, 10));
+    groundc->SetFrictionCoefficient(1);
     //groundc->transform.SetPosition({0, -1, 0});
     
     //cube2->SetParent(ground);
 
     Entity *sphere = s->CreateObject<Entity>(Transform({-2.5, 3, -2.5}));
     sphere->usedShaderProgram = "default";
-    sphere->AddCollider<SphereCollider>(Transform(), 1);
     sphere->SetRigidBodyType(DYNAMIC);
+    SphereCollider *sphcoll = sphere->AddCollider<SphereCollider>(Transform(), 1);
+    sphcoll->SetFrictionCoefficient(1);
 
     Model *hl1_reactor_demo = s->CreateObject<Model>();
     hl1_reactor_demo->usedShaderProgram = "default";
@@ -319,7 +322,8 @@ int main()
 
             //cube2->transform.Translate({1.0f * delta, 0, 1.0f * delta});
 
-            ground->transform.Translate(glm::vec3(delta * 1.0f, 0, 0));
+            //ground->transform.Translate(glm::vec3(delta * 1.0f, 0, 0));
+            ground->SetLinearVelocity({1, 0, 0});
 
             updateCam(window, cam, delta, ent);
 
