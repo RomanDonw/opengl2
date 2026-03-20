@@ -31,7 +31,7 @@ const unsigned short FPS = 100;
 bool readtextfile(std::string filename, std::string *output);
 
 void scrollCallback(GLFWwindow *w, double xoff, double yoff);
-void updateCam(GLFWwindow *w, Camera *c, double delta, Entity *crowbar);
+void updateCam(GLFWwindow *w, Camera *c, double delta, Model *crowbar);
 
 const unsigned short WWIDTH = 1280;
 const unsigned short WHEIGHT = 720;
@@ -193,13 +193,13 @@ int main()
     AudioListener *listener = s->CreateObject<AudioListener>();
     listener->SetParent(cam, false);
 
-    Entity *ent = s->CreateObject<Entity>();
+    Model *ent = s->CreateObject<Model>();
     ent->SetParent(cam, false);
     ent->usedShaderProgram = "default";
     ent->transform = Transform(glm::vec3(0.0933556, -0.160361, -0.179554), crowbar_rot, glm::vec3(0.01));
     s->SetObjectOrder(ent, 1);
 
-    Entity *cube = s->CreateObject<Entity>(Transform({0, 0, -5}, glm::quat(glm::vec3(0)), glm::vec3(0.1)));
+    Model *cube = s->CreateObject<Model>(Transform({0, 0, -5}, glm::quat(glm::vec3(0)), glm::vec3(0.1)));
     cube->usedShaderProgram = "default";
     cube->color = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 
@@ -215,9 +215,12 @@ int main()
     ground->transform.SetScale({10, 0.5, 10});
     ground->usedShaderProgram = "default";
     ground->color = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
-    ground->AddCollider<BoxCollider>(Transform(), glm::vec3(10, 0.5, 10));
+    BoxCollider *groundc = ground->AddCollider<BoxCollider>(Transform(), glm::vec3(10, 0.5, 10));
+    groundc->transform.SetPosition({0, -1, 0});
+    
+    cube2->SetParent(ground);
 
-    Entity *hl1_reactor_demo = s->CreateObject<Entity>();
+    Model *hl1_reactor_demo = s->CreateObject<Model>();
     hl1_reactor_demo->usedShaderProgram = "default";
     hl1_reactor_demo->transform.SetPosition({10, 0, 0});
 
@@ -305,6 +308,8 @@ int main()
             ent->surfaces[0].textureTransform.Rotate(0.1 * delta);
 
             //cube2->transform.Translate({1.0f * delta, 0, 1.0f * delta});
+
+            ground->transform.Translate(glm::vec3(delta * 1.0f, 0, 0));
 
             updateCam(window, cam, delta, ent);
 
@@ -445,7 +450,7 @@ void scrollCallback(GLFWwindow *w, double xoff, double yoff)
     if (cameraSpeed < 0) cameraSpeed = 0;
 }
 
-void updateCam(GLFWwindow *window, Camera *cam, double delta, Entity *crowbar)
+void updateCam(GLFWwindow *window, Camera *cam, double delta, Model *crowbar)
 {
     static float cwoffset = 0;
 

@@ -13,7 +13,7 @@
 void RigidBody::constructor()
 {
     rb = scene->world->createRigidBody(Utils::transformtorp3dtransform(transform));
-    SetRigidBodyType(RigidBodyType::STATIC);
+    SetRigidBodyType(RigidBodyType::KINEMATIC);
 }
 
 // === PROTECTED ===
@@ -27,6 +27,8 @@ RigidBody::~RigidBody()
     scene->world->destroyRigidBody(rb);
 }
 
+// ==================================================================================
+
 void RigidBody::OnGlobalTransformChanged()
 {
     GameObject::OnGlobalTransformChanged();
@@ -39,27 +41,24 @@ void RigidBody::AfterUpdate()
 {
     //GameObject::AfterUpdate();
 
-    if (GetRigidBodyType() == RigidBodyType::STATIC) return;
-
-    Transform newt = Utils::rp3dtransformtotransform(rb->getTransform());
-    lockphystransupdate = true;
-    transform = Transform(newt.GetPosition(), newt.GetRotation(), transform.GetScale());
+    Transform newt = Utils::rp3dtransformtotransform(rb->getTransform()).GlobalToLocal(GetParentGlobalTransform());
+    newt.SetScale(transform.GetScale());
+    {
+        lockphystransupdate = true;
+        transform = newt;
+    }
 }
+
+// ==================================================================================
 
 // === PUBLIC ===
-
-size_t RigidBody::SetParent(GameObject *new_parent, bool save_global_pos)
-{
-    if (GetRigidBodyType() == RigidBodyType::STATIC) return GameObject::SetParent(new_parent, save_global_pos);
-    return -1;
-}
 
 RigidBodyType RigidBody::GetRigidBodyType() const
 {
     switch (rb->getType())
     {
-        case rp3d::BodyType::STATIC:
-            return RigidBodyType::STATIC;
+        case rp3d::BodyType::KINEMATIC:
+            return RigidBodyType::KINEMATIC;
         
         case rp3d::BodyType::DYNAMIC:
             return RigidBodyType::DYNAMIC;
@@ -77,15 +76,10 @@ void RigidBody::SetRigidBodyType(RigidBodyType type)
     {
         case RigidBodyType::DYNAMIC:
             rb->setType(rp3d::BodyType::DYNAMIC);
-
-            GameObject::SetParent(nullptr, true); // deattach from parent, because dynamic physics body must be in world coordinate system.
-            //SetGravityEnabled(false);
-
             break;
 
-        case RigidBodyType::STATIC:
-            rb->setType(rp3d::BodyType::STATIC);
-
+        case RigidBodyType::KINEMATIC:
+            rb->setType(rp3d::BodyType::KINEMATIC);
             break;
     }
 }
@@ -98,6 +92,8 @@ void RigidBody::SetLinearVelocity(glm::vec3 v) { rb->setLinearVelocity(Utils::gl
 
 float RigidBody::GetMass() const { return rb->getMass(); }
 void RigidBody::SetMass(float mass) { rb->setMass(mass); }
+
+// ==================================================================================
 
 bool RigidBody::HasCollider(Collider *c) { return std::ranges::contains(colliders, c); }
 

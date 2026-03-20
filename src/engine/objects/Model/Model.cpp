@@ -37,6 +37,9 @@ void Model::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform
     sp->SetUniformFloat("fogEndDistance", fog->endDistance);
     sp->SetUniformVector3("fogColor", fog->color);
 
+    Transform globt = GetGlobalTransform();
+    glm::mat4 mdl = globt.GetTransformationMatrix();
+
     for (Surface surface : surfaces)
     {
         if (!surface.enableRender) continue;
@@ -74,7 +77,7 @@ void Model::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform
 
         sp->SetUniformMatrix3x3("textureTransformation", surface.textureTransform.GetTransformationMatrix());
 
-        sp->SetUniformMatrix4x4("model", GetGlobalTransform().GetTransformationMatrix() * surface.transform.GetTransformationMatrix());
+        sp->SetUniformMatrix4x4("model", mdl * surface.transform.GetTransformationMatrix());
         sp->SetUniformVector4("color", color * surface.color);
 
         mesh->RenderMesh();

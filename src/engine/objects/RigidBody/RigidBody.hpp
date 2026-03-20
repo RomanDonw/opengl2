@@ -44,8 +44,6 @@ class RigidBody : virtual public GameObject
     public:
         const GameObjectType type = GameObjectType::RIGIDBODY;
 
-        size_t SetParent(GameObject *new_parent, bool save_global_pos = true) override;
-
         RigidBodyType GetRigidBodyType() const;
         void SetRigidBodyType(RigidBodyType type);
 
