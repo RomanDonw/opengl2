@@ -174,6 +174,8 @@ int main()
     if (ResourceManager::CreateMesh("cube")->LoadFromUCMESHFile("./res/models/cube.ucmesh")) printf("loaded model cube\n");
     if (ResourceManager::CreateMesh("hl1_reactor_demo")->LoadFromUCMESHFile("./res/models/hl1_reactor_demo.ucmesh")) printf("loaded model hl1_reactor_demo\n");
 
+    if (ResourceManager::CreateMesh("sphere")->LoadFromUCMESHFile("./res/models/sphere.ucmesh")) puts("loaded model sphere");
+
     AudioClip *zapsfx = ResourceManager::CreateAudioClip("zapsfx");
     if (zapsfx->LoadFromUCSOUNDFile("./res/sounds/zapmachine.ucsound")) printf("loaded zapmachine sound\n");
 
@@ -209,16 +211,21 @@ int main()
     cube2->SetRigidBodyType(DYNAMIC);
     cube2->SetGravityEnabled(true);
     cube2->AddCollider<BoxCollider>(Transform(), glm::vec3(1));
-    //std::cout << cube2->SetParent(cube) << std::endl;
+    cube2->SetMass(10);
 
-    Entity *ground = s->CreateObject<Entity>(Transform({-2.5, -10, -2.5}));
+    Entity *ground = s->CreateObject<Entity>(Transform({-2.5, -10, -2.5}, glm::quat(glm::radians(glm::vec3(20, 0, 0)))));
     ground->transform.SetScale({10, 0.5, 10});
     ground->usedShaderProgram = "default";
     ground->color = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
     BoxCollider *groundc = ground->AddCollider<BoxCollider>(Transform(), glm::vec3(10, 0.5, 10));
-    groundc->transform.SetPosition({0, -1, 0});
+    //groundc->transform.SetPosition({0, -1, 0});
     
-    cube2->SetParent(ground);
+    //cube2->SetParent(ground);
+
+    Entity *sphere = s->CreateObject<Entity>(Transform({-2.5, 3, -2.5}));
+    sphere->usedShaderProgram = "default";
+    sphere->AddCollider<SphereCollider>(Transform(), 1);
+    sphere->SetRigidBodyType(DYNAMIC);
 
     Model *hl1_reactor_demo = s->CreateObject<Model>();
     hl1_reactor_demo->usedShaderProgram = "default";
@@ -257,6 +264,9 @@ int main()
     surf.texture = "";
     surf.culling = NoCulling;
     hl1_reactor_demo->surfaces.push_back(surf);
+
+    surf.mesh = "sphere";
+    sphere->surfaces.push_back(surf);
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(s->fog.color.x, s->fog.color.y, s->fog.color.z, 1);
