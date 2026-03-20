@@ -90,6 +90,9 @@ void RigidBody::SetGravityEnabled(bool state) { rb->enableGravity(state); }
 glm::vec3 RigidBody::GetLinearVelocity() const { return Utils::rp3dvec3toglmvec3(rb->getLinearVelocity()); }
 void RigidBody::SetLinearVelocity(glm::vec3 v) { rb->setLinearVelocity(Utils::glmvec3torp3dvec3(v)); }
 
+glm::vec3 RigidBody::GetAngularVelocity() const { return Utils::rp3dvec3toglmvec3(rb->getAngularVelocity()); }
+void RigidBody::SetAngularVelocity(glm::vec3 v) { rb->setAngularVelocity(Utils::glmvec3torp3dvec3(v)); }
+
 float RigidBody::GetMass() const { return rb->getMass(); }
 void RigidBody::SetMass(float mass) { rb->setMass(mass); }
 

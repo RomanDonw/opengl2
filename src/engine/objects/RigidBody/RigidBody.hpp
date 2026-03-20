@@ -53,6 +53,9 @@ class RigidBody : virtual public GameObject
         glm::vec3 GetLinearVelocity() const;
         void SetLinearVelocity(glm::vec3 v);
 
+        glm::vec3 GetAngularVelocity() const;
+        void SetAngularVelocity(glm::vec3 v);
+
         float GetMass() const;
         void SetMass(float mass);
 
