@@ -52,6 +52,17 @@ void Scene::OnSceneUnload() { ForEachAllObjects([&](GameObject *obj) -> bool { o
 
 // === PUBLIC ===
 
+bool Scene::HasObject(GameObject *obj)
+{
+    bool ret = false;
+    ForEachAllObjects([&](GameObject *o) -> bool
+    {
+        ret = obj == o;
+        return !ret;
+    });
+    return ret;
+}
+
 void Scene::ForEachAllObjects(std::function<bool (GameObject *)> callback)
 {
     for (std::pair<int32_t, std::vector<GameObject *>> pair : objects)

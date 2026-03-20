@@ -20,6 +20,9 @@ class AudioListener;
 class RigidBody;
 class GameObject;
 
+template <typename T>
+concept GameObjectConcept = std::derived_from<T, GameObject>;
+
 class Scene final
 {
     friend class Engine;
@@ -45,19 +48,9 @@ class Scene final
     public:
         FogRenderSettings fog;
 
-        template<std::derived_from<GameObject> T>
-        bool HasObject(T *obj)
-        {
-            bool ret = false;
-            ForEachAllObjects([&](GameObject *o) -> bool
-            {
-                ret = obj == o;
-                return !ret;
-            });
-            return ret;
-        }
+        bool HasObject(GameObject *obj);
 
-        template<std::derived_from<GameObject> T, typename... Args>
+        template<GameObjectConcept T, typename... Args>
         T *CreateObject(Args&&... args)
         {
             T *ret = new T(this, std::forward<Args>(args)...);
@@ -68,7 +61,7 @@ class Scene final
             return ret;
         }
 
-        template<std::derived_from<GameObject> T>
+        template<GameObjectConcept T>
         void DeleteObject(T *obj)
         {
             if (!HasObject(obj)) throw std::runtime_error("this scene doesn't have this object");
