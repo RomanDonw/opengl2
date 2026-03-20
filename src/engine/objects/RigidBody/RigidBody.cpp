@@ -21,7 +21,11 @@ void RigidBody::constructor()
 RigidBody::RigidBody(Scene *s, Transform t) : GameObject(s, t) { constructor(); }
 RigidBody::RigidBody(Scene *s) : GameObject(s) { constructor(); }
 
-RigidBody::~RigidBody() { scene->world->destroyRigidBody(rb); }
+RigidBody::~RigidBody()
+{
+    for (Collider *c : colliders) RemoveCollider(c);
+    scene->world->destroyRigidBody(rb);
+}
 
 void RigidBody::OnGlobalTransformChanged()
 {
