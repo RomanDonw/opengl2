@@ -81,6 +81,15 @@ class RigidBody : virtual public GameObject
         void ApplyLocalTorque(glm::vec3 torque);
         void ApplyGlobalTorque(glm::vec3 torque);
 
+        float GetLinearDamping() const;
+        void SetLinearDamping(float damping);
+
+        float GetAngularDamping() const;
+        void SetAngularDamping(float damping);
+
+        glm::vec3 GetCenterOfMass() const;
+        void SetCenterOfMass(glm::vec3 offset);
+
         // ============================
 
         bool HasCollider(Collider *c);

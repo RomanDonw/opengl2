@@ -114,6 +114,15 @@ void RigidBody::ApplyGlobalForceAtGlobalPoint(glm::vec3 force, glm::vec3 point) 
 void RigidBody::ApplyLocalTorque(glm::vec3 torque) { rb->applyLocalTorque(Utils::glmvec3torp3dvec3(torque)); }
 void RigidBody::ApplyGlobalTorque(glm::vec3 torque) { rb->applyWorldTorque(Utils::glmvec3torp3dvec3(torque)); }
 
+float RigidBody::GetLinearDamping() const { return rb->getLinearDamping(); }
+void RigidBody::SetLinearDamping(float damping) { rb->setLinearDamping(damping); }
+
+float RigidBody::GetAngularDamping() const { return rb->getAngularDamping(); }
+void RigidBody::SetAngularDamping(float damping) { rb->setAngularDamping(damping); }
+
+glm::vec3 RigidBody::GetCenterOfMass() const { return Utils::rp3dvec3toglmvec3(rb->getLocalCenterOfMass()); }
+void RigidBody::SetCenterOfMass(glm::vec3 offset) { rb->setLocalCenterOfMass(Utils::glmvec3torp3dvec3(offset)); }
+
 // ==================================================================================
 
 bool RigidBody::HasCollider(Collider *c) { return std::ranges::contains(colliders, c); }
