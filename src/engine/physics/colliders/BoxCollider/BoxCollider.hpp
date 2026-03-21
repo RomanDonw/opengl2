@@ -7,6 +7,7 @@
 
 class RigidBody;
 
+// this collider type doesn't support scale from transform property.
 class BoxCollider final : public Collider
 {
     friend class RigidBody;
