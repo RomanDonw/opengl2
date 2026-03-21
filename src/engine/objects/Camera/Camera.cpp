@@ -13,7 +13,8 @@ Camera::~Camera() { if (scene->GetCurrentCamera() == this) scene->SetCurrentCame
 
 glm::mat4 Camera::GetViewMatrix()
 {
-    return glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetFront(), transform.GetUp());
+    Transform globt = GetGlobalTransform();
+    return glm::lookAt(globt.GetPosition(), globt.GetPosition() + globt.GetFront(), globt.GetUp());
 }
 
 glm::mat4 Camera::GetProjectionMatrix(glm::uvec2 scrsize)
