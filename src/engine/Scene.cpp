@@ -7,6 +7,7 @@
 
 #include "objects/GameObject/GameObject.hpp"
 #include "objects/Camera/Camera.hpp"
+#include "physics/SceneRaycastCallback.hpp"
 
 #include "Utils.hpp"
 
@@ -126,3 +127,13 @@ void Scene::SetCurrentCamera(Camera *camera)
 
 glm::vec3 Scene::GetGravity() { return Utils::rp3dvec3toglmvec3(world->getGravity()); }
 void Scene::SetGravity(glm::vec3 v) { world->setGravity(Utils::glmvec3torp3dvec3(v)); }
+
+bool Scene::Raycast(glm::vec3 start, glm::vec3 end, std::function<RaycastCallbackState (RaycastInfo)> callback)
+{
+    SceneRaycastCallback c(this, callback);
+    rp3d::Ray ray(Utils::glmvec3torp3dvec3(start), Utils::glmvec3torp3dvec3(end));
+
+    world->raycast(ray, &c);
+
+    return c.hit;
+}

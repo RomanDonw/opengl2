@@ -329,6 +329,8 @@ int main()
     double prev_time = glfwGetTime();
     double prev_sec = glfwGetTime();
 
+    bool hitclicked = false;
+
     unsigned long loops = 0;
     unsigned long ups = 0;
     while (!glfwWindowShouldClose(window))
@@ -413,6 +415,19 @@ int main()
                 lastX = mouseX;
                 lastY = mouseY;
             }
+
+            if (captured && !hitclicked && Engine::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+            {
+                hitclicked = true;
+                
+                Transform camt = cam->GetGlobalTransform();
+                s->Raycast(camt.GetPosition(), camt.GetPosition() + camt.GetFront() * 2.0f, [&](RaycastInfo info) -> RaycastCallbackState
+                {
+                    std::cout << Utils::tostring(info.point) << std::endl;
+                    return STOP;
+                });
+            }
+            else if ((captured && hitclicked && !Engine::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) || !captured)) hitclicked = false;
 
             glm::vec3 oldplpos = playerrb->GetGlobalTransform().GetPosition();
 

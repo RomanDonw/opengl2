@@ -10,6 +10,8 @@
 #include "Engine.hpp"
 
 #include "FogRenderSettings.hpp"
+#include "physics/RaycastCallbackState.hpp"
+#include "physics/RaycastInfo.hpp"
 
 class Engine;
 class Camera;
@@ -17,6 +19,7 @@ class AudioListener;
 class RigidBody;
 class GameObject;
 class Collider;
+class SceneRaycastCallback;
 
 template <typename T>
 concept GameObjectConcept = std::derived_from<T, GameObject>;
@@ -27,6 +30,7 @@ class Scene final
     friend class AudioListener;
     friend class RigidBody;
     friend class Collider;
+    friend class SceneRaycastCallback;
 
     private:
         Scene();
@@ -75,6 +79,8 @@ class Scene final
 
         glm::vec3 GetGravity();
         void SetGravity(glm::vec3 v);
+
+        bool Raycast(glm::vec3 start, glm::vec3 end, std::function<RaycastCallbackState (RaycastInfo)> callback);
 };
 
 #endif
