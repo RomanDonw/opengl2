@@ -39,6 +39,7 @@ const unsigned short WHEIGHT = 720;
 const glm::vec3 crowbar_rot = glm::vec3(-3.04567, -0.648789, 3.12098);
 
 double lastX = WWIDTH / 2, lastY = WHEIGHT / 2;
+const float MOUSE_SENSITIVITY = 0.1;
 
 struct
 {
@@ -182,6 +183,9 @@ int main()
     AudioClip *alienbuildersfx = ResourceManager::CreateAudioClip("alienbuildersfx");
     if (alienbuildersfx->LoadFromUCSOUNDFile("./res/sounds/alien_builder.ucsound")) printf("loaded alienbuilder sound\n");
 
+    AudioClip *freightmove1sfx = ResourceManager::CreateAudioClip("freightmove1sfx");
+    if (freightmove1sfx->LoadFromUCSOUNDFile("./res/sounds/freightmove1.ucsound")) puts("loaded freightmove1 sound");
+
     Scene *s = Engine::CreateScene("main");
     Engine::SetCurrentScene("main");
     s->fog.enabled = true;
@@ -190,6 +194,7 @@ int main()
     s->fog.color = glm::vec3(106 / 255.0f, 117 / 255.0f, 129 / 255.0f);
 
     Camera *cam = s->CreateObject<Camera>();
+    cam->FOV = glm::radians(70.0f);
     s->SetCurrentCamera(cam);
 
     AudioListener *listener = s->CreateObject<AudioListener>();
@@ -220,9 +225,18 @@ int main()
     ground->color = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
     BoxCollider *groundc = ground->AddCollider<BoxCollider>(Transform(), glm::vec3(10, 0.5, 10));
     groundc->SetFrictionCoefficient(1);
+    groundc->SetBounciness(0);
     //groundc->transform.SetPosition({0, -1, 0});
     
     //cube2->SetParent(ground);
+
+    AudioSource *groundsrc = s->CreateObject<AudioSource>();
+    groundsrc->SetParent(ground, false);
+    groundsrc->SetSourceFloat(AL_GAIN, 0.2);
+    groundsrc->SetSourceFloat(AL_MAX_DISTANCE, 16);
+    groundsrc->SetSourceFloat(AL_REFERENCE_DISTANCE, 10);
+    groundsrc->SetLooping(true);
+    groundsrc->SetCurrentClip(freightmove1sfx);
 
     Entity *sphere = s->CreateObject<Entity>(Transform({-2.5, 3, -2.5}));
     sphere->usedShaderProgram = "default";
@@ -232,7 +246,7 @@ int main()
 
     Model *hl1_reactor_demo = s->CreateObject<Model>();
     hl1_reactor_demo->usedShaderProgram = "default";
-    hl1_reactor_demo->transform.SetPosition({10, 0, 0});
+    hl1_reactor_demo->transform.SetPosition({-15, 0, 0});
 
     AudioEffectSlot reverb = AudioEffectSlot();
     EAXReverbEffectSettings reverbsetts;
@@ -247,6 +261,18 @@ int main()
     //src->SetSourceFloat(AL_REFERENCE_DISTANCE, 8);
     //src->SetSourceFloat(AL_MAX_DISTANCE, 32);
     //src->SetSourceFloat(AL_GAIN, 1);
+
+    RigidBody *playerrb = s->CreateObject<RigidBody>(Transform({-2.5, 1, -2.5}));
+    CapsuleCollider *playercoll = playerrb->AddCollider<CapsuleCollider>(Transform(), 0.5, 1.5);
+    playercoll->SetFrictionCoefficient(3);
+    playercoll->SetBounciness(0);
+    playerrb->SetAngularLockAxisFactor({0, 1, 0});
+    playerrb->SetRigidBodyType(DYNAMIC);
+    playerrb->SetGravityEnabled(true);
+    playerrb->SetMass(50);
+    cam->SetParent(playerrb, false);
+    cam->transform.SetPosition({0, 0.5, 0});
+
 
     Surface surf;
     surf.mesh = "crowbar_cyl";
@@ -283,10 +309,15 @@ int main()
     float refdist = 8;
     float maxdist = 32;
 
-    src->Play();
+    //src->Play();
+    groundsrc->Play();
 
     glfwSetTime(0);
     double prev_time = glfwGetTime();
+    double prev_sec = glfwGetTime();
+
+    unsigned long loops = 0;
+    unsigned long ups = 0;
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -317,6 +348,13 @@ int main()
         {
             prev_time = glfwGetTime();
 
+            if (glfwGetTime() >= prev_sec + 1)
+            {
+                ups = loops;
+                loops = 0;
+                prev_sec = glfwGetTime();
+            }
+
             ent->surfaces[0].textureTransform.Translate(glm::vec2(0, delta * 0.5f));
             ent->surfaces[0].textureTransform.Rotate(0.1 * delta);
 
@@ -325,18 +363,67 @@ int main()
             //ground->transform.Translate(glm::vec3(delta * 1.0f, 0, 0));
             ground->SetLinearVelocity({1, 0, 0});
 
-            updateCam(window, cam, delta, ent);
+            //updateCam(window, cam, delta, ent);
+
+            if (Engine::IsKeyPressed(GLFW_KEY_W)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(0, 0, -1000));
+            if (Engine::IsKeyPressed(GLFW_KEY_S)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(0, 0, 1000));
+            if (Engine::IsKeyPressed(GLFW_KEY_A)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(-1000, 0, 0));
+            if (Engine::IsKeyPressed(GLFW_KEY_D)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(1000, 0, 0));
+
+            if (Engine::IsKeyPressed(GLFW_KEY_SPACE)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(0, 1000, 0));
 
             //if (Engine::IsKeyPressed(GLFW_KEY_F)) src->Pause();
             //else if (src->GetState() != AudioSourceState::PLAYING) src->Play();
 
+            playerrb->SetAngularVelocity(glm::vec3(0));
+
+            if (!ImGUI::GetIO().WantCaptureMouse && Engine::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
+            {
+                double mouseX, mouseY;
+                glfwGetCursorPos(window, &mouseX, &mouseY);
+
+                float mxoff = -glm::radians((mouseX - lastX) * MOUSE_SENSITIVITY);
+                float myoff = -glm::radians((mouseY - lastY) * MOUSE_SENSITIVITY);
+                {
+                    glm::quat delta_pitch = glm::angleAxis(myoff, glm::vec3(1, 0, 0));
+                    glm::quat delta_yaw = glm::angleAxis(mxoff, glm::vec3(0, 1, 0));
+
+                    glm::quat new_rotation = cam->transform.GetRotation() * delta_pitch;
+
+                    glm::vec3 front = new_rotation * glm::vec3(0, 0, -1);
+                    glm::vec3 front_xz = glm::normalize(glm::vec3(front.x, 0, front.z));
+
+                    if (glm::dot(front, front_xz) >= glm::cos(glm::radians(60.0f))) cam->transform.SetRotation(new_rotation);
+                    playerrb->transform.Rotate(delta_yaw);
+                }
+
+                lastX = mouseX;
+                lastY = mouseY;
+            }
+
+            glm::vec3 oldplpos = playerrb->GetGlobalTransform().GetPosition();
+
             Engine::Update(delta);
+
+            glm::vec3 deltaplpos = playerrb->GetGlobalTransform().GetPosition() - oldplpos;
+
+            static float cwoffset = 0;
+            cwoffset += glm::length(Utils::normalize(deltaplpos)) * glm::radians(11.25f / 4);
+            cwoffset = glm::mod(cwoffset, glm::radians(360.0f));
+
+            ent->transform.SetRotation(crowbar_rot + glm::vec3(glm::sin(cwoffset) * 0.03f, 0.0f, 0.0f));
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             Engine::Render();
 
             Engine::BeginRenderUI();
+
+            {
+                std::ostringstream oss;
+                oss << "FPS: " << ups;
+                ImGUI::GetForegroundDrawList()->AddText(ImVec2(10, 10), IM_COL32(255, 255, 255, 255), oss.str().c_str());
+            }
 
             ImGUI::SetNextWindowSize(ImVec2(600, 620), ImGuiCond_FirstUseEver);
             ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
@@ -446,6 +533,8 @@ int main()
             Engine::EndRenderUI();
 
             glfwSwapBuffers(window);
+
+            loops++;
         }
     }
 
@@ -454,7 +543,6 @@ int main()
     return 0;
 }
 
-const float MOUSE_SENSITIVITY = 0.1;
 const float DEFAULT_CAMERA_SPEED = 3;
 float cameraSpeed = DEFAULT_CAMERA_SPEED;
 
@@ -476,13 +564,13 @@ void updateCam(GLFWwindow *window, Camera *cam, double delta, Model *crowbar)
     Transform *t = &cam->transform;
     glm::vec3 old_pos = t->GetPosition();
 
-    if (Engine::IsKeyPressed(GLFW_KEY_W)) { t->Translate(t->GetFront() * glm::vec3(speed * delta)); }
-    if (Engine::IsKeyPressed(GLFW_KEY_S)) { t->Translate(-t->GetFront() * glm::vec3(speed * delta)); }
-    if (Engine::IsKeyPressed(GLFW_KEY_A)) { t->Translate(-t->GetRight() * glm::vec3(speed * delta)); }
-    if (Engine::IsKeyPressed(GLFW_KEY_D)) { t->Translate(t->GetRight() * glm::vec3(speed * delta)); }
+    //if (Engine::IsKeyPressed(GLFW_KEY_W)) { t->Translate(t->GetFront() * glm::vec3(speed * delta)); }
+    //if (Engine::IsKeyPressed(GLFW_KEY_S)) { t->Translate(-t->GetFront() * glm::vec3(speed * delta)); }
+    //if (Engine::IsKeyPressed(GLFW_KEY_A)) { t->Translate(-t->GetRight() * glm::vec3(speed * delta)); }
+    //if (Engine::IsKeyPressed(GLFW_KEY_D)) { t->Translate(t->GetRight() * glm::vec3(speed * delta)); }
 
-    if (Engine::IsKeyPressed(GLFW_KEY_SPACE)) t->Translate(glm::vec3(0, speed * delta, 0));
-    if (Engine::IsKeyPressed(GLFW_KEY_LEFT_ALT)) t->Translate(glm::vec3(0, -speed * delta, 0));
+    //if (Engine::IsKeyPressed(GLFW_KEY_SPACE)) t->Translate(glm::vec3(0, speed * delta, 0));
+    //if (Engine::IsKeyPressed(GLFW_KEY_LEFT_ALT)) t->Translate(glm::vec3(0, -speed * delta, 0));
 
     glm::vec3 deltapos = t->GetPosition() - old_pos;
     cwoffset += glm::length(Utils::normalize(deltapos)) * glm::radians(11.25f / 4);
