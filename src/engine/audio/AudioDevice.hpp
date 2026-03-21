@@ -14,7 +14,7 @@ class AudioDevice
         ALCcontext *context;
 
     public:
-        AudioDevice(const ALchar *devname); // devname can be NULL/nullptr.
+        AudioDevice(const ALchar *devname, bool enableHRTF = false); // devname can be NULL/nullptr.
         ~AudioDevice();
 };
 

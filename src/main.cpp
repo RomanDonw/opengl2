@@ -186,6 +186,9 @@ int main()
     AudioClip *freightmove1sfx = ResourceManager::CreateAudioClip("freightmove1sfx");
     if (freightmove1sfx->LoadFromUCSOUNDFile("./res/sounds/freightmove1.ucsound")) puts("loaded freightmove1 sound");
 
+    AudioClip *mus_mech8 = ResourceManager::CreateAudioClip("mus_mech8");
+    if (mus_mech8->LoadFromUCSOUNDFile("./res/music/Mech8.ucsound")) puts("loaded Mech8 music");
+
     Scene *s = Engine::CreateScene("main");
     Engine::SetCurrentScene("main");
     s->fog.enabled = true;
@@ -196,6 +199,13 @@ int main()
     Camera *cam = s->CreateObject<Camera>();
     cam->FOV = glm::radians(70.0f);
     s->SetCurrentCamera(cam);
+
+    AudioSource *music = s->CreateObject<AudioSource>();
+    music->SetParent(cam, false);
+    music->SetSourceFloat(AL_REFERENCE_DISTANCE, 1);
+    music->SetSourceFloat(AL_MAX_DISTANCE, 1);
+    music->SetSourceFloat(AL_GAIN, 0.2);
+    music->SetLooping(true);
 
     AudioListener *listener = s->CreateObject<AudioListener>();
     listener->SetParent(cam, false);
@@ -269,7 +279,7 @@ int main()
     playerrb->SetAngularLockAxisFactor({0, 1, 0});
     playerrb->SetRigidBodyType(DYNAMIC);
     playerrb->SetGravityEnabled(true);
-    playerrb->SetMass(50);
+    playerrb->SetMass(70);
     cam->SetParent(playerrb, false);
     cam->transform.SetPosition({0, 0.5, 0});
 
@@ -311,6 +321,9 @@ int main()
 
     //src->Play();
     groundsrc->Play();
+
+    music->SetCurrentClip(mus_mech8);
+    music->Play();
 
     glfwSetTime(0);
     double prev_time = glfwGetTime();
@@ -365,12 +378,12 @@ int main()
 
             //updateCam(window, cam, delta, ent);
 
-            if (Engine::IsKeyPressed(GLFW_KEY_W)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(0, 0, -1000));
-            if (Engine::IsKeyPressed(GLFW_KEY_S)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(0, 0, 1000));
-            if (Engine::IsKeyPressed(GLFW_KEY_A)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(-1000, 0, 0));
-            if (Engine::IsKeyPressed(GLFW_KEY_D)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(1000, 0, 0));
+            if (Engine::IsKeyPressed(GLFW_KEY_W)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(0, 0, -1) * 10.0f * playerrb->GetMass());
+            if (Engine::IsKeyPressed(GLFW_KEY_S)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(0, 0, 1) * 10.0f * playerrb->GetMass());
+            if (Engine::IsKeyPressed(GLFW_KEY_A)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(-1, 0, 0) * 10.0f * playerrb->GetMass());
+            if (Engine::IsKeyPressed(GLFW_KEY_D)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(1, 0, 0) * 10.0f * playerrb->GetMass());
 
-            if (Engine::IsKeyPressed(GLFW_KEY_SPACE)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(0, 1000, 0));
+            if (Engine::IsKeyPressed(GLFW_KEY_SPACE)) playerrb->ApplyLocalForceToCenterOfMass(-s->GetGravity() * 2.0f * playerrb->GetMass());
 
             //if (Engine::IsKeyPressed(GLFW_KEY_F)) src->Pause();
             //else if (src->GetState() != AudioSourceState::PLAYING) src->Play();

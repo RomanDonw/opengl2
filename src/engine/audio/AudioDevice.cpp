@@ -7,7 +7,7 @@
 
 #include "../Engine.hpp"
 
-AudioDevice::AudioDevice(const ALchar *devname)
+AudioDevice::AudioDevice(const ALchar *devname, bool enableHRTF)
 {
     device = alcOpenDevice(devname);
     if (!device)
@@ -17,7 +17,9 @@ AudioDevice::AudioDevice(const ALchar *devname)
         throw std::runtime_error(oss.str());
     }
 
-    context = alcCreateContext(device, NULL);
+    ALCint attribs[] = {ALC_HRTF_SOFT, enableHRTF ? ALC_TRUE : ALC_FALSE, 0};
+    context = alcCreateContext(device, attribs);
+    //context = alcCreateContext(device, NULL);
     if (!context)
     {
         alcCloseDevice(device);
