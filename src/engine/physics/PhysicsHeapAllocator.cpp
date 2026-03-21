@@ -3,8 +3,12 @@
 #include <cstdlib>
 #include <new>
 
+// === PRIVATE ===
+
 PhysicsHeapAllocator::PhysicsHeapAllocator() : MemoryAllocator() {}
 PhysicsHeapAllocator::~PhysicsHeapAllocator() {}
+
+// === PUBLIC ===
 
 void *PhysicsHeapAllocator::allocate(size_t size)
 {
