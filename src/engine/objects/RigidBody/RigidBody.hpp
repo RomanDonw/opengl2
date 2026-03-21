@@ -50,20 +50,26 @@ class RigidBody : virtual public GameObject
         bool IsGravityEnabled() const;
         void SetGravityEnabled(bool state);
 
+        float GetMass() const;
+        void SetMass(float mass);
+
+        // ============================
+
         glm::vec3 GetLinearVelocity() const;
         void SetLinearVelocity(glm::vec3 v);
 
         glm::vec3 GetAngularVelocity() const;
         void SetAngularVelocity(glm::vec3 v);
 
-        float GetMass() const;
-        void SetMass(float mass);
+        // ============================
 
         glm::vec3 GetLinearLockAxisFactor() const;
         void SetLinearLockAxisFactor(glm::vec3 factor);
 
         glm::vec3 GetAngularLockAxisFactor() const;
         void SetAngularLockAxisFactor(glm::vec3 factor);
+
+        // ============================
 
         // applies force in global (world)/local space at body`s center of mass.
         void ApplyLocalForceToCenterOfMass(glm::vec3 force);
@@ -80,6 +86,8 @@ class RigidBody : virtual public GameObject
         // applies torque in global (world)/local space.
         void ApplyLocalTorque(glm::vec3 torque);
         void ApplyGlobalTorque(glm::vec3 torque);
+
+        // ============================
 
         float GetLinearDamping() const;
         void SetLinearDamping(float damping);
