@@ -96,6 +96,24 @@ void RigidBody::SetAngularVelocity(glm::vec3 v) { rb->setAngularVelocity(Utils::
 float RigidBody::GetMass() const { return rb->getMass(); }
 void RigidBody::SetMass(float mass) { rb->setMass(mass); }
 
+glm::vec3 RigidBody::GetLinearLockAxisFactor() const { return Utils::rp3dvec3toglmvec3(rb->getLinearLockAxisFactor()); }
+void RigidBody::SetLinearLockAxisFactor(glm::vec3 factor) { rb->setLinearLockAxisFactor(Utils::glmvec3torp3dvec3(glm::clamp(factor, glm::vec3(0), glm::vec3(1)))); }
+
+glm::vec3 RigidBody::GetAngularLockAxisFactor() const { return Utils::rp3dvec3toglmvec3(rb->getAngularLockAxisFactor()); }
+void RigidBody::SetAngularLockAxisFactor(glm::vec3 factor) { rb->setAngularLockAxisFactor(Utils::glmvec3torp3dvec3(glm::clamp(factor, glm::vec3(0), glm::vec3(1)))); }
+
+void RigidBody::ApplyLocalForceToCenterOfMass(glm::vec3 force) { rb->applyLocalForceAtCenterOfMass(Utils::glmvec3torp3dvec3(force)); }
+void RigidBody::ApplyGlobalForceToCenterOfMass(glm::vec3 force) { rb->applyWorldForceAtCenterOfMass(Utils::glmvec3torp3dvec3(force)); }
+
+void RigidBody::ApplyLocalForceAtLocalPoint(glm::vec3 force, glm::vec3 point) { rb->applyLocalForceAtLocalPosition(Utils::glmvec3torp3dvec3(force), Utils::glmvec3torp3dvec3(point)); }
+void RigidBody::ApplyGlobalForceAtLocalPoint(glm::vec3 force, glm::vec3 point) { rb->applyWorldForceAtLocalPosition(Utils::glmvec3torp3dvec3(force), Utils::glmvec3torp3dvec3(point)); }
+
+void RigidBody::ApplyLocalForceAtGlobalPoint(glm::vec3 force, glm::vec3 point) { rb->applyLocalForceAtWorldPosition(Utils::glmvec3torp3dvec3(force), Utils::glmvec3torp3dvec3(point)); }
+void RigidBody::ApplyGlobalForceAtGlobalPoint(glm::vec3 force, glm::vec3 point) { rb->applyWorldForceAtWorldPosition(Utils::glmvec3torp3dvec3(force), Utils::glmvec3torp3dvec3(point)); }
+
+void RigidBody::ApplyLocalTorque(glm::vec3 torque) { rb->applyLocalTorque(Utils::glmvec3torp3dvec3(torque)); }
+void RigidBody::ApplyGlobalTorque(glm::vec3 torque) { rb->applyWorldTorque(Utils::glmvec3torp3dvec3(torque)); }
+
 // ==================================================================================
 
 bool RigidBody::HasCollider(Collider *c) { return std::ranges::contains(colliders, c); }

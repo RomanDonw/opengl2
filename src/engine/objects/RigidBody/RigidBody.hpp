@@ -59,6 +59,28 @@ class RigidBody : virtual public GameObject
         float GetMass() const;
         void SetMass(float mass);
 
+        glm::vec3 GetLinearLockAxisFactor() const;
+        void SetLinearLockAxisFactor(glm::vec3 factor);
+
+        glm::vec3 GetAngularLockAxisFactor() const;
+        void SetAngularLockAxisFactor(glm::vec3 factor);
+
+        // applies force in global (world)/local space at body`s center of mass.
+        void ApplyLocalForceToCenterOfMass(glm::vec3 force);
+        void ApplyGlobalForceToCenterOfMass(glm::vec3 force);
+
+        // applies force in global (world)/local space to point of body in local space.
+        void ApplyLocalForceAtLocalPoint(glm::vec3 force, glm::vec3 point);
+        void ApplyGlobalForceAtLocalPoint(glm::vec3 force, glm::vec3 point);
+
+        // applies force in global (world)/local space to point of body in global (world) space.
+        void ApplyLocalForceAtGlobalPoint(glm::vec3 force, glm::vec3 point);
+        void ApplyGlobalForceAtGlobalPoint(glm::vec3 force, glm::vec3 point);
+
+        // applies torque in global (world)/local space.
+        void ApplyLocalTorque(glm::vec3 torque);
+        void ApplyGlobalTorque(glm::vec3 torque);
+
         // ============================
 
         bool HasCollider(Collider *c);
