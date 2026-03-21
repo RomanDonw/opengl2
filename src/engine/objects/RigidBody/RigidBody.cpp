@@ -13,6 +13,8 @@
 void RigidBody::constructor()
 {
     rb = scene->world->createRigidBody(Utils::transformtorp3dtransform(transform));
+    scene->rbslinks.insert({rb, this});
+    
     SetRigidBodyType(RigidBodyType::KINEMATIC);
 }
 
@@ -24,6 +26,8 @@ RigidBody::RigidBody(Scene *s) : GameObject(s) { constructor(); }
 RigidBody::~RigidBody()
 {
     for (Collider *c : colliders) RemoveCollider(c);
+
+    scene->rbslinks.erase(rb);
     scene->world->destroyRigidBody(rb);
 }
 

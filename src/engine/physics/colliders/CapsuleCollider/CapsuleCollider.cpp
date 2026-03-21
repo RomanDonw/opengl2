@@ -9,10 +9,12 @@ CapsuleCollider::CapsuleCollider(rp3d::PhysicsCommon *phys, rp3d::RigidBody *phy
 {
     shape = phys->createCapsuleShape(radius, height);
     collider = physrb->addCollider(shape, Utils::transformtorp3dtransform(t));
+    linkphyscollwiththis();
 }
 
 CapsuleCollider::~CapsuleCollider()
 {
+    unlinkphyscollfromthis();
     physrb->removeCollider(collider);
     phys->destroyCapsuleShape(shape);
 }

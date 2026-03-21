@@ -9,10 +9,12 @@ BoxCollider::BoxCollider(rp3d::PhysicsCommon *phys, rp3d::RigidBody *physrb, Rig
 {
     shape = phys->createBoxShape(Utils::glmvec3torp3dvec3(halfExtents));
     collider = physrb->addCollider(shape, Utils::transformtorp3dtransform(t));
+    linkphyscollwiththis();
 }
 
 BoxCollider::~BoxCollider()
 {
+    unlinkphyscollfromthis();
     physrb->removeCollider(collider);
     phys->destroyBoxShape(shape);
 }

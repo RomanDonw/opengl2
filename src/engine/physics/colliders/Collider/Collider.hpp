@@ -25,6 +25,9 @@ class Collider // interface class.
 
         void OnTransformChanged();
 
+        void linkphyscollwiththis();
+        void unlinkphyscollfromthis();
+
     public:
         const ColliderType type = ColliderType::UNKNOWN;
         ColliderTransform transform;

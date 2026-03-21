@@ -4,6 +4,7 @@
 #include <vector>
 #include <concepts>
 #include <map>
+#include <unordered_map>
 #include <functional>
 
 #include "Engine.hpp"
@@ -15,6 +16,7 @@ class Camera;
 class AudioListener;
 class RigidBody;
 class GameObject;
+class Collider;
 
 template <typename T>
 concept GameObjectConcept = std::derived_from<T, GameObject>;
@@ -24,12 +26,15 @@ class Scene final
     friend class Engine;
     friend class AudioListener;
     friend class RigidBody;
+    friend class Collider;
 
     private:
         Scene();
         ~Scene();
 
         rp3d::PhysicsWorld *world;
+        std::unordered_map<rp3d::RigidBody *, RigidBody *> rbslinks;
+        std::unordered_map<rp3d::Collider *, Collider *> collslinks;
 
         std::map<int32_t, std::vector<GameObject *>, std::less<int32_t>> objects;
         Camera *currcam = nullptr;

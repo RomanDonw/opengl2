@@ -9,10 +9,12 @@ SphereCollider::SphereCollider(rp3d::PhysicsCommon *phys, rp3d::RigidBody *physr
 {
     shape = phys->createSphereShape(radius);
     collider = physrb->addCollider(shape, Utils::transformtorp3dtransform(t));
+    linkphyscollwiththis();
 }
 
 SphereCollider::~SphereCollider()
 {
+    unlinkphyscollfromthis();
     physrb->removeCollider(collider);
     phys->destroySphereShape(shape);
 }

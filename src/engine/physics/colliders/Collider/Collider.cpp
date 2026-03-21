@@ -2,6 +2,8 @@
 
 #include "../../../Engine.hpp"
 #include "../../../Utils.hpp"
+#include "../../../Scene.hpp"
+#include "../../../objects/RigidBody/RigidBody.hpp"
 
 // === PROTECTED ===
 
@@ -14,6 +16,9 @@ void Collider::OnTransformChanged()
 
     collider->setLocalToBodyTransform(Utils::transformtorp3dtransform(transform));
 }
+
+void Collider::linkphyscollwiththis() { wraprb->scene->collslinks.insert({collider, this}); }
+void Collider::unlinkphyscollfromthis() { wraprb->scene->collslinks.erase(collider); }
 
 // === PUBLIC ===
 
