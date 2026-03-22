@@ -24,6 +24,7 @@ class Model : virtual public GameObject
         const GameObjectType type = GameObjectType::MODEL;
 
         bool enableRender = true;
+        bool enableDepthTest = true;
         std::string usedShaderProgram = "";
         glm::vec4 color = glm::vec4(1.0f);
         std::vector<Surface> surfaces = std::vector<Surface>();

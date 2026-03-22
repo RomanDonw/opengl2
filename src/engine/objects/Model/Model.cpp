@@ -80,6 +80,8 @@ void Model::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform
         sp->SetUniformMatrix4x4("model", mdl * surface.transform.GetTransformationMatrix());
         sp->SetUniformVector4("color", color * surface.color);
 
+        if (enableDepthTest && surface.enableDepthTest) glEnable(GL_DEPTH_TEST);
+        else glDisable(GL_DEPTH_TEST);
         mesh->RenderMesh();
     }
 }

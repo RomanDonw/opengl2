@@ -46,12 +46,13 @@ void Scene::Render()
     glm::mat4 view = currcam->GetViewMatrix();
     Transform globt = currcam->GetGlobalTransform();
 
-    ForEachAllOrders([&](std::vector<GameObject *> layer) -> bool
+    /*ForEachAllOrders([&](std::vector<GameObject *> layer) -> bool
     {
         glClear(GL_DEPTH_BUFFER_BIT);
         for (GameObject *obj : layer) obj->Render(&proj, &view, &globt, &fog);
         return true;
-    });
+    });*/
+    ForEachAllObjects([&](GameObject *obj) -> bool { obj->Render(&proj, &view, &globt, &fog); return true; });
 }
 
 void Scene::OnSceneLoad() { ForEachAllObjects([&](GameObject *obj) -> bool { obj->OnSceneLoad(); return true; }); }

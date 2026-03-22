@@ -20,6 +20,7 @@ struct
 {
     Transform transform = Transform();
     bool enableRender = true;
+    bool enableDepthTest = true;
     glm::vec4 color = glm::vec4(1.0f);
     FaceCullingType culling = FaceCullingType::BackFace;
 
