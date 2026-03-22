@@ -20,53 +20,15 @@ struct
     unsigned int v0, v1, v2, v3;
 } typedef UCMESHQuadInfo;
 
-/*Mesh::Mesh(std::vector<glm::vec3> _vertices, std::vector<unsigned int> _indices, std::vector<glm::vec2> _uvs)
-{
-    vertices = _vertices;
-    indices = _indices;
-    uvs = _uvs;
-
-    GenerateBuffers();
-}*/
-
 Mesh::Mesh() {}
 Mesh::~Mesh() { DeleteBuffers(); }
 
-void Mesh::ClearVertices() { vertices.clear(); }
-void Mesh::ClearIndices() { indices.clear(); }
-void Mesh::ClearUVs() { uvs.clear(); }
 void Mesh::ClearMesh()
 {
-    ClearVertices();
-    ClearIndices();
-    ClearUVs();
+    vertices.clear();
+    uvs.clear();
+    indices.clear();
 }
-
-void Mesh::AddVertexWithUV(glm::vec3 vertex, glm::vec2 uv)
-{
-    vertices.push_back(vertex);
-    uvs.push_back(uv);
-}
-
-void Mesh::AddVertexWithUV(float x, float y, float z, float u, float v) { AddVertexWithUV(glm::vec3(x, y, z), glm::vec2(u, v)); }
-
-void Mesh::AddTriangle(unsigned int v0, unsigned int v1, unsigned int v2)
-{
-    indices.push_back(v0);
-    indices.push_back(v1);
-    indices.push_back(v2);
-}
-
-void Mesh::AddQuad(unsigned int v0, unsigned int v1, unsigned int v2, unsigned int v3)
-{
-    AddTriangle(v3, v0, v1);
-    AddTriangle(v1, v2, v3);
-}
-
-std::vector<glm::vec3> Mesh::GetVertices() { return vertices; }
-std::vector<unsigned int> Mesh::GetIndices() { return indices; }
-size_t Mesh::GetIndicesCount() { return indices.size(); }
-std::vector<glm::vec2> Mesh::GetUVs() { return uvs; }
 
 bool Mesh::HasBuffers() { return hasbuffers; }
 
@@ -92,7 +54,7 @@ bool Mesh::GenerateBuffers()
     glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(glm::uvec3), indices.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -129,7 +91,6 @@ void Mesh::ApplyTransformation(glm::mat4 mat)
     }
 }
 void Mesh::ApplyTransformation(Transform t) { ApplyTransformation(t.GetTransformationMatrix()); }
-//void Mesh::ApplyTransformation(const Transform *t) { ApplyTransformation(t->GetTransformationMatrix()); }
 
 bool Mesh::LoadFromUCMESHFile(std::string filename)
 {
@@ -162,7 +123,8 @@ bool Mesh::LoadFromUCMESHFile(std::string filename)
         fread(&v, sizeof(v), 1, f);
         if (feof(f)) goto readmesherrorquit;
 
-        AddVertexWithUV(v.x, v.y, v.z, v.u, v.v);
+        vertices.push_back(glm::vec3(v.x, v.y, v.z));
+        uvs.push_back(glm::vec2(v.u, v.v));
     }
 
     uint8_t prim_type;
@@ -180,7 +142,7 @@ bool Mesh::LoadFromUCMESHFile(std::string filename)
 
                 if (tri.v0 >= vertices_count || tri.v1 >= vertices_count || tri.v2 >= vertices_count) continue;
 
-                AddTriangle(tri.v0, tri.v1, tri.v2);
+                indices.push_back(glm::uvec3(tri.v0, tri.v1, tri.v2));
                 break;
 
             case 1: // quad.
@@ -190,7 +152,8 @@ bool Mesh::LoadFromUCMESHFile(std::string filename)
 
                 if (quad.v0 >= vertices_count || quad.v1 >= vertices_count || quad.v2 >= vertices_count || quad.v3 >= vertices_count) continue;
 
-                AddQuad(quad.v0, quad.v1, quad.v2, quad.v3);
+                indices.push_back(glm::uvec3(quad.v3, quad.v0, quad.v1));
+                indices.push_back(glm::uvec3(quad.v1, quad.v2, quad.v3));
                 break;
 
             default:
@@ -198,7 +161,6 @@ bool Mesh::LoadFromUCMESHFile(std::string filename)
         }
     }
 
-    //GenerateBuffers();
     RegenerateBuffers();
 
     fclose(f);
@@ -216,7 +178,7 @@ bool Mesh::RenderMesh()
     if (!HasBuffers()) return false;
 
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, GetIndicesCount(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, indices.size() * 3, GL_UNSIGNED_INT, nullptr);
 
     return true;
 }
