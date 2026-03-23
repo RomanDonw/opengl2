@@ -39,7 +39,7 @@ size_t GameObject::SetParent(GameObject *newparent, bool saveglobalpos)
 {
     size_t index = -1; // yea, i know that size_t is an unsigned type, but vector can't contain 2^64 - 1 elements, so i can use that magic number as "special return code/value".
     if (newparent == this) return -1;
-    if (newparent->scene != scene) return -1; // objects must be in the same scene.
+    if (newparent && (newparent->scene != scene)) return -1; // objects must be in the same scene.
     
     if (parent) parent->children.erase(std::remove(parent->children.begin(), parent->children.end(), this), parent->children.end());
     if (newparent)
