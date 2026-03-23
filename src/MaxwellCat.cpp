@@ -12,7 +12,7 @@
 
 void MaxwellCat::constructor()
 {
-    tags.insert("maxwellcat");
+    tags.insert("Maxwell the Cat");
 
     SetRigidBodyType(DYNAMIC);
     SetMass(4.5);
@@ -49,6 +49,8 @@ MaxwellCat::~MaxwellCat()
 {
     scene->DeleteObject(src);
     scene->DeleteObject(model);
+
+    for (GameObject *obj : children) if (obj->tags.contains("Decal")) scene->DeleteObject(obj);
 }
 
 void MaxwellCat::Update(double delta)

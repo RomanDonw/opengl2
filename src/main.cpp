@@ -486,6 +486,8 @@ int main()
                     tmpsrc->SetCurrentClip((rand() % 2) ? hit1sfx : hit2sfx);
                     tmpsrc->Play();
 
+                    if (info.rigidbody->tags.contains("Maxwell the Cat")) s->DeleteObject(info.rigidbody);
+
                     return STOP;
                 });
             }
