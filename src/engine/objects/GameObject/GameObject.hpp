@@ -48,7 +48,7 @@ class GameObject
         std::unordered_set<std::string> tags;
 
         GameObject *GetParent(); // can return nullptr.
-        virtual size_t SetParent(GameObject *newparent, bool saveglobalpos = true);
+        virtual size_t SetParent(GameObject *newparent, bool saveglobalpos = true); // newparent can be nullptr.
 
         Scene *GetScene();
 
