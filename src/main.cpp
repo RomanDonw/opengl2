@@ -26,6 +26,8 @@
 #include "engine/audio/AudioEffectProperties.hpp"
 #include "engine/audio/AudioEffectSlot.hpp"
 
+#include "Decal.hpp"
+
 const unsigned short FPS = 100;
 
 bool readtextfile(std::string filename, std::string *output);
@@ -176,6 +178,10 @@ int main()
     if (ResourceManager::CreateMesh("hl1_reactor_demo")->LoadFromUCMESHFile("./res/models/hl1_reactor_demo.ucmesh")) printf("loaded model hl1_reactor_demo\n");
 
     if (ResourceManager::CreateMesh("sphere")->LoadFromUCMESHFile("./res/models/sphere.ucmesh")) puts("loaded model sphere");
+    if (ResourceManager::CreateMesh("decal")->LoadFromUCMESHFile("./res/models/decal.ucmesh")) puts("loaded model decal");
+
+    if (ResourceManager::CreateTexture("bullethole1")->LoadFromUCTEXFile("./res/textures/bullethole1.uctex")) puts("loaded bullethole1 texture");
+    if (ResourceManager::CreateTexture("bullethole2")->LoadFromUCTEXFile("./res/textures/bullethole2.uctex")) puts("loaded bullethole2 texture");
 
     AudioClip *zapsfx = ResourceManager::CreateAudioClip("zapsfx");
     if (zapsfx->LoadFromUCSOUNDFile("./res/sounds/zapmachine.ucsound")) printf("loaded zapmachine sound\n");
@@ -188,6 +194,15 @@ int main()
 
     AudioClip *mus_mech8 = ResourceManager::CreateAudioClip("mus_mech8");
     if (mus_mech8->LoadFromUCSOUNDFile("./res/music/Mech8.ucsound")) puts("loaded Mech8 music");
+
+    AudioClip *hit1sfx = ResourceManager::CreateAudioClip("hit1sfx");
+    if (hit1sfx->LoadFromUCSOUNDFile("./res/sounds/hit_1.ucsound")) puts("loaded hit_1 sound");
+
+    AudioClip *hit2sfx = ResourceManager::CreateAudioClip("hit2sfx");
+    if (hit2sfx->LoadFromUCSOUNDFile("./res/sounds/hit_2.ucsound")) puts("loaded hit_2 sound");
+
+    AudioClip *misssfx = ResourceManager::CreateAudioClip("misssfx");
+    if (misssfx->LoadFromUCSOUNDFile("./res/sounds/miss.ucsound")) puts("loaded miss sound");
 
     Scene *s = Engine::CreateScene("main");
     Engine::SetCurrentScene("main");
@@ -214,7 +229,8 @@ int main()
     ent->SetParent(cam, false);
     ent->usedShaderProgram = "default";
     ent->transform = Transform(glm::vec3(0.0933556, -0.160361, -0.179554), crowbar_rot, glm::vec3(0.01));
-    s->SetObjectOrder(ent, 1);
+    ent->enableDepthTest = false;
+    s->SetObjectOrder(ent, 101);
 
     Model *cube = s->CreateObject<Model>(Transform({0, 0, -5}, glm::quat(glm::vec3(0)), glm::vec3(0.1)));
     cube->usedShaderProgram = "default";
@@ -242,7 +258,7 @@ int main()
 
     AudioSource *groundsrc = s->CreateObject<AudioSource>();
     groundsrc->SetParent(ground, false);
-    groundsrc->SetSourceFloat(AL_GAIN, 0.2);
+    groundsrc->SetSourceFloat(AL_GAIN, 0.1);
     groundsrc->SetSourceFloat(AL_MAX_DISTANCE, 16);
     groundsrc->SetSourceFloat(AL_REFERENCE_DISTANCE, 10);
     groundsrc->SetLooping(true);
@@ -307,9 +323,6 @@ int main()
     surf.mesh = "sphere";
     sphere->surfaces.push_back(surf);
 
-    glEnable(GL_DEPTH_TEST);
-    glClearColor(s->fog.color.x, s->fog.color.y, s->fog.color.z, 1);
-
     float speed = 1;
     bool captured = false;
 
@@ -323,16 +336,22 @@ int main()
     groundsrc->Play();
 
     music->SetCurrentClip(mus_mech8);
-    music->Play();
+    //music->Play();
 
-    glfwSetTime(0);
-    double prev_time = glfwGetTime();
-    double prev_sec = glfwGetTime();
+    srand(time(NULL));
 
     bool hitclicked = false;
-
     unsigned long loops = 0;
     unsigned long ups = 0;
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glClearColor(s->fog.color.x, s->fog.color.y, s->fog.color.z, 1);
+    
+    double prev_time = 0;
+    double prev_sec = 0;
+    glfwSetTime(0);
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -419,11 +438,47 @@ int main()
             if (captured && !hitclicked && Engine::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
             {
                 hitclicked = true;
+
+                {
+                    TemporaryAudioSource *tmpsrc = s->CreateObject<TemporaryAudioSource>();
+                    tmpsrc->SetParent(cam, false);
+                    tmpsrc->SetSourceFloat(AL_MAX_DISTANCE, 1);
+                    tmpsrc->SetSourceFloat(AL_REFERENCE_DISTANCE, 1);
+                    tmpsrc->SetSourceFloat(AL_GAIN, 0.3);
+                    tmpsrc->SetCurrentClip(misssfx);
+                    tmpsrc->Play();
+                }
                 
                 Transform camt = cam->GetGlobalTransform();
                 s->Raycast(camt.GetPosition(), camt.GetPosition() + camt.GetFront() * 2.0f, [&](RaycastInfo info) -> RaycastCallbackState
                 {
                     std::cout << Utils::tostring(info.point) << std::endl;
+
+                    //glm::vec3 rot = Utils::angles(-info.normal, glm::radians(45.0f));
+                    const glm::vec3 forward = glm::vec3(0, 0, -1);
+
+                    glm::quat rot = glm::angleAxis(glm::acos(glm::dot(info.normal, forward)), Utils::normalize(glm::cross(forward, info.normal)));
+                    glm::vec3 offset = info.normal * (0.01f + ((rand() % 101) / 100.0f - 0.5f) * 0.01f);
+                    Decal *d = s->CreateObject<Decal>(Transform(info.point + offset, rot, glm::vec3(0.3)), 60);
+                    d->fadeoutstart = 50;
+                    d->usedShaderProgram = "default";
+                    s->SetObjectOrder(d, 1);
+                    d->SetParent(info.rigidbody, true);
+                    
+                    Surface sf;
+                    sf.mesh = "decal";
+                    sf.texture = (rand() & 1) ? "bullethole1" : "bullethole2";
+                    //s.texture = "crowbar_cyl";
+                    d->surfaces.push_back(sf);
+
+                    TemporaryAudioSource *tmpsrc = s->CreateObject<TemporaryAudioSource>();
+                    tmpsrc->SetParent(cam, false);
+                    tmpsrc->SetSourceFloat(AL_MAX_DISTANCE, 1);
+                    tmpsrc->SetSourceFloat(AL_REFERENCE_DISTANCE, 1);
+                    tmpsrc->SetSourceFloat(AL_GAIN, 0.3);
+                    tmpsrc->SetCurrentClip((rand() % 2) ? hit1sfx : hit2sfx);
+                    tmpsrc->Play();
+
                     return STOP;
                 });
             }
@@ -537,6 +592,8 @@ int main()
 
             ImGUI::SetNextWindowSize(ImVec2(400, 200), ImGuiCond_FirstUseEver);
             ImGUI::Begin("Test functions");
+
+            if (ImGUI::Button("Start music")) music->Play();
 
             if (ImGUI::Button("Spawn new TemporaryAudioSource"))
             {
