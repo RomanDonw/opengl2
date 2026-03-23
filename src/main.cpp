@@ -27,6 +27,7 @@
 #include "engine/audio/AudioEffectSlot.hpp"
 
 #include "Decal.hpp"
+#include "MaxwellCat.hpp"
 
 const unsigned short FPS = 100;
 
@@ -183,6 +184,9 @@ int main()
     if (ResourceManager::CreateTexture("bullethole1")->LoadFromUCTEXFile("./res/textures/bullethole1.uctex")) puts("loaded bullethole1 texture");
     if (ResourceManager::CreateTexture("bullethole2")->LoadFromUCTEXFile("./res/textures/bullethole2.uctex")) puts("loaded bullethole2 texture");
 
+    if (ResourceManager::CreateTexture("maxwellcat")->LoadFromUCTEXFile("./res/textures/maxwellcat.uctex")) puts("loaded maxwellcat texture");
+    if (ResourceManager::CreateMesh("maxwellcat")->LoadFromUCMESHFile("./res/models/maxwellcat.ucmesh")) puts("loaded maxwellact model");
+
     AudioClip *zapsfx = ResourceManager::CreateAudioClip("zapsfx");
     if (zapsfx->LoadFromUCSOUNDFile("./res/sounds/zapmachine.ucsound")) printf("loaded zapmachine sound\n");
 
@@ -192,9 +196,6 @@ int main()
     AudioClip *freightmove1sfx = ResourceManager::CreateAudioClip("freightmove1sfx");
     if (freightmove1sfx->LoadFromUCSOUNDFile("./res/sounds/freightmove1.ucsound")) puts("loaded freightmove1 sound");
 
-    AudioClip *mus_mech8 = ResourceManager::CreateAudioClip("mus_mech8");
-    if (mus_mech8->LoadFromUCSOUNDFile("./res/music/Mech8.ucsound")) puts("loaded Mech8 music");
-
     AudioClip *hit1sfx = ResourceManager::CreateAudioClip("hit1sfx");
     if (hit1sfx->LoadFromUCSOUNDFile("./res/sounds/hit_1.ucsound")) puts("loaded hit_1 sound");
 
@@ -203,6 +204,12 @@ int main()
 
     AudioClip *misssfx = ResourceManager::CreateAudioClip("misssfx");
     if (misssfx->LoadFromUCSOUNDFile("./res/sounds/miss.ucsound")) puts("loaded miss sound");
+
+    AudioClip *mus_maxwellcat = ResourceManager::CreateAudioClip("mus_maxwellcat");
+    if (mus_maxwellcat->LoadFromUCSOUNDFile("./res/music/maxwellcat.ucsound")) puts("loaded maxwellcat music");
+
+    AudioClip *mus_mech8 = ResourceManager::CreateAudioClip("mus_mech8");
+    if (mus_mech8->LoadFromUCSOUNDFile("./res/music/Mech8.ucsound")) puts("loaded Mech8 music");
 
     Scene *s = Engine::CreateScene("main");
     Engine::SetCurrentScene("main");
@@ -458,7 +465,7 @@ int main()
                     const glm::vec3 forward = glm::vec3(0, 0, -1);
 
                     glm::quat rot = glm::angleAxis(glm::acos(glm::dot(info.normal, forward)), Utils::normalize(glm::cross(forward, info.normal)));
-                    glm::vec3 offset = info.normal * (0.01f + ((rand() % 101) / 100.0f - 0.5f) * 0.01f);
+                    glm::vec3 offset = info.normal * (0.01f + ((rand() % 101) / 100.0f - 0.5f) * 0.005f);
                     Decal *d = s->CreateObject<Decal>(Transform(info.point + offset, rot, glm::vec3(0.3)), 60);
                     d->fadeoutstart = 50;
                     d->usedShaderProgram = "default";
@@ -612,6 +619,8 @@ int main()
             //if (ImGUI::Button("Disable yellow cube gravity")) cube2->SetGravityEnabled(false);
 
             if (ImGUI::Button("Reset yellow cube velocity")) cube2->SetLinearVelocity(glm::vec3(0.0f));
+
+            if (ImGUI::Button("Spawn Maxwell the Cat")) s->CreateObject<MaxwellCat>(Transform(playerrb->transform.GetPosition()));
 
             ImGUI::End();
 
