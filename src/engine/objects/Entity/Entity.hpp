@@ -1,4 +1,4 @@
-#ifndef ENITTY_HPP
+#ifndef ENTITY_HPP
 #define ENTITY_HPP
 
 #include "../Model/Model.hpp"

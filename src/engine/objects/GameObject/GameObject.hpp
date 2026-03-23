@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <unordered_set>
 
 #include "GameObjectTypes.hpp"
 #include "GameObjectTransform.hpp"
@@ -44,6 +45,7 @@ class GameObject
     public:
         const GameObjectType type = GameObjectType::GAMEOBJECT;
         GameObjectTransform transform;
+        std::unordered_set<std::string> tags;
 
         GameObject *GetParent(); // can return nullptr.
         virtual size_t SetParent(GameObject *new_parent, bool save_global_pos = true);
