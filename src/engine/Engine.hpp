@@ -13,8 +13,20 @@
 #include "physics/PhysicsHeapAllocator.hpp"
 
 class Scene;
-class AudioDevice;
 class RigidBody;
+
+enum
+{
+    SUCCESS,
+    ERROR_ALREADY_INITED,
+
+    ERROR_OPENGL_INIT,
+
+    ERROR_OPENAL_OPENDEVICE,
+    ERROR_OPENAL_CREATECONTEXT,
+    ERROR_OPENAL_DETECT_EXT_EFX,
+    ERROR_OPENAL_INIT_EXT_EFX
+} typedef EngineInitReturnCode;
 
 class Engine final
 {
@@ -28,27 +40,28 @@ class Engine final
         static inline bool inited = false;
 
         static inline GLFWwindow *window = nullptr;
-        static inline AudioDevice *currdev = nullptr;
+
+        static inline ALCdevice *audiodev = nullptr;
+        static inline ALCcontext *audiocontext = nullptr;
 
         static inline PhysicsHeapAllocator physalloc = PhysicsHeapAllocator();
         static inline rp3d::PhysicsCommon *phys = nullptr;
 
-        static void resizecallback(GLFWwindow *w, int width, int height);
-
         static inline std::string currscene = "";
         static inline std::unordered_map<std::string, Scene *> scenes = std::unordered_map<std::string, Scene *>();
 
+        static void resizecallback(GLFWwindow *w, int width, int height);
+        static void shutdownwin();
+        static void shutdownaudio();
+
     public:
-        static bool Init(unsigned short windowWidth, unsigned short windowHeight);
+        static EngineInitReturnCode Init(unsigned short windowWidth, unsigned short windowHeight, const ALchar *audiodevname, bool enableHRTF = false);
         static bool Shutdown();
 
         static GLFWwindow *GetWindow(); // can return nullptr.
         static glm::uvec2 GetWindowSize();
         static bool IsKeyPressed(unsigned short keycode);
         static bool IsMouseButtonPressed(unsigned char button);
-
-        static AudioDevice *GetCurrentAudioDevice(); // can return nullptr.
-        static void SetCurrentAudioDevice(AudioDevice *device); // can accept nullptr.
 
         static void SetAudioDistanceModel(ALenum model);
 

@@ -5,24 +5,63 @@
 
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
-#include "audio/AudioDevice.hpp"
 
 // === PRIVATE ===
 
-//Engine::~Engine() { Shutdown(); DeleteAllScenes(); }
 Engine::~Engine() { Shutdown(); }
 
 void Engine::resizecallback(GLFWwindow *w, int width, int height) { if (width > 0 && height > 0) glViewport(0, 0, width, height); }
 
+void Engine::shutdownwin()
+{
+    glfwMakeContextCurrent(NULL);
+    glfwTerminate();
+    window = nullptr;
+}
+
+void Engine::shutdownaudio()
+{
+    alcMakeContextCurrent(NULL);
+    alcDestroyContext(audiocontext);
+    audiocontext = nullptr;
+
+    alcCloseDevice(audiodev);
+    audiodev = nullptr;
+}
+
 // === PUBLIC ===
 
-bool Engine::Init(unsigned short windowWidth, unsigned short windowHeight)
+EngineInitReturnCode Engine::Init(unsigned short windowWidth, unsigned short windowHeight, const ALchar *audiodevname, bool enableHRTF)
 {
-    if (inited) return false;
+    if (inited) return ERROR_ALREADY_INITED;
 
-    if (initOpenGL(&window, windowWidth, windowHeight) != INITOPENGL_SUCCESS) return false;
+    // init OpenGL.
 
+    if (initOpenGL(&window, windowWidth, windowHeight) != INITOPENGL_SUCCESS) return ERROR_OPENGL_INIT;
     glfwSetWindowSizeCallback(window, resizecallback);
+
+    // init audio.
+
+    audiodev = alcOpenDevice(audiodevname);
+    if (!audiodev) { shutdownwin(); return ERROR_OPENAL_OPENDEVICE; }
+
+    ALCint attribs[] = {ALC_HRTF_SOFT, enableHRTF ? ALC_TRUE : ALC_FALSE, 0};
+    audiocontext = alcCreateContext(audiodev, attribs);
+    if (!audiocontext)
+    {
+        alcCloseDevice(audiodev);
+        audiodev = nullptr;
+
+        shutdownwin();
+        return ERROR_OPENAL_CREATECONTEXT;
+    }
+
+    alcMakeContextCurrent(audiocontext);
+
+    if (alcIsExtensionPresent(audiodev, "ALC_EXT_EFX") == AL_FALSE) { shutdownaudio(); shutdownwin(); return ERROR_OPENAL_DETECT_EXT_EFX; }
+    if (!initEFX()) { shutdownaudio(); shutdownwin(); return ERROR_OPENAL_INIT_EXT_EFX; }
+
+    // ImGUI & physics.
 
     IMGUI_CHECKVERSION();
     ImGUI::CreateContext();
@@ -33,7 +72,7 @@ bool Engine::Init(unsigned short windowWidth, unsigned short windowHeight)
     phys = new rp3d::PhysicsCommon(&physalloc);
 
     inited = true;
-    return true;
+    return SUCCESS;
 }
 
 bool Engine::Shutdown()
@@ -47,9 +86,8 @@ bool Engine::Shutdown()
     ImGui_ImplGlfw_Shutdown();
     ImGUI::DestroyContext();
 
-    glfwMakeContextCurrent(NULL);
-    glfwTerminate();
-    window = nullptr;
+    shutdownaudio();
+    shutdownwin();
 
     inited = false;
     return true;
@@ -88,22 +126,6 @@ bool Engine::IsMouseButtonPressed(unsigned char button)
     if (!inited) throw std::runtime_error("engine isn't initialized");
 
     return glfwGetMouseButton(window, button) == GLFW_PRESS;
-}
-
-AudioDevice *Engine::GetCurrentAudioDevice() { return currdev; }
-
-void Engine::SetCurrentAudioDevice(AudioDevice *device)
-{
-    currdev = device;
-
-    if (currdev)
-    {
-        alcMakeContextCurrent(currdev->context);
-
-        if (alcIsExtensionPresent(currdev->device, "ALC_EXT_EFX") == AL_FALSE) throw std::runtime_error("can't detect EFX extension on current device");
-        if (!initEFX()) throw std::runtime_error("failed to initialize EFX extension on current device");
-    }
-    else alcMakeContextCurrent(NULL);
 }
 
 void Engine::SetAudioDistanceModel(ALenum model) { alDistanceModel(model); }

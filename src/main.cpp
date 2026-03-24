@@ -22,7 +22,6 @@
 
 #include "engine/physics/colliders/colliders.hpp"
 
-#include "engine/audio/AudioDevice.hpp"
 #include "engine/audio/AudioEffectProperties.hpp"
 #include "engine/audio/AudioEffectSlot.hpp"
 
@@ -137,7 +136,9 @@ void applyeaxreverbeffecttoslot(const EAXReverbEffectSettings *setts, AudioEffec
 
 int main()
 {
-    if (!Engine::Init(WWIDTH, WHEIGHT)) return 1;
+    if (Engine::Init(WWIDTH, WHEIGHT, NULL) != SUCCESS) return 1;
+
+    Engine::SetAudioDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
 
     GLFWwindow *window = Engine::GetWindow();
     ImGUI::GetIO().IniFilename = nullptr;
@@ -146,11 +147,6 @@ int main()
     glfwSetScrollCallback(window, scrollCallback);
 
     glfwSetCursorPos(window, Engine::GetWindowSize().x / 2.0f, Engine::GetWindowSize().y / 2.0f);
-
-    AudioDevice dev = AudioDevice(NULL);
-    Engine::SetCurrentAudioDevice(&dev);
-
-    Engine::SetAudioDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
 
     ShaderProgram *sh = ResourceManager::CreateShaderProgram("default");
 
@@ -259,9 +255,6 @@ int main()
     BoxCollider *groundc = ground->AddCollider<BoxCollider>(Transform(), glm::vec3(10, 0.5, 10));
     groundc->SetFrictionCoefficient(1);
     groundc->SetBounciness(0);
-    //groundc->transform.SetPosition({0, -1, 0});
-    
-    //cube2->SetParent(ground);
 
     AudioSource *groundsrc = s->CreateObject<AudioSource>();
     groundsrc->SetParent(ground, false);
@@ -291,13 +284,10 @@ int main()
     src->SetCurrentClip(zapsfx);
 
     src->SetLooping(true);
-    //src->SetSourceFloat(AL_REFERENCE_DISTANCE, 8);
-    //src->SetSourceFloat(AL_MAX_DISTANCE, 32);
-    //src->SetSourceFloat(AL_GAIN, 1);
 
     RigidBody *playerrb = s->CreateObject<RigidBody>(Transform({-2.5, 1, -2.5}));
     CapsuleCollider *playercoll = playerrb->AddCollider<CapsuleCollider>(Transform(), 0.5, 1.5);
-    playercoll->SetFrictionCoefficient(3);
+    playercoll->SetFrictionCoefficient(0.5);
     playercoll->SetBounciness(0);
     playerrb->SetAngularLockAxisFactor({0, 1, 0});
     playerrb->SetRigidBodyType(DYNAMIC);
@@ -339,7 +329,6 @@ int main()
     float refdist = 8;
     float maxdist = 32;
 
-    //src->Play();
     groundsrc->Play();
 
     music->SetCurrentClip(mus_mech8);
@@ -399,12 +388,7 @@ int main()
             ent->surfaces[0].textureTransform.Translate(glm::vec2(0, delta * 0.5f));
             ent->surfaces[0].textureTransform.Rotate(0.1 * delta);
 
-            //cube2->transform.Translate({1.0f * delta, 0, 1.0f * delta});
-
-            //ground->transform.Translate(glm::vec3(delta * 1.0f, 0, 0));
             ground->SetLinearVelocity({1, 0, 0});
-
-            //updateCam(window, cam, delta, ent);
 
             if (Engine::IsKeyPressed(GLFW_KEY_W)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(0, 0, -1) * 10.0f * playerrb->GetMass());
             if (Engine::IsKeyPressed(GLFW_KEY_S)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(0, 0, 1) * 10.0f * playerrb->GetMass());
@@ -412,9 +396,6 @@ int main()
             if (Engine::IsKeyPressed(GLFW_KEY_D)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(1, 0, 0) * 10.0f * playerrb->GetMass());
 
             if (Engine::IsKeyPressed(GLFW_KEY_SPACE)) playerrb->ApplyLocalForceToCenterOfMass(-s->GetGravity() * 2.0f * playerrb->GetMass());
-
-            //if (Engine::IsKeyPressed(GLFW_KEY_F)) src->Pause();
-            //else if (src->GetState() != AudioSourceState::PLAYING) src->Play();
 
             playerrb->SetAngularVelocity(glm::vec3(0));
 
@@ -485,6 +466,8 @@ int main()
                     tmpsrc->SetSourceFloat(AL_GAIN, 0.3);
                     tmpsrc->SetCurrentClip((rand() % 2) ? hit1sfx : hit2sfx);
                     tmpsrc->Play();
+
+                    info.rigidbody->ApplyGlobalForceAtGlobalPoint(-2000.0f * info.normal, info.point);
 
                     if (info.rigidbody->tags.contains("Maxwell the Cat")) s->DeleteObject(info.rigidbody);
 
