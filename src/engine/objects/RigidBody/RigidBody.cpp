@@ -127,6 +127,12 @@ void RigidBody::SetAngularDamping(float damping) { rb->setAngularDamping(damping
 glm::vec3 RigidBody::GetCenterOfMass() const { return Utils::rp3dvec3toglmvec3(rb->getLocalCenterOfMass()); }
 void RigidBody::SetCenterOfMass(glm::vec3 offset) { rb->setLocalCenterOfMass(Utils::glmvec3torp3dvec3(offset)); }
 
+glm::vec3 RigidBody::GetForce() const { return Utils::rp3dvec3toglmvec3(rb->getForce()); }
+glm::vec3 RigidBody::GetTorque() const { return Utils::rp3dvec3toglmvec3(rb->getTorque()); }
+
+void RigidBody::ResetForce() { rb->resetForce(); }
+void RigidBody::ResetTorque() { rb->resetTorque(); }
+
 // ==================================================================================
 
 bool RigidBody::HasCollider(Collider *c) { return std::ranges::contains(colliders, c); }

@@ -89,6 +89,12 @@ class RigidBody : virtual public GameObject
 
         // ============================
 
+        glm::vec3 GetForce() const;
+        glm::vec3 GetTorque() const;
+
+        void ResetForce();
+        void ResetTorque();
+
         float GetLinearDamping() const;
         void SetLinearDamping(float damping);
 
