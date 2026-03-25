@@ -34,24 +34,36 @@ bool Mesh::HasBuffers() { return hasbuffers; }
 
 bool Mesh::GenerateBuffers()
 {
-    if (hasbuffers /*|| vertices.size() == 0 || uvs.size() == 0 || indices.size() == 0*/) return false;
+    if (hasbuffers) return false;
+
+    // generate buffers.
 
     glGenVertexArrays(1, &VAO);
+
     glGenBuffers(1, &VBO_VERTEX);
     glGenBuffers(1, &VBO_UV);
+    glGenBuffers(1, &VBO_NORMAL);
+
     glGenBuffers(1, &EBO);
+
+    // bind data to buffers.
 
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO_VERTEX);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void *)0);
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO_UV);
     glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), uvs.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void *)0);
     glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_NORMAL);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), normals.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void *)0);
+    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(glm::uvec3), indices.data(), GL_STATIC_DRAW);
@@ -68,8 +80,11 @@ bool Mesh::DeleteBuffers()
     if (!hasbuffers) return false;
 
     glDeleteVertexArrays(1, &VAO);
+
     glDeleteBuffers(1, &VBO_VERTEX);
     glDeleteBuffers(1, &VBO_UV);
+    glDeleteBuffers(1, &VBO_NORMAL);
+
     glDeleteBuffers(1, &EBO);
 
     hasbuffers = false;
@@ -178,7 +193,10 @@ bool Mesh::RenderMesh()
     if (!HasBuffers()) return false;
 
     glBindVertexArray(VAO);
+
     glDrawElements(GL_TRIANGLES, indices.size() * 3, GL_UNSIGNED_INT, nullptr);
+
+    glBindVertexArray(0);
 
     return true;
 }

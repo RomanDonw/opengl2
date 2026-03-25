@@ -2,6 +2,7 @@
 
 in vec3 globalVertexPosition;
 in vec2 texturePosition;
+in vec3 normal;
 
 out vec4 FragColor;
 

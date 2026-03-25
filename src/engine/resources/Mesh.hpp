@@ -17,7 +17,7 @@ class Mesh final
 
     private:
         bool hasbuffers = false;
-        GLuint VAO, VBO_VERTEX, VBO_UV, EBO;
+        GLuint VAO, VBO_VERTEX, VBO_UV, VBO_NORMAL, EBO;
 
         Mesh();
         ~Mesh();
@@ -25,6 +25,7 @@ class Mesh final
     public:
         std::vector<glm::vec3> vertices;
         std::vector<glm::vec2> uvs;
+        std::vector<glm::vec3> normals;
         std::vector<glm::uvec3> indices;
 
         void ClearMesh();
