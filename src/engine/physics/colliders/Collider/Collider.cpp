@@ -32,3 +32,6 @@ void Collider::SetFrictionCoefficient(float coefficient) { collider->getMaterial
 
 float Collider::GetMassDensity() const { return collider->getMaterial().getMassDensity(); }
 void Collider::SetMassDensity(float density) { collider->getMaterial().setMassDensity(density); }
+
+bool Collider::GetIsTrigger() const { return collider->getIsTrigger(); }
+void Collider::SetIsTrigger(bool istrigger) { collider->setIsTrigger(istrigger); }

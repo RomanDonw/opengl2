@@ -42,6 +42,9 @@ class Collider // interface class.
 
         float GetMassDensity() const;
         void SetMassDensity(float density);
+
+        bool GetIsTrigger() const;
+        void SetIsTrigger(bool istrigger);
 };
 
 #endif
