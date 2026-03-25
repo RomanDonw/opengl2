@@ -42,5 +42,4 @@ target_link_libraries(opengl2 PRIVATE -lsndfile -lmp3lame -lFLAC -lm -lssp -lvor
 
 
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglad.a")
-#target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libJolt.dll.a")
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libreactphysics3d.a")
