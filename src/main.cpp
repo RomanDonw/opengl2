@@ -184,28 +184,28 @@ int main()
     if (ResourceManager::CreateMesh("maxwellcat")->LoadFromUCMESHFile("./res/models/maxwellcat.ucmesh")) puts("loaded maxwellact model");
 
     AudioClip *zapsfx = ResourceManager::CreateAudioClip("zapsfx");
-    if (zapsfx->LoadFromUCSOUNDFile("./res/sounds/zapmachine.ucsound")) printf("loaded zapmachine sound\n");
+    if (zapsfx->LoadFromAudioFile("./res/sounds/zapmachine.wav")) printf("loaded zapmachine sound\n");
 
     AudioClip *alienbuildersfx = ResourceManager::CreateAudioClip("alienbuildersfx");
-    if (alienbuildersfx->LoadFromUCSOUNDFile("./res/sounds/alien_builder.ucsound")) printf("loaded alienbuilder sound\n");
+    if (alienbuildersfx->LoadFromAudioFile("./res/sounds/alien_builder.wav")) printf("loaded alienbuilder sound\n");
 
     AudioClip *freightmove1sfx = ResourceManager::CreateAudioClip("freightmove1sfx");
-    if (freightmove1sfx->LoadFromUCSOUNDFile("./res/sounds/freightmove1.ucsound")) puts("loaded freightmove1 sound");
+    if (freightmove1sfx->LoadFromAudioFile("./res/sounds/freightmove1.wav")) puts("loaded freightmove1 sound");
 
     AudioClip *hit1sfx = ResourceManager::CreateAudioClip("hit1sfx");
-    if (hit1sfx->LoadFromUCSOUNDFile("./res/sounds/hit_1.ucsound")) puts("loaded hit_1 sound");
+    if (hit1sfx->LoadFromAudioFile("./res/sounds/hit_1.wav")) puts("loaded hit_1 sound");
 
     AudioClip *hit2sfx = ResourceManager::CreateAudioClip("hit2sfx");
-    if (hit2sfx->LoadFromUCSOUNDFile("./res/sounds/hit_2.ucsound")) puts("loaded hit_2 sound");
+    if (hit2sfx->LoadFromAudioFile("./res/sounds/hit_2.wav")) puts("loaded hit_2 sound");
 
     AudioClip *misssfx = ResourceManager::CreateAudioClip("misssfx");
-    if (misssfx->LoadFromUCSOUNDFile("./res/sounds/miss.ucsound")) puts("loaded miss sound");
+    if (misssfx->LoadFromAudioFile("./res/sounds/miss.wav")) puts("loaded miss sound");
 
     AudioClip *mus_maxwellcat = ResourceManager::CreateAudioClip("mus_maxwellcat");
-    if (mus_maxwellcat->LoadFromUCSOUNDFile("./res/music/maxwellcat.ucsound")) puts("loaded maxwellcat music");
+    if (mus_maxwellcat->LoadFromAudioFile("./res/music/maxwellcat.ogg")) puts("loaded maxwellcat music");
 
     AudioClip *mus_mech8 = ResourceManager::CreateAudioClip("mus_mech8");
-    if (mus_mech8->LoadFromUCSOUNDFile("./res/music/Mech8.ucsound")) puts("loaded Mech8 music");
+    if (mus_mech8->LoadFromAudioFile("./res/music/Mech8.ogg")) puts("loaded Mech8 music");
 
     Scene *s = Engine::CreateScene("main");
     Engine::SetCurrentScene("main");

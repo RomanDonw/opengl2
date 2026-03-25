@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <iterator>
 
+#include <sndfile.h>
+
 #include "../objects/AudioSource/AudioSource.hpp"
 
 // === PRIVATE ===
@@ -30,6 +32,31 @@ AudioClip::~AudioClip()
 
 // === PUBLIC ===
 
+bool AudioClip::LoadFromAudioFile(std::string filename)
+{
+    if (!std::filesystem::is_regular_file(filename)) return false;
+
+    #if 0
+    SF_INFO info;
+    SNDFILE *sf = sf_open(filename.c_str(), SFM_READ, &info);
+    if (!sf) return false;
+
+    ALenum format;
+    if (info.channels == 1) format = AL_FORMAT_MONO16;
+    else if (info.channels == 2) format = AL_FORMAT_STEREO16;
+    else { sf_close(sf); return false; }
+
+    std::vector<short> data = std::vector<short>(info.frames * info.channels);
+    sf_read_short(sf, data.data(), data.size());
+    sf_close(sf);
+
+    updatebuff(format, data.data(), data.size() * sizeof(short), info.samplerate);
+    #endif
+
+    return true;
+}
+
+#if 0
 bool AudioClip::LoadFromUCSOUNDFile(std::string filename)
 {
     if (!std::filesystem::is_regular_file(filename)) return false;
@@ -92,3 +119,4 @@ bool AudioClip::LoadFromUCSOUNDFile(std::string filename)
     fclose(f);
     return true;
 }
+#endif

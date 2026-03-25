@@ -27,7 +27,9 @@ class AudioClip final
         ~AudioClip();
 
     public:
-        bool LoadFromUCSOUNDFile(std::string filename);
+        //bool LoadFromUCSOUNDFile(std::string filename);
+        bool LoadFromAudioFile(std::string filename);
+
 };
 
 #endif

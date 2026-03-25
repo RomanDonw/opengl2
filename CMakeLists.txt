@@ -26,7 +26,10 @@ target_include_directories(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include"
 
 # link static libs.
 
-target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglfw3.a")
+find_package(glfw3 REQUIRED)
+target_link_libraries(opengl2 PRIVATE glfw3)
+
+#target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglfw3.a")
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglad.a")
 #target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libJolt.dll.a")
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libreactphysics3d.a")
