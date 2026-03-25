@@ -36,7 +36,6 @@ bool AudioClip::LoadFromAudioFile(std::string filename)
 {
     if (!std::filesystem::is_regular_file(filename)) return false;
 
-    #if 0
     SF_INFO info;
     SNDFILE *sf = sf_open(filename.c_str(), SFM_READ, &info);
     if (!sf) return false;
@@ -51,7 +50,6 @@ bool AudioClip::LoadFromAudioFile(std::string filename)
     sf_close(sf);
 
     updatebuff(format, data.data(), data.size() * sizeof(short), info.samplerate);
-    #endif
 
     return true;
 }
