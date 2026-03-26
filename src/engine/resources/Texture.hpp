@@ -24,11 +24,9 @@ class Texture final
 
         bool DeleteTexture();
 
-        bool LoadFromUCTEXFile(std::string filename);
+        bool LoadFromTextureFile(std::string filename);
 
         bool SetTextureIntParameter(GLenum param, GLint value);
-        //void SetDefaultParametres();
-        //void SetLinearSmoothing();
 };
 
 #endif

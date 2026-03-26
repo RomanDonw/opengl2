@@ -72,6 +72,7 @@ void Model::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform
 
         sp->SetUniformInteger("texture", 0);
         if (texture) texture->BindTexture();
+        else glBindTexture(GL_TEXTURE_2D, 0);
         glActiveTexture(GL_TEXTURE0);
         sp->SetUniformInteger("hasTexture", texture ? GL_TRUE : GL_FALSE);
 

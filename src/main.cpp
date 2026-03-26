@@ -168,8 +168,8 @@ int main()
     if (ResourceManager::CreateMesh("crowbar_cyl")->LoadFromUCMESHFile("./res/models/cyl.ucmesh")) printf("loaded model crowbar_cyl\n");
     if (ResourceManager::CreateMesh("crowbar_head")->LoadFromUCMESHFile("./res/models/head.ucmesh")) printf("loaded model crowbar_head\n");
 
-    if (ResourceManager::CreateTexture("crowbar_cyl")->LoadFromUCTEXFile("./res/textures/cyl.uctex")) printf("loaded texture crowbar_cyj\n");
-    if (ResourceManager::CreateTexture("crowbar_head")->LoadFromUCTEXFile("./res/textures/head.uctex")) printf("loaded texture crowbar_head\n");
+    if (ResourceManager::CreateTexture("crowbar_cyl")->LoadFromTextureFile("./res/textures/cyl.png")) printf("loaded texture crowbar_cyj\n");
+    if (ResourceManager::CreateTexture("crowbar_head")->LoadFromTextureFile("./res/textures/head.png")) printf("loaded texture crowbar_head\n");
 
     if (ResourceManager::CreateMesh("cube")->LoadFromUCMESHFile("./res/models/cube.ucmesh")) printf("loaded model cube\n");
     if (ResourceManager::CreateMesh("hl1_reactor_demo")->LoadFromUCMESHFile("./res/models/hl1_reactor_demo.ucmesh")) printf("loaded model hl1_reactor_demo\n");
@@ -177,10 +177,12 @@ int main()
     if (ResourceManager::CreateMesh("sphere")->LoadFromUCMESHFile("./res/models/sphere.ucmesh")) puts("loaded model sphere");
     if (ResourceManager::CreateMesh("decal")->LoadFromUCMESHFile("./res/models/decal.ucmesh")) puts("loaded model decal");
 
-    if (ResourceManager::CreateTexture("bullethole1")->LoadFromUCTEXFile("./res/textures/bullethole1.uctex")) puts("loaded bullethole1 texture");
-    if (ResourceManager::CreateTexture("bullethole2")->LoadFromUCTEXFile("./res/textures/bullethole2.uctex")) puts("loaded bullethole2 texture");
 
-    if (ResourceManager::CreateTexture("maxwellcat")->LoadFromUCTEXFile("./res/textures/maxwellcat.uctex")) puts("loaded maxwellcat texture");
+
+    if (ResourceManager::CreateTexture("bullethole1")->LoadFromTextureFile("./res/textures/bullethole1.png")) puts("loaded bullethole1 texture");
+    if (ResourceManager::CreateTexture("bullethole2")->LoadFromTextureFile("./res/textures/bullethole2.png")) puts("loaded bullethole2 texture");
+
+    if (ResourceManager::CreateTexture("maxwellcat")->LoadFromTextureFile("./res/textures/maxwellcat.png")) puts("loaded maxwellcat texture");
     if (ResourceManager::CreateMesh("maxwellcat")->LoadFromUCMESHFile("./res/models/maxwellcat.ucmesh")) puts("loaded maxwellact model");
 
     AudioClip *zapsfx = ResourceManager::CreateAudioClip("zapsfx");
