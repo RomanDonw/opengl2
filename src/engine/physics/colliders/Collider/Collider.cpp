@@ -35,3 +35,9 @@ void Collider::SetMassDensity(float density) { collider->getMaterial().setMassDe
 
 bool Collider::GetIsTrigger() const { return collider->getIsTrigger(); }
 void Collider::SetIsTrigger(bool istrigger) { collider->setIsTrigger(istrigger); }
+
+unsigned short Collider::GetCollisionCategoryBits() { return collider->getCollisionCategoryBits(); }
+void Collider::SetCollisionCategoryBits(unsigned short bits) { collider->setCollisionCategoryBits(bits); }
+
+unsigned short Collider::GetCollideWithMaskBits() { return collider->getCollideWithMaskBits(); }
+void Collider::SetCollideWithMaskBits(unsigned short bits) { collider->setCollideWithMaskBits(bits); }

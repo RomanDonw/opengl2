@@ -80,7 +80,7 @@ class Scene final
         glm::vec3 GetGravity();
         void SetGravity(glm::vec3 v);
 
-        bool Raycast(glm::vec3 start, glm::vec3 end, std::function<RaycastCallbackState (RaycastInfo)> callback);
+        bool Raycast(glm::vec3 start, glm::vec3 end, std::function<RaycastCallbackState (RaycastInfo)> callback, unsigned short collidewithmaskbits = 0xFFFF);
 };
 
 #endif

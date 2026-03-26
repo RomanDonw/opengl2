@@ -45,6 +45,12 @@ class Collider // interface class.
 
         bool GetIsTrigger() const;
         void SetIsTrigger(bool istrigger);
+
+        unsigned short GetCollisionCategoryBits();
+        void SetCollisionCategoryBits(unsigned short bits);
+
+        unsigned short GetCollideWithMaskBits();
+        void SetCollideWithMaskBits(unsigned short bits);
 };
 
 #endif
