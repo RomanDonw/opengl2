@@ -32,8 +32,9 @@ target_include_directories(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include"
 
 # link static libs.
 
-find_package(glfw3 REQUIRED)
-target_link_libraries(opengl2 PRIVATE glfw3)
+#find_package(glfw3 REQUIRED)
+#target_link_libraries(opengl2 PRIVATE glfw3)
+target_link_libraries(opengl2 PRIVATE -lglfw3)
 
 find_package(OpenAL REQUIRED)
 target_link_libraries(opengl2 PRIVATE OpenAL::OpenAL)
