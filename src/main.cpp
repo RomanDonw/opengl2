@@ -178,6 +178,15 @@ int main()
     if (ResourceManager::CreateMesh("decal")->LoadFromUCMESHFile("./res/models/decal.ucmesh")) puts("loaded model decal");
 
 
+    if (ResourceManager::CreateMesh("button_3")->LoadFromUCMESHFile("./res/models/buttons/3.ucmesh")) puts("loaded button 3 model");
+    if (ResourceManager::CreateMesh("button_4")->LoadFromUCMESHFile("./res/models/buttons/4.ucmesh")) puts("loaded button 4 model");
+
+    if (ResourceManager::CreateTexture("button_3_on")->LoadFromTextureFile("./res/textures/buttons/3_on.png")) puts("loaded button 3 on texture");
+    if (ResourceManager::CreateTexture("button_3_off")->LoadFromTextureFile("./res/textures/buttons/3_off.png")) puts("loaded button 3 off texture");
+
+    if (ResourceManager::CreateTexture("button_4_on")->LoadFromTextureFile("./res/textures/buttons/4_on.png")) puts("loaded button 4 on texture");
+    if (ResourceManager::CreateTexture("button_4_off")->LoadFromTextureFile("./res/textures/buttons/4_off.png")) puts("loaded button 4 off texture");
+
 
     if (ResourceManager::CreateTexture("bullethole1")->LoadFromTextureFile("./res/textures/bullethole1.png")) puts("loaded bullethole1 texture");
     if (ResourceManager::CreateTexture("bullethole2")->LoadFromTextureFile("./res/textures/bullethole2.png")) puts("loaded bullethole2 texture");
@@ -471,7 +480,7 @@ int main()
 
                     info.rigidbody->ApplyGlobalForceAtGlobalPoint(-2000.0f * info.normal, info.point);
 
-                    if (info.rigidbody->tags.contains("Maxwell the Cat")) s->DeleteObject(info.rigidbody);
+                    //if (info.rigidbody->tags.contains("Maxwell the Cat")) s->DeleteObject(info.rigidbody);
 
                     return STOP;
                 });
