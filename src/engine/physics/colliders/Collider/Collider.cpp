@@ -17,8 +17,8 @@ void Collider::OnTransformChanged()
     collider->setLocalToBodyTransform(Utils::transformtorp3dtransform(transform));
 }
 
-void Collider::linkphyscollwiththis() { wraprb->scene->collslinks.insert({collider, this}); }
-void Collider::unlinkphyscollfromthis() { wraprb->scene->collslinks.erase(collider); }
+void Collider::linkphyscollwiththis() { wraprb->GetScene()->collslinks.insert({collider, this}); }
+void Collider::unlinkphyscollfromthis() { wraprb->GetScene()->collslinks.erase(collider); }
 
 // === PUBLIC ===
 

@@ -12,6 +12,7 @@
 
 void MaxwellCat::constructor()
 {
+    Scene *scene = GetScene();
     tags.insert("Maxwell the Cat");
 
     SetRigidBodyType(DYNAMIC);
@@ -47,19 +48,15 @@ MaxwellCat::MaxwellCat(Scene *s) : GameObject(s), RigidBody(s) { constructor(); 
 
 MaxwellCat::~MaxwellCat()
 {
-    scene->DeleteObject(src);
-    scene->DeleteObject(model);
+    GetScene()->DeleteObject(src);
+    GetScene()->DeleteObject(model);
 
-    /*for (GameObject *obj : children)
-    {
-        printf("scene: %p, obj->scene: %p\n", scene, obj->GetScene());
-        if (obj->tags.contains("Decal")) scene->DeleteObject(obj);
-    }*/
+    for (GameObject *obj : GetChildren()) if (obj->tags.contains("Decal")) GetScene()->DeleteObject(obj);
 }
 
 void MaxwellCat::Update(double delta)
 {
-    if (transform.GetPosition().y < -100) { scene->DeleteObject(this); return; }
+    if (transform.GetPosition().y < -100) { GetScene()->DeleteObject(this); return; }
 
     if (src->GetState() == AudioSourceState::INIT) src->Play();
 

@@ -13,5 +13,5 @@ void TemporaryAudioSource::Update(double delta)
 {
     AudioSource::Update(delta);
 
-    if (GetState() == AudioSourceState::STOPPED) scene->DeleteObject(this);
+    if (GetState() == AudioSourceState::STOPPED) GetScene()->DeleteObject(this);
 }

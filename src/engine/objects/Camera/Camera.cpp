@@ -7,7 +7,7 @@
 Camera::Camera(Scene *s, Transform t) : GameObject(s, t) {}
 Camera::Camera(Scene *s) : GameObject(s) {}
 
-Camera::~Camera() { if (scene->GetCurrentCamera() == this) scene->SetCurrentCamera(nullptr); }
+Camera::~Camera() { if (GetScene()->GetCurrentCamera() == this) GetScene()->SetCurrentCamera(nullptr); }
 
 // === PUBLIC ===
 

@@ -13,7 +13,7 @@ void AudioSource::constructor()
     alSourcei(source, AL_BUFFER, 0);
     SetLooping(false);
 
-    if (Engine::GetScene(Engine::GetCurrentScene()) != scene) locked = true;
+    if (Engine::GetScene(Engine::GetCurrentScene()) != GetScene()) locked = true;
 }
 
 void AudioSource::updatesrcpos()

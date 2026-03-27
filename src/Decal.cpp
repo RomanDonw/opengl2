@@ -19,7 +19,7 @@ void Decal::Update(double delta)
     Model::Update(delta);
 
     if (starttimestamp < 0) starttimestamp = glfwGetTime();
-    if (glfwGetTime() >= starttimestamp + lifetime) { scene->DeleteObject(this); return; }
+    if (glfwGetTime() >= starttimestamp + lifetime) { GetScene()->DeleteObject(this); return; }
 
     double timesincecreate = glfwGetTime() - starttimestamp;
     double fadeoutlen = lifetime - fadeoutstart;

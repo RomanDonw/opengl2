@@ -1,7 +1,6 @@
 #ifndef GAMEOBJECT_HPP
 #define GAMEOBJECT_HPP
 
-#include <vector>
 #include <string>
 #include <unordered_set>
 
@@ -18,7 +17,12 @@ class GameObject
     friend class Scene;
 
     private:
-        int32_t order; // can be changed only by Scene!
+        int32_t order; // can be changed only by Scene class!
+
+        // for security reasons moved to private section.
+        Scene *scene;
+        GameObject *parent = nullptr;
+        std::unordered_set<GameObject *> children = std::unordered_set<GameObject *>();
 
     protected:
         virtual void OnLocalTransformChanged();
@@ -30,10 +34,6 @@ class GameObject
         GameObject(Scene *s);
 
         virtual ~GameObject();
-
-        Scene *scene;
-        GameObject *parent = nullptr;
-        std::vector<GameObject *> children = std::vector<GameObject *>();
 
         virtual void Update(double delta);
         virtual void AfterUpdate();
@@ -47,10 +47,12 @@ class GameObject
         GameObjectTransform transform;
         std::unordered_set<std::string> tags;
 
-        GameObject *GetParent(); // can return nullptr.
-        virtual size_t SetParent(GameObject *newparent, bool saveglobalpos = true); // newparent can be nullptr.
+        GameObject *GetParent() const; // can return nullptr.
+        bool SetParent(GameObject *newparent, bool saveglobalpos = true); // newparent can be nullptr; returns true if parent was changed, otherwise returns false.
 
-        Scene *GetScene();
+        std::unordered_set<GameObject *> GetChildren() const;
+
+        Scene *GetScene() const;
 
         Transform GetParentGlobalTransform();
         Transform GetGlobalTransform();

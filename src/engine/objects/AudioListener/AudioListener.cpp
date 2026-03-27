@@ -16,6 +16,7 @@ struct
 
 void AudioListener::constructor()
 {
+    Scene *scene = GetScene();
     if (scene->hasAudioListener) throw std::runtime_error("one scene can have only one AudioListener class instance");
     scene->hasAudioListener = true;
 
@@ -39,7 +40,7 @@ void AudioListener::updatelstpos()
 AudioListener::AudioListener(Scene *s, Transform t) : GameObject(s, t) { constructor(); }
 AudioListener::AudioListener(Scene *s) : GameObject(s) { constructor(); }
 
-AudioListener::~AudioListener() { scene->hasAudioListener = false; }
+AudioListener::~AudioListener() { GetScene()->hasAudioListener = false; }
 
 void AudioListener::OnGlobalTransformChanged()
 {

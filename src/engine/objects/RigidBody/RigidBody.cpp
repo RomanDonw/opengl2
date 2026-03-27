@@ -12,6 +12,8 @@
 
 void RigidBody::constructor()
 {
+    Scene *scene = GetScene();
+
     rb = scene->world->createRigidBody(Utils::transformtorp3dtransform(transform));
     scene->rbslinks.insert({rb, this});
     
@@ -25,6 +27,8 @@ RigidBody::RigidBody(Scene *s) : GameObject(s) { constructor(); }
 
 RigidBody::~RigidBody()
 {
+    Scene *scene = GetScene();
+
     for (Collider *c : colliders) RemoveCollider(c);
 
     scene->rbslinks.erase(rb);
