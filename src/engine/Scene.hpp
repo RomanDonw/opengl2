@@ -1,7 +1,7 @@
 #ifndef SCENE_HPP
 #define SCENE_HPP
 
-#include <vector>
+#include <unordered_set>
 #include <concepts>
 #include <map>
 #include <unordered_map>
@@ -40,7 +40,7 @@ class Scene final
         std::unordered_map<rp3d::RigidBody *, RigidBody *> rbslinks;
         std::unordered_map<rp3d::Collider *, Collider *> collslinks;
 
-        std::map<int32_t, std::vector<GameObject *>, std::less<int32_t>> objects;
+        std::map<int32_t, std::unordered_set<GameObject *>, std::less<int32_t>> objects;
         Camera *currcam = nullptr;
         bool hasAudioListener = false;
 
@@ -60,7 +60,7 @@ class Scene final
         {
             T *ret = new T(this, std::forward<Args>(args)...);
 
-            objects.at(0).push_back(ret);
+            objects.at(0).insert(ret);
             ret->order = 0;
             
             return ret;
@@ -72,7 +72,7 @@ class Scene final
         void SetObjectOrder(GameObject *obj, int32_t order);
 
         void ForEachAllObjects(std::function<bool (GameObject *)> callback);
-        void ForEachAllOrders(std::function<bool (std::vector<GameObject *>)> callback);
+        void ForEachAllOrders(std::function<bool (std::unordered_set<GameObject *>)> callback);
 
         Camera *GetCurrentCamera(); // can return nullptr.
         void SetCurrentCamera(Camera *cam); // can be nullptr.

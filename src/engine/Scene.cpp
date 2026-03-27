@@ -15,7 +15,7 @@
 
 Scene::Scene()
 {
-    objects.insert({0, std::vector<GameObject *>()});
+    objects.insert({0, std::unordered_set<GameObject *>()});
 
     world = Engine::phys->createPhysicsWorld();
 }
@@ -77,8 +77,8 @@ void Scene::DeleteObject(GameObject *obj)
 {
     if (!HasObject(obj)) throw std::runtime_error("this scene doesn't have this object");
 
-    std::vector<GameObject *> *group = &objects.at(obj->order);
-    group->erase(std::remove(group->begin(), group->end(), obj), group->end());
+    std::unordered_set<GameObject *> *group = &objects.at(obj->order);
+    group->erase(obj);
     if (!group->size()) objects.erase(obj->order);
 
     delete obj;
@@ -93,12 +93,12 @@ void Scene::SetObjectOrder(GameObject *obj, int32_t order)
     if (!HasObject(obj)) throw std::runtime_error("this scene doesn't have this object");
     if (order == obj->order) return;
 
-    std::vector<GameObject *> *group = &objects.at(obj->order);
-    group->erase(std::remove(group->begin(), group->end(), obj), group->end());
+    std::unordered_set<GameObject *> *group = &objects.at(obj->order);
+    group->erase(obj);
     if (!group->size()) objects.erase(obj->order);
 
-    if (!objects.contains(order)) objects.insert({order, std::vector<GameObject *>()});
-    objects.at(order).push_back(obj);
+    if (!objects.contains(order)) objects.insert({order, std::unordered_set<GameObject *>()});
+    objects.at(order).insert(obj);
     obj->order = order;
 }
 
@@ -106,15 +106,15 @@ void Scene::SetObjectOrder(GameObject *obj, int32_t order)
 
 void Scene::ForEachAllObjects(std::function<bool (GameObject *)> callback)
 {
-    for (std::pair<int32_t, std::vector<GameObject *>> pair : objects)
+    for (std::pair<int32_t, std::unordered_set<GameObject *>> pair : objects)
     {
         for (GameObject *obj : pair.second) if (!callback(obj)) return;
     }
 }
 
-void Scene::ForEachAllOrders(std::function<bool (std::vector<GameObject *>)> callback)
+void Scene::ForEachAllOrders(std::function<bool (std::unordered_set<GameObject *>)> callback)
 {
-    for (std::pair<int32_t, std::vector<GameObject *>> pair : objects) if (!callback(pair.second)) return;
+    for (std::pair<int32_t, std::unordered_set<GameObject *>> pair : objects) if (!callback(pair.second)) return;
 }
 
 // ============================================================================================================
