@@ -19,7 +19,8 @@ void MaxwellCat::constructor()
     SetMass(4.5);
     //AddCollider<SphereCollider>(Transform(), 0.3);
     //SetAngularLockAxisFactor({0, 1, 0});
-    AddCollider<BoxCollider>(Transform(), glm::vec3(0.3, 0.2, 0.3));
+    BoxCollider *coll = AddCollider<BoxCollider>(Transform(), glm::vec3(0.3, 0.2, 0.3));
+    coll->SetBounciness(0.75);
 
     model = scene->CreateObject<Model>();
     model->SetParent(this, false);
@@ -48,10 +49,12 @@ MaxwellCat::MaxwellCat(Scene *s) : GameObject(s), RigidBody(s) { constructor(); 
 
 MaxwellCat::~MaxwellCat()
 {
-    GetScene()->DeleteObject(src);
-    GetScene()->DeleteObject(model);
+    Scene *scene = GetScene();
 
-    for (GameObject *obj : GetChildren()) if (obj->tags.contains("Decal")) GetScene()->DeleteObject(obj);
+    scene->DeleteObject(src);
+    scene->DeleteObject(model);
+
+    for (GameObject *obj : GetChildren()) if (obj->tags.contains("Decal")) scene->DeleteObject(obj);
 }
 
 void MaxwellCat::Update(double delta)

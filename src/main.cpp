@@ -307,6 +307,21 @@ int main()
     cam->SetParent(playerrb, false);
     cam->transform.SetPosition({0, 0.5, 0});
 
+    Entity *button = s->CreateObject<Entity>();
+    button->usedShaderProgram = "default";
+    button->tags.insert("Button");
+    button->tags.insert("Button.type.4");
+    button->tags.insert("Button.off");
+    {
+        BoxCollider *coll = button->AddCollider<BoxCollider>(Transform(), glm::vec3(0.05, 0.05, 0.05));
+        coll->SetIsTrigger(true);
+
+        Surface sf;
+        sf.texture = "button_4_off";
+        sf.mesh = "button_4";
+
+        button->surfaces.push_back(sf);
+    }
 
     Surface surf;
     surf.mesh = "crowbar_cyl";
@@ -451,36 +466,51 @@ int main()
                 Transform camt = cam->GetGlobalTransform();
                 s->Raycast(camt.GetPosition(), camt.GetPosition() + camt.GetFront() * 2.0f, [&](RaycastInfo info) -> RaycastCallbackState
                 {
-                    std::cout << Utils::tostring(info.point) << std::endl;
+                    //std::cout << Utils::tostring(info.point) << std::endl;
 
-                    //glm::vec3 rot = Utils::angles(-info.normal, glm::radians(45.0f));
-                    const glm::vec3 forward = glm::vec3(0, 0, -1);
+                    if (info.rigidbody->tags.contains("Button"))
+                    {
+                        Entity *btn = (Entity)info.rigidbody;
+                        if (btn->tags.contains("Button.4"))
+                        {
+                            if (btn->tags.contains("Button.on"))
+                            {
+                                btn->surfaces[0].texture = "button_4_off"
+                                btn->tags.
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //glm::vec3 rot = Utils::angles(-info.normal, glm::radians(45.0f));
+                        const glm::vec3 forward = glm::vec3(0, 0, -1);
 
-                    glm::quat rot = glm::angleAxis(glm::acos(glm::dot(info.normal, forward)), Utils::normalize(glm::cross(forward, info.normal)));
-                    glm::vec3 offset = info.normal * (0.01f + ((rand() % 101) / 100.0f - 0.5f) * 0.005f);
-                    Decal *d = s->CreateObject<Decal>(Transform(info.point + offset, rot, glm::vec3(0.3)), 60);
-                    d->fadeoutstart = 50;
-                    d->usedShaderProgram = "default";
-                    s->SetObjectOrder(d, 1);
-                    d->SetParent(info.rigidbody, true);
-                    
-                    Surface sf;
-                    sf.mesh = "decal";
-                    sf.texture = (rand() & 1) ? "bullethole1" : "bullethole2";
-                    //s.texture = "crowbar_cyl";
-                    d->surfaces.push_back(sf);
+                        glm::quat rot = glm::angleAxis(glm::acos(glm::dot(info.normal, forward)), Utils::normalize(glm::cross(forward, info.normal)));
+                        glm::vec3 offset = info.normal * (0.01f + ((rand() % 101) / 100.0f - 0.5f) * 0.005f);
+                        Decal *d = s->CreateObject<Decal>(Transform(info.point + offset, rot, glm::vec3(0.3)), 60);
+                        d->fadeoutstart = 50;
+                        d->usedShaderProgram = "default";
+                        s->SetObjectOrder(d, 1);
+                        d->SetParent(info.rigidbody, true);
+                        
+                        Surface sf;
+                        sf.mesh = "decal";
+                        sf.texture = (rand() & 1) ? "bullethole1" : "bullethole2";
+                        //s.texture = "crowbar_cyl";
+                        d->surfaces.push_back(sf);
 
-                    TemporaryAudioSource *tmpsrc = s->CreateObject<TemporaryAudioSource>();
-                    tmpsrc->SetParent(cam, false);
-                    tmpsrc->SetSourceFloat(AL_MAX_DISTANCE, 1);
-                    tmpsrc->SetSourceFloat(AL_REFERENCE_DISTANCE, 1);
-                    tmpsrc->SetSourceFloat(AL_GAIN, 0.3);
-                    tmpsrc->SetCurrentClip((rand() % 2) ? hit1sfx : hit2sfx);
-                    tmpsrc->Play();
+                        TemporaryAudioSource *tmpsrc = s->CreateObject<TemporaryAudioSource>();
+                        tmpsrc->SetParent(cam, false);
+                        tmpsrc->SetSourceFloat(AL_MAX_DISTANCE, 1);
+                        tmpsrc->SetSourceFloat(AL_REFERENCE_DISTANCE, 1);
+                        tmpsrc->SetSourceFloat(AL_GAIN, 0.3);
+                        tmpsrc->SetCurrentClip((rand() % 2) ? hit1sfx : hit2sfx);
+                        tmpsrc->Play();
 
-                    info.rigidbody->ApplyGlobalForceAtGlobalPoint(-2000.0f * info.normal, info.point);
+                        info.rigidbody->ApplyGlobalForceAtGlobalPoint(-2000.0f * info.normal, info.point);
 
-                    //if (info.rigidbody->tags.contains("Maxwell the Cat")) s->DeleteObject(info.rigidbody);
+                        //if (info.rigidbody->tags.contains("Maxwell the Cat")) s->DeleteObject(info.rigidbody);
+                    }
 
                     return STOP;
                 });
@@ -506,8 +536,11 @@ int main()
             Engine::BeginRenderUI();
 
             {
+                glm::vec3 pos = playerrb->GetGlobalTransform().GetPosition();
+
                 std::ostringstream oss;
-                oss << "FPS: " << ups;
+                oss << "FPS: " << ups << std::endl << std::endl;
+                oss << "X: " << pos.x << ", Y: " << pos.y << ", Z: " << pos.z;
                 ImGUI::GetForegroundDrawList()->AddText(ImVec2(10, 10), IM_COL32(255, 255, 255, 255), oss.str().c_str());
             }
 
