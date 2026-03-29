@@ -19,8 +19,6 @@ class SphereCollider final : public Collider
         ~SphereCollider() override;
 
     public:
-        const ColliderType type = ColliderType::SPHERE;
-
         float GetRadius() const;
         void SetRadius(float radius);
 };

@@ -15,9 +15,6 @@ class Entity : public Model, public RigidBody
         Entity(Scene *s);
 
         ~Entity();
-
-    public:
-        const GameObjectType type = GameObjectType::ENTITY;
 };
 
 #endif

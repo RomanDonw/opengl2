@@ -49,8 +49,6 @@ class AudioSource : public GameObject
         void OnSceneUnload() override;
 
     public:
-        const GameObjectType type = GameObjectType::AUDIOSOURCE;
-
         void SetSourceFloat(ALenum option, float value);
 
         bool IsLooped();

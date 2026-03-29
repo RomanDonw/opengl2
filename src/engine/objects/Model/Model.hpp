@@ -21,8 +21,6 @@ class Model : virtual public GameObject
         void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog) override;
 
     public:
-        const GameObjectType type = GameObjectType::MODEL;
-
         bool enableRender = true;
         bool enableDepthTest = true;
         std::string usedShaderProgram = "";

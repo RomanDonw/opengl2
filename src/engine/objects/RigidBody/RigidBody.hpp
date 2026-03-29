@@ -42,8 +42,6 @@ class RigidBody : virtual public GameObject
         void AfterUpdate() override;
 
     public:
-        const GameObjectType type = GameObjectType::RIGIDBODY;
-
         RigidBodyType GetRigidBodyType() const;
         void SetRigidBodyType(RigidBodyType type);
 

@@ -13,7 +13,7 @@
 void MaxwellCat::constructor()
 {
     Scene *scene = GetScene();
-    tags.insert("Maxwell the Cat");
+    //tags.insert("Maxwell the Cat");
 
     SetRigidBodyType(DYNAMIC);
     SetMass(4.5);

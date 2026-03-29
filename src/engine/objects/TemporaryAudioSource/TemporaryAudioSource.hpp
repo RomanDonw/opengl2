@@ -16,9 +16,6 @@ class TemporaryAudioSource final : public AudioSource
         ~TemporaryAudioSource() override;
 
         void Update(double delta) override;
-
-    public:
-        const GameObjectType type = GameObjectType::TEMPORARYAUDIOSOURCE;
 };
 
 #endif

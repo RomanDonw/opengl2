@@ -4,7 +4,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "GameObjectTypes.hpp"
 #include "GameObjectTransform.hpp"
 
 #include "../../FogRenderSettings.hpp"
@@ -43,7 +42,6 @@ class GameObject
         virtual void OnSceneUnload();
 
     public:
-        const GameObjectType type = GameObjectType::GAMEOBJECT;
         GameObjectTransform transform;
         std::unordered_set<std::string> tags;
 

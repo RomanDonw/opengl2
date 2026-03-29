@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <filesystem>
 #include <sstream>
+#include <typeinfo>
 
 #include "engine/Utils.hpp"
 #include "engine/Engine.hpp"
@@ -511,6 +512,8 @@ int main()
 
                         //if (info.rigidbody->tags.contains("Maxwell the Cat")) s->DeleteObject(info.rigidbody);
                     }
+
+                    if (MaxwellCat *cat = dynamic_cast<MaxwellCat *>(info.rigidbody)) puts("hit on Maxwell the Cat");
 
                     return STOP;
                 });

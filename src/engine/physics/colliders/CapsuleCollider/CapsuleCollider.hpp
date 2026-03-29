@@ -19,8 +19,6 @@ class CapsuleCollider final : public Collider
         ~CapsuleCollider() override;
 
     public:
-        const ColliderType type = ColliderType::CAPSULE;
-
         float GetRadius() const;
         void SetRadius(float radius);
 
