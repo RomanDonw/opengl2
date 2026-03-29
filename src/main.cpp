@@ -28,6 +28,7 @@
 
 #include "Decal.hpp"
 #include "MaxwellCat.hpp"
+#include "Button.hpp"
 
 const unsigned short FPS = 100;
 
@@ -213,6 +214,9 @@ int main()
     AudioClip *misssfx = ResourceManager::CreateAudioClip("misssfx");
     if (misssfx->LoadFromAudioFile("./res/sounds/miss.wav")) puts("loaded miss sound");
 
+    AudioClip *button8sfx = ResourceManager::CreateAudioClip("button8sfx");
+    if (button8sfx->LoadFromAudioFile("./res/sounds/buttons/8.wav")) puts("loaded button 8 sound");
+
     AudioClip *mus_maxwellcat = ResourceManager::CreateAudioClip("mus_maxwellcat");
     if (mus_maxwellcat->LoadFromAudioFile("./res/music/maxwellcat.ogg")) puts("loaded maxwellcat music");
 
@@ -308,21 +312,15 @@ int main()
     cam->SetParent(playerrb, false);
     cam->transform.SetPosition({0, 0.5, 0});
 
-    Entity *button = s->CreateObject<Entity>();
+    Button *button = s->CreateObject<Button>();
+    button->SetParent(ground);
+    button->transform.SetPosition({0, 2, -2});
     button->usedShaderProgram = "default";
-    button->tags.insert("Button");
-    button->tags.insert("Button.type.4");
-    button->tags.insert("Button.off");
-    {
-        BoxCollider *coll = button->AddCollider<BoxCollider>(Transform(), glm::vec3(0.05, 0.05, 0.05));
-        coll->SetIsTrigger(true);
-
-        Surface sf;
-        sf.texture = "button_4_off";
-        sf.mesh = "button_4";
-
-        button->surfaces.push_back(sf);
-    }
+    button->model = "button_4";
+    button->textureoff = "button_4_off";
+    button->textureon = "button_4_on";
+    button->togglesfx = "button8sfx";
+    button->SetButtonState(false, false);
 
     Surface surf;
     surf.mesh = "crowbar_cyl";
@@ -356,7 +354,7 @@ int main()
     float refdist = 8;
     float maxdist = 32;
 
-    groundsrc->Play();
+    //groundsrc->Play();
 
     music->SetCurrentClip(mus_mech8);
     //music->Play();
@@ -415,7 +413,16 @@ int main()
             ent->surfaces[0].textureTransform.Translate(glm::vec2(0, delta * 0.5f));
             ent->surfaces[0].textureTransform.Rotate(0.1 * delta);
 
-            ground->SetLinearVelocity({1, 0, 0});
+            if (button->GetButtonState())
+            {
+                if (groundsrc->GetState() != AudioSourceState::PLAYING) groundsrc->Play();
+                ground->SetLinearVelocity({1, 0, 0});
+            }
+            else
+            {
+                if (groundsrc->GetState() != AudioSourceState::PAUSED) groundsrc->Pause();
+                ground->SetLinearVelocity(glm::vec3(0));
+            }
 
             if (Engine::IsKeyPressed(GLFW_KEY_W)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(0, 0, -1) * 10.0f * playerrb->GetMass());
             if (Engine::IsKeyPressed(GLFW_KEY_S)) playerrb->ApplyLocalForceToCenterOfMass(glm::vec3(0, 0, 1) * 10.0f * playerrb->GetMass());
@@ -469,18 +476,7 @@ int main()
                 {
                     //std::cout << Utils::tostring(info.point) << std::endl;
 
-                    if (info.rigidbody->tags.contains("Button"))
-                    {
-                        Entity *btn = (Entity)info.rigidbody;
-                        if (btn->tags.contains("Button.4"))
-                        {
-                            if (btn->tags.contains("Button.on"))
-                            {
-                                btn->surfaces[0].texture = "button_4_off"
-                                btn->tags.
-                            }
-                        }
-                    }
+                    if (Button *btn = dynamic_cast<Button *>(info.rigidbody)) btn->ToggleButtonState();
                     else
                     {
                         //glm::vec3 rot = Utils::angles(-info.normal, glm::radians(45.0f));
