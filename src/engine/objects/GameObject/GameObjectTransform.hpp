@@ -5,7 +5,7 @@
 
 class GameObject;
 
-class GameObjectTransform : public Transform
+class GameObjectTransform final : public Transform
 {
     friend class GameObject;
 
