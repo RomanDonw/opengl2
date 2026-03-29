@@ -314,7 +314,7 @@ int main()
 
     Button *button = s->CreateObject<Button>();
     button->SetParent(ground);
-    button->transform.SetPosition({0, 2, -2});
+    button->transform.SetPosition({0, 2, 5});
     button->usedShaderProgram = "default";
     button->model = "button_4";
     button->textureoff = "button_4_off";
@@ -461,26 +461,20 @@ int main()
             {
                 hitclicked = true;
 
-                {
-                    TemporaryAudioSource *tmpsrc = s->CreateObject<TemporaryAudioSource>();
-                    tmpsrc->SetParent(cam, false);
-                    tmpsrc->SetSourceFloat(AL_MAX_DISTANCE, 1);
-                    tmpsrc->SetSourceFloat(AL_REFERENCE_DISTANCE, 1);
-                    tmpsrc->SetSourceFloat(AL_GAIN, 0.3);
-                    tmpsrc->SetCurrentClip(misssfx);
-                    tmpsrc->Play();
-                }
+                bool swing = true;
                 
                 Transform camt = cam->GetGlobalTransform();
-                s->Raycast(camt.GetPosition(), camt.GetPosition() + camt.GetFront() * 2.0f, [&](RaycastInfo info) -> RaycastCallbackState
+                s->Raycast(camt.GetPosition(), camt.GetPosition() + camt.GetFront() * 2.5f, [&](RaycastInfo info) -> RaycastCallbackState
                 {
-                    //std::cout << Utils::tostring(info.point) << std::endl;
-
-                    if (Button *btn = dynamic_cast<Button *>(info.rigidbody)) btn->ToggleButtonState();
+                    if (Button *btn = dynamic_cast<Button *>(info.rigidbody))
+                    {
+                        swing = false;
+                        btn->ToggleButtonState();
+                    }
                     else
                     {
-                        //glm::vec3 rot = Utils::angles(-info.normal, glm::radians(45.0f));
                         const glm::vec3 forward = glm::vec3(0, 0, -1);
+                        if (MaxwellCat *cat = dynamic_cast<MaxwellCat *>(info.rigidbody)) puts("hit on Maxwell the Cat");
 
                         glm::quat rot = glm::angleAxis(glm::acos(glm::dot(info.normal, forward)), Utils::normalize(glm::cross(forward, info.normal)));
                         glm::vec3 offset = info.normal * (0.01f + ((rand() % 101) / 100.0f - 0.5f) * 0.005f);
@@ -505,14 +499,21 @@ int main()
                         tmpsrc->Play();
 
                         info.rigidbody->ApplyGlobalForceAtGlobalPoint(-2000.0f * info.normal, info.point);
-
-                        //if (info.rigidbody->tags.contains("Maxwell the Cat")) s->DeleteObject(info.rigidbody);
                     }
-
-                    if (MaxwellCat *cat = dynamic_cast<MaxwellCat *>(info.rigidbody)) puts("hit on Maxwell the Cat");
 
                     return STOP;
                 });
+
+                if (swing)
+                {
+                    TemporaryAudioSource *tmpsrc = s->CreateObject<TemporaryAudioSource>();
+                    tmpsrc->SetParent(cam, false);
+                    tmpsrc->SetSourceFloat(AL_MAX_DISTANCE, 1);
+                    tmpsrc->SetSourceFloat(AL_REFERENCE_DISTANCE, 1);
+                    tmpsrc->SetSourceFloat(AL_GAIN, 0.3);
+                    tmpsrc->SetCurrentClip(misssfx);
+                    tmpsrc->Play();
+                }
             }
             else if ((captured && hitclicked && !Engine::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) || !captured)) hitclicked = false;
 

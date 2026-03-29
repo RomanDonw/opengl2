@@ -19,7 +19,7 @@ void MaxwellCat::constructor()
     SetMass(4.5);
     //AddCollider<SphereCollider>(Transform(), 0.3);
     //SetAngularLockAxisFactor({0, 1, 0});
-    BoxCollider *coll = AddCollider<BoxCollider>(Transform(), glm::vec3(0.3, 0.2, 0.3));
+    BoxCollider *coll = AddCollider<BoxCollider>(Transform({0, 0.1, 0}), glm::vec3(0.3, 0.2, 0.3));
     coll->SetBounciness(0.75);
 
     model = scene->CreateObject<Model>();
