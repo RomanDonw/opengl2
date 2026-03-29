@@ -29,7 +29,7 @@ RigidBody::~RigidBody()
 {
     Scene *scene = GetScene();
 
-    for (Collider *c : colliders) RemoveCollider(c);
+    for (Collider *c : GetColliders()) RemoveCollider(c);
 
     scene->rbslinks.erase(rb);
     scene->world->destroyRigidBody(rb);
