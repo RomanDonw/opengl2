@@ -4,7 +4,6 @@
 #include "../../../external/physics.hpp"
 #include "../../../Transform.hpp"
 
-#include "ColliderType.hpp"
 #include "ColliderTransform.hpp"
 
 class RigidBody;
@@ -29,7 +28,6 @@ class Collider // interface class.
         void unlinkphyscollfromthis();
 
     public:
-        const ColliderType type = ColliderType::UNKNOWN;
         ColliderTransform transform;
 
         RigidBody *GetRigidBody() const;
