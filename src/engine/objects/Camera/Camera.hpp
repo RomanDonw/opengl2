@@ -19,8 +19,6 @@ class Camera final : public GameObject
         ~Camera() override;
 
     public:
-        const GameObjectType type = GameObjectType::CAMERA;
-
         float FOV = glm::radians(60.0f);
         float nearDistance = 0.1;
         float farDistance = 1000;

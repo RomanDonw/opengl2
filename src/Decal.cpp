@@ -6,7 +6,7 @@
 
 void Decal::constructor()
 {
-    tags.insert("Decal");
+    //tags.insert("Decal");
 }
 
 Decal::Decal(Scene *s, Transform t, double lifetime) : GameObject(s, t), Model(s, t), lifetime(lifetime) { constructor(); }

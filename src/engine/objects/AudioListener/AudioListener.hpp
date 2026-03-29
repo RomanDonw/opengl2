@@ -25,9 +25,6 @@ class AudioListener final : public GameObject
         void OnGlobalTransformChanged() override;
         void OnSceneLoad() override;
         void OnSceneUnload() override;
-
-    public:
-        const GameObjectType type = GameObjectType::AUDIOLISTENER;
 };
 
 #endif
