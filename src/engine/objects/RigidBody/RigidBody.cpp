@@ -139,19 +139,13 @@ void RigidBody::ResetTorque() { rb->resetTorque(); }
 
 // ==================================================================================
 
-bool RigidBody::HasCollider(Collider *c) { return std::ranges::contains(colliders, c); }
+bool RigidBody::HasCollider(Collider *c) { return colliders.contains(c); }
 
 void RigidBody::RemoveCollider(Collider *c)
 {
     if (!HasCollider(c)) throw std::runtime_error("this rigidbody doesn't has this collider");
-    colliders.erase(std::remove(colliders.begin(), colliders.end(), c), colliders.end());
+    colliders.erase(c);
     delete c;
 }
 
-Collider *RigidBody::GetCollider(size_t index)
-{
-    if (index >= colliders.size()) return nullptr;
-    return colliders[index];
-}
-
-std::vector<Collider *> RigidBody::GetAllColliders() { return colliders; }
+std::unordered_set<Collider *> RigidBody::GetColliders() const { return colliders; }

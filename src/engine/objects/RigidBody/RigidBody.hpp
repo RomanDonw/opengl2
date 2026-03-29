@@ -3,7 +3,7 @@
 
 #include "../../external/physics.hpp"
 
-#include <vector>
+#include <unordered_set>
 #include <concepts>
 #include <iterator>
 #include <algorithm>
@@ -26,13 +26,12 @@ class RigidBody : virtual public GameObject
 
     private:
         bool lockphystransupdate = false; // this flag need to prevert double updating of physics transform when rigidbody`s transform updates after scene physics update.
+        std::unordered_set<Collider *> colliders;
+        rp3d::RigidBody *rb;
 
         void constructor();
 
     protected:
-        rp3d::RigidBody *rb;
-        std::vector<Collider *> colliders;
-
         RigidBody(Scene *s, Transform t);
         RigidBody(Scene *s);
 
@@ -111,15 +110,13 @@ class RigidBody : virtual public GameObject
         {
             T *ret = new T(Engine::phys, rb, this, offset, std::forward<Args>(args)...);
 
-            colliders.push_back(ret);
+            colliders.insert(ret);
 
             return ret;
         }
 
         void RemoveCollider(Collider *c);
-
-        Collider *GetCollider(size_t index); // can return nullptr.
-        std::vector<Collider *> GetAllColliders();
+        std::unordered_set<Collider *> GetColliders() const;
 };
 
 #endif
