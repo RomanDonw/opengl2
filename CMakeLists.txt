@@ -39,8 +39,10 @@ target_link_libraries(opengl2 PRIVATE -lglfw3)
 find_package(OpenAL REQUIRED)
 target_link_libraries(opengl2 PRIVATE OpenAL::OpenAL)
 
+find_package(ReactPhysics3D REQUIRED)
+target_link_libraries(opengl2 PRIVATE ReactPhysics3D::ReactPhysics3D)
+
 target_link_libraries(opengl2 PRIVATE -lsndfile -lmp3lame -lFLAC -lm -lssp -lvorbisenc -lvorbis -logg -lopus -lmpg123 -lshlwapi -lwinmm -lws2_32 -lole32 -luuid -lpthread)
 
 
 target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libglad.a")
-target_link_libraries(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/libreactphysics3d.a")
