@@ -18,7 +18,7 @@ class Model : virtual public GameObject
 
         ~Model() override;
 
-        void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog) override;
+        void Render(const GameObjectRenderData *data) override;
 
     public:
         bool enableRender = true;

@@ -5,6 +5,7 @@
 #include <unordered_set>
 
 #include "GameObjectTransform.hpp"
+#include "GameObjectRenderData.hpp"
 
 #include "../../FogRenderSettings.hpp"
 
@@ -36,7 +37,7 @@ class GameObject
 
         virtual void Update(double delta);
         virtual void AfterUpdate();
-        virtual void Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog);
+        virtual void Render(const GameObjectRenderData *data);
 
         virtual void OnSceneLoad();
         virtual void OnSceneUnload();

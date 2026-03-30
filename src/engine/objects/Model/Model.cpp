@@ -11,9 +11,9 @@ Model::Model(Scene *s) : GameObject(s) {}
 
 Model::~Model() {}
 
-void Model::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform *camt, const FogRenderSettings *fog)
+void Model::Render(const GameObjectRenderData *data)
 {
-    //GameObject::Render(proj, view, camt, fog);
+    //GameObject::Render(data);
 
     if (!enableRender) return;
 
@@ -22,20 +22,20 @@ void Model::Render(const glm::mat4 *proj, const glm::mat4 *view, const Transform
 
     sp->UseThisProgram();
 
-    sp->SetUniformMatrix4x4("projection", *proj);
-    sp->SetUniformMatrix4x4("view", *view);
+    sp->SetUniformMatrix4x4("projection", *(data->proj));
+    sp->SetUniformMatrix4x4("view", *(data->view));
 
-    sp->SetUniformVector3("cameraPosition", camt->GetPosition());
-    sp->SetUniformVector3("cameraRotation", glm::eulerAngles(camt->GetRotation())); // glm::eulerAngles is unstable.
+    sp->SetUniformVector3("cameraPosition", data->camt->GetPosition());
+    sp->SetUniformVector3("cameraRotation", glm::eulerAngles(data->camt->GetRotation())); // glm::eulerAngles is unstable.
 
-    sp->SetUniformVector3("cameraFront", camt->GetFront());
-    sp->SetUniformVector3("cameraUp", camt->GetUp());
-    sp->SetUniformVector3("cameraRight", camt->GetRight());
+    sp->SetUniformVector3("cameraFront", data->camt->GetFront());
+    sp->SetUniformVector3("cameraUp", data->camt->GetUp());
+    sp->SetUniformVector3("cameraRight", data->camt->GetRight());
 
-    sp->SetUniformInteger("fogEnabled", (fog->enabled && fog->startDistance >= 0 && fog->endDistance > 0) ? GL_TRUE : GL_FALSE);
-    sp->SetUniformFloat("fogStartDistance", fog->startDistance);
-    sp->SetUniformFloat("fogEndDistance", fog->endDistance);
-    sp->SetUniformVector3("fogColor", fog->color);
+    sp->SetUniformInteger("fogEnabled", (data->fog->enabled && data->fog->startDistance >= 0 && data->fog->endDistance > 0) ? GL_TRUE : GL_FALSE);
+    sp->SetUniformFloat("fogStartDistance", data->fog->startDistance);
+    sp->SetUniformFloat("fogEndDistance", data->fog->endDistance);
+    sp->SetUniformVector3("fogColor", data->fog->color);
 
     Transform globt = GetGlobalTransform();
     glm::mat4 mdl = globt.GetTransformationMatrix();
