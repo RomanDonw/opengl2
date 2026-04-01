@@ -20,6 +20,7 @@ class RigidBody;
 class GameObject;
 class Collider;
 class SceneRaycastCallback;
+class PointLight;
 
 template <typename T>
 concept GameObjectConcept = std::derived_from<T, GameObject>;
@@ -31,6 +32,7 @@ class Scene final
     friend class RigidBody;
     friend class Collider;
     friend class SceneRaycastCallback;
+    friend class PointLight;
 
     private:
         Scene();
@@ -39,6 +41,8 @@ class Scene final
         rp3d::PhysicsWorld *world;
         std::unordered_map<rp3d::RigidBody *, RigidBody *> rbslinks;
         std::unordered_map<rp3d::Collider *, Collider *> collslinks;
+
+        std::unordered_set<PointLight *> pointlights;
 
         std::map<int32_t, std::unordered_set<GameObject *>, std::less<int32_t>> objects;
         Camera *currcam = nullptr;
@@ -52,6 +56,7 @@ class Scene final
 
     public:
         FogRenderSettings fog;
+        glm::vec3 ambientlight = glm::vec3(0.5);
 
         bool HasObject(GameObject *obj);
 

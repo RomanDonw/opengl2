@@ -1,6 +1,7 @@
 #include "Model.hpp"
 
 #include "../../ResourceManager.hpp"
+#include "../../render/SSBO.hpp"
 
 #include "../../resources/Mesh.hpp"
 #include "../../resources/Texture.hpp"
@@ -36,6 +37,11 @@ void Model::Render(const GameObjectRenderData *data)
     sp->SetUniformFloat("fogStartDistance", data->fog->startDistance);
     sp->SetUniformFloat("fogEndDistance", data->fog->endDistance);
     sp->SetUniformVector3("fogColor", data->fog->color);
+
+    sp->SetUniformVector3("ambientLight", *(data->ambientlight));
+
+    data->pointlightsssbo->BindToSlot(0);
+    sp->SetUniformInteger("pointLightsCount", data->pointlightscount);
 
     Transform globt = GetGlobalTransform();
     glm::mat4 mdl = globt.GetTransformationMatrix();

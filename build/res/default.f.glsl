@@ -1,4 +1,20 @@
-#version 330 core
+#version 460 core
+
+struct PointLightData
+{
+    vec3 position;
+    float radius;
+    vec3 color;
+    uint flags;
+};
+
+uniform vec3 ambientLight;
+
+uniform uint pointLightsCount;
+layout(std430, binding = 0) buffer pointLights
+{
+    PointLightData pointLightsData[];
+};
 
 in vec3 globalVertexPosition;
 in vec2 texturePosition;
@@ -27,7 +43,7 @@ void main()
 {
     vec4 vertcol = (hasTexture ? texture2D(texture, texturePosition) : vec4(1.0)) * color;
 
-    //FragColor = vertcol;
+    vertcol *= vec4(ambientLight, 1);
 
     float dist = length(globalVertexPosition - cameraPosition);
     float fog_int_factor = min(1, max(0, (dist - fogStartDistance) / (fogEndDistance - fogStartDistance)));

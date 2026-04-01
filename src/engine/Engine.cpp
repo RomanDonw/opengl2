@@ -5,6 +5,7 @@
 
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
+#include "render/SSBO.hpp"
 
 // === PRIVATE ===
 
@@ -71,6 +72,8 @@ EngineInitReturnCode Engine::Init(unsigned short windowWidth, unsigned short win
 
     phys = new rp3d::PhysicsCommon(&physalloc);
 
+    pointlightsssbo = new SSBO();
+
     inited = true;
     return SUCCESS;
 }
@@ -78,6 +81,9 @@ EngineInitReturnCode Engine::Init(unsigned short windowWidth, unsigned short win
 bool Engine::Shutdown()
 {
     if (!inited) return false;
+
+    delete pointlightsssbo;
+    pointlightsssbo = nullptr;
 
     delete phys;
     phys = nullptr;

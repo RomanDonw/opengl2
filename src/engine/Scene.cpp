@@ -8,6 +8,8 @@
 #include "objects/GameObject/GameObject.hpp"
 #include "objects/Camera/Camera.hpp"
 #include "physics/SceneRaycastCallback.hpp"
+#include "objects/PointLight/PointLight.hpp"
+#include "render/SSBO.hpp"
 
 #include "Utils.hpp"
 
@@ -45,12 +47,20 @@ void Scene::Render()
     glm::mat4 proj = currcam->GetProjectionMatrix(Engine::GetWindowSize());
     glm::mat4 view = currcam->GetViewMatrix();
     Transform globt = currcam->GetGlobalTransform();
+    
+    std::vector<PointLightData> pointlightsdata;
+    for (PointLight *light : pointlights) pointlightsdata.push_back(light->GetLightData());
+
+    Engine::pointlightsssbo->SetBufferData(pointlightsdata.data(), pointlightsdata.size() * sizeof(PointLightData), GL_STATIC_DRAW);
 
     GameObjectRenderData data;
     data.proj = &proj;
     data.view = &view;
     data.camt = &globt;
     data.fog = &fog;
+    data.pointlightsssbo = Engine::pointlightsssbo;
+    data.pointlightscount = (uint32_t)pointlights.size();
+    data.ambientlight = &ambientlight;
     
     ForEachAllObjects([&](GameObject *obj) -> bool { obj->Render(&data); return true; });
 }

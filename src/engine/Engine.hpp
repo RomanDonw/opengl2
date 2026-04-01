@@ -14,6 +14,7 @@
 
 class Scene;
 class RigidBody;
+class SSBO;
 
 enum
 {
@@ -46,6 +47,8 @@ class Engine final
 
         static inline PhysicsHeapAllocator physalloc = PhysicsHeapAllocator();
         static inline rp3d::PhysicsCommon *phys = nullptr;
+
+        static inline SSBO *pointlightsssbo = nullptr;
 
         static inline std::string currscene = "";
         static inline std::unordered_map<std::string, Scene *> scenes = std::unordered_map<std::string, Scene *>();
