@@ -7,7 +7,6 @@ void SSBO::BindToSlot(GLuint slot) const { glBindBufferBase(GL_SHADER_STORAGE_BU
 
 void SSBO::SetBufferData(void *data, size_t size, GLenum usage)
 {
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, usage);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    if (currsize != size) { glNamedBufferData(buffer, size, data, usage); currsize = size; }
+    else glNamedBufferSubData(buffer, 0, size, data);
 }

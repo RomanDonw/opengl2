@@ -7,6 +7,7 @@ class SSBO final
 {
     private:
         GLuint buffer;
+        size_t currsize;
 
     public:
         SSBO();
