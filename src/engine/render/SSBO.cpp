@@ -5,8 +5,4 @@ SSBO::~SSBO() { glDeleteBuffers(1, &buffer); }
 
 void SSBO::BindToSlot(GLuint slot) const { glBindBuffersBase(GL_SHADER_STORAGE_BUFFER, slot, 1, &buffer); }
 
-void SSBO::SetBufferData(void *data, size_t size, GLenum usage)
-{
-    if (currsize != size) { glNamedBufferData(buffer, size, data, usage); currsize = size; }
-    else glNamedBufferSubData(buffer, 0, size, data);
-}
+void SSBO::SetBufferData(const void *data, size_t size, GLenum usage) { glNamedBufferData(buffer, size, data, usage); }
