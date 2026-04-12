@@ -50,6 +50,7 @@ class ShaderProgram final
 
         bool HasUniform(std::string name);
         bool SetUniformInteger(std::string name, int value);
+        bool SetUniformUnsignedInteger(std::string name, unsigned int value);
         bool SetUniformFloat(std::string name, float value);
         bool SetUniformVector3(std::string name, glm::vec3 value);
         bool SetUniformVector4(std::string name, glm::vec4 value);

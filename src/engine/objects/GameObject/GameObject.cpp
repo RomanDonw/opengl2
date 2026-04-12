@@ -59,8 +59,8 @@ std::unordered_set<GameObject *> GameObject::GetChildren() const { return childr
 
 Scene *GameObject::GetScene() const { return scene; }
 
-Transform GameObject::GetParentGlobalTransform()
+Transform GameObject::GetParentGlobalTransform() const
 { return parent ? parent->transform.LocalToGlobal(parent->GetParentGlobalTransform()) : Transform(); }
 
-Transform GameObject::GetGlobalTransform()
-{ return transform.LocalToGlobal(GetParentGlobalTransform()); }
+Transform GameObject::GetGlobalTransform() const
+{ return ((Transform)transform).LocalToGlobal(GetParentGlobalTransform()); }

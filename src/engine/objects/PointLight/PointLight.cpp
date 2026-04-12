@@ -16,9 +16,10 @@ PointLight::~PointLight() { GetScene()->pointlights.erase(this); };
 PointLightData PointLight::GetLightData() const
 {
     PointLightData ret;
-    ret.position = transform.GetPosition();
+    ret.position = GetGlobalTransform().GetPosition();
     ret.radius = radius;
     ret.color = color;
     ret.flags = (enabled ? 0b1 : 0b0);
+
     return ret;
 }

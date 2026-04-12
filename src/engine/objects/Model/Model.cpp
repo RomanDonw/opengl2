@@ -41,7 +41,7 @@ void Model::Render(const GameObjectRenderData *data)
     sp->SetUniformVector3("ambientLight", *(data->ambientlight));
 
     data->pointlightsssbo->BindToSlot(0);
-    sp->SetUniformInteger("pointLightsCount", data->pointlightscount);
+    sp->SetUniformUnsignedInteger("pointLightsCount", data->pointlightscount);
 
     Transform globt = GetGlobalTransform();
     glm::mat4 mdl = globt.GetTransformationMatrix();

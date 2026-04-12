@@ -51,7 +51,9 @@ void Scene::Render()
     std::vector<PointLightData> pointlightsdata;
     for (PointLight *light : pointlights) pointlightsdata.push_back(light->GetLightData());
 
-    Engine::pointlightsssbo->SetBufferData(pointlightsdata.data(), pointlightsdata.size() * sizeof(PointLightData), GL_STATIC_DRAW);
+    Engine::pointlightsssbo->SetBufferData(pointlightsdata.data(), pointlightsdata.size() * sizeof(PointLightData), GL_STREAM_DRAW);
+    glMemoryBarrier(GL_ALL_BARRIER_BITS);
+    //glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_BUFFER_UPDATE_BARRIER_BIT);
 
     GameObjectRenderData data;
     data.proj = &proj;
@@ -59,7 +61,7 @@ void Scene::Render()
     data.camt = &globt;
     data.fog = &fog;
     data.pointlightsssbo = Engine::pointlightsssbo;
-    data.pointlightscount = (uint32_t)pointlights.size();
+    data.pointlightscount = (uint32_t)(pointlights.size());
     data.ambientlight = &ambientlight;
     
     ForEachAllObjects([&](GameObject *obj) -> bool { obj->Render(&data); return true; });

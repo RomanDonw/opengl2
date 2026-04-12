@@ -20,6 +20,7 @@
 #include "engine/objects/AudioSource/AudioSource.hpp"
 #include "engine/objects/AudioListener/AudioListener.hpp"
 #include "engine/objects/TemporaryAudioSource/TemporaryAudioSource.hpp"
+#include "engine/objects/PointLight/PointLight.hpp"
 
 #include "engine/physics/colliders/colliders.hpp"
 
@@ -139,6 +140,9 @@ void applyeaxreverbeffecttoslot(const EAXReverbEffectSettings *setts, AudioEffec
 int main()
 {
     if (Engine::Init(WWIDTH, WHEIGHT, NULL) != SUCCESS) return 1;
+
+    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+    std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
     Engine::SetAudioDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
 
@@ -321,6 +325,10 @@ int main()
     button->textureon = "button_4_on";
     button->togglesfx = "button8sfx";
     button->SetButtonState(false, false);
+
+    PointLight *light = s->CreateObject<PointLight>(Transform({0, -7, 0}));
+    light->radius = 10;
+    light->color = glm::vec3(1, 0, 0);
 
     Surface surf;
     surf.mesh = "crowbar_cyl";

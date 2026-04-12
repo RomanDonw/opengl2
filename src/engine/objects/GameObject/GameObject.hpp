@@ -53,8 +53,8 @@ class GameObject
 
         Scene *GetScene() const;
 
-        Transform GetParentGlobalTransform();
-        Transform GetGlobalTransform();
+        Transform GetParentGlobalTransform() const;
+        Transform GetGlobalTransform() const;
 };
 
 #endif

@@ -192,6 +192,15 @@ bool ShaderProgram::SetUniformInteger(std::string name, int value)
     return true;
 }
 
+bool ShaderProgram::SetUniformUnsignedInteger(std::string name, unsigned int value)
+{
+    if (!HasUniform(name)) return false;
+
+    glUniform1ui(glGetUniformLocation(shaderProgram, name.c_str()), value);
+
+    return true;
+}
+
 bool ShaderProgram::SetUniformFloat(std::string name, float value)
 {
     if (!HasUniform(name)) return false;
