@@ -51,7 +51,7 @@ void main()
 
         if (data.radius <= 0 || (data.flags & 1) == 0) continue;
 
-        float dist = length(globalVertexPosition - data.pos);
+        float dist = length(globalVertexPosition - data.position);
         float lightintfactor = 1 - clamp(dist / data.radius, 0, 1);
         light += data.color * lightintfactor;
     }
