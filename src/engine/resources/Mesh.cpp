@@ -107,6 +107,15 @@ void Mesh::ApplyTransformation(glm::mat4 mat)
 }
 void Mesh::ApplyTransformation(Transform t) { ApplyTransformation(t.GetTransformationMatrix()); }
 
+void Mesh::FlipMesh()
+{
+    for (size_t i = 0; i < indices.size(); i++)
+    {
+        glm::uvec3 tri = indices[i];
+        indices[i] = glm::uvec3(tri.z, tri.y, tri.x);
+    }
+}
+
 bool Mesh::LoadFromUCMESHFile(std::string filename)
 {
     if (!std::filesystem::is_regular_file(filename)) return false;
