@@ -1,4 +1,4 @@
-# SuperEngine scene — use Project tab to open; scripts in scripts/*.ses
+# Evelent Engine scene — use Project tab to open; scripts in scripts/*.ses
 ambient 0.35 0.36 0.4
 fog 0 24 80 0.42 0.46 0.5
 object "Sun"

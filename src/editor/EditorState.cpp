@@ -33,6 +33,7 @@ bool EditorState::LoadScene(const std::string &relativeScenePath)
         SceneSerializer::Save(scene, abs, &project);
     }
     EnsureEditorCamera();
+    if (FreeplayCamera *fp = FindFreeplayCamera()) SyncFlyFromFreeplay(fp);
     SetEditorVisualDefaults();
     ClearSelection();
     return true;
@@ -174,8 +175,9 @@ FreeplayCamera *EditorState::FindFreeplayCamera() const
 void EditorState::SyncFlyFromFreeplay(FreeplayCamera *fp)
 {
     if (!fp) return;
-    const glm::vec3 pos = fp->GetGlobalTransform().GetPosition();
-    flyCamera.FocusOn(pos);
+    const Transform gt = fp->GetGlobalTransform();
+    flyCamera.SetPose(gt.GetPosition(), gt.GetRotation());
+    SyncEditorCameraObject();
 }
 
 void EditorState::ToggleFreeplayPreview()
@@ -209,9 +211,7 @@ void EditorState::SyncFreeplayFromFly()
     if (!fp || !freeplayViewportPreview) return;
 
     fp->transform.SetPosition(flyCamera.GetPosition());
-    const glm::vec3 front = flyCamera.GetFront();
-    const glm::mat4 look = glm::lookAt(glm::vec3(0.0f), front, glm::vec3(0.0f, 1.0f, 0.0f));
-    fp->transform.SetRotation(glm::quat_cast(look));
+    fp->transform.SetRotation(flyCamera.GetRotation());
     fp->SyncAnglesFromTransform();
     if (scene) scene->SetCurrentCamera(fp);
 }
@@ -396,7 +396,5 @@ void EditorState::SyncEditorCameraObject()
     EnsureEditorCamera();
     if (!editorCameraObject) return;
     editorCameraObject->transform.SetPosition(flyCamera.GetPosition());
-    const glm::vec3 front = flyCamera.GetFront();
-    const glm::mat4 look = glm::lookAt(glm::vec3(0.0f), front, glm::vec3(0.0f, 1.0f, 0.0f));
-    editorCameraObject->transform.SetRotation(glm::quat_cast(look));
+    editorCameraObject->transform.SetRotation(flyCamera.GetRotation());
 }

@@ -25,6 +25,12 @@ static bool isEditorInternalObject(GameObject *obj)
     return obj && obj->displayName == "__EditorCamera__";
 }
 
+static glm::quat quatFromSceneEuler(const glm::vec3 &degrees)
+{
+    return glm::angleAxis(glm::radians(degrees.y), glm::vec3(0.0f, 1.0f, 0.0f))
+         * glm::angleAxis(glm::radians(degrees.x), glm::vec3(1.0f, 0.0f, 0.0f));
+}
+
 static std::string esc(const std::string &s)
 {
     std::string out;
@@ -53,7 +59,7 @@ bool SceneSerializer::Save(Scene *scene, const std::string &path, const EditorPr
     if (!scene) return false;
 
     std::ostringstream oss;
-    oss << "# SuperEngine scene\n";
+    oss << "# Evelent Engine scene\n";
     oss << "ambient " << scene->ambientLight.x << " " << scene->ambientLight.y << " " << scene->ambientLight.z << "\n";
     oss << "fog " << (scene->fog.enabled ? 1 : 0) << " " << scene->fog.startDistance << " " << scene->fog.endDistance
         << " " << scene->fog.color.x << " " << scene->fog.color.y << " " << scene->fog.color.z << "\n";
@@ -182,6 +188,7 @@ bool SceneSerializer::Load(Scene *scene, const std::string &path, const EditorPr
             if (GameObject *p = findByName(scene, pendingParent)) current->SetParent(p, false);
             pendingParent.clear();
         }
+        if (FreeplayCamera *fp = dynamic_cast<FreeplayCamera *>(current)) fp->SyncAnglesFromTransform();
         current = nullptr;
     };
 
@@ -275,7 +282,7 @@ bool SceneSerializer::Load(Scene *scene, const std::string &path, const EditorPr
         else if (line.rfind("  rot ", 0) == 0)
         {
             sscanf(line.c_str(), "  rot %f %f %f", &rot.x, &rot.y, &rot.z);
-            current->transform.SetRotation(glm::quat(glm::radians(rot)));
+            current->transform.SetRotation(quatFromSceneEuler(rot));
         }
         else if (line.rfind("  scale ", 0) == 0)
         {

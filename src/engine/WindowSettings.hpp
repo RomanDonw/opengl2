@@ -5,7 +5,7 @@
 
 struct WindowSettings
 {
-    std::string title = "SuperEngine";
+    std::string title = "Evelent Engine";
     unsigned int width = 1280;
     unsigned int height = 720;
     int glMajor = 4;

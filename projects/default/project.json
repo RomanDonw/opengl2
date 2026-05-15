@@ -1,4 +1,4 @@
-# SuperEngine project config
+# Evelent Engine project config
 name default
 entry_scene scenes/main.scene
 scripts_dir scripts

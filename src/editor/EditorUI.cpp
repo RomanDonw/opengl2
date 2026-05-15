@@ -67,6 +67,8 @@ namespace
 static void renderMainBar(EditorState &state)
 {
     if (!ImGUI::BeginMainMenuBar()) return;
+    ImGUI::Text("Evelent Engine");
+    ImGUI::Separator();
 
     if (ImGUI::BeginMenu("File"))
     {
@@ -240,53 +242,184 @@ static void renderHierarchyList(EditorState &state)
     }
 }
 
-static void renderProjectBrowser(EditorState &state)
+namespace
 {
-    ImGUI::Text("Root: %s", state.project.rootPath.c_str());
-    ImGUI::Separator();
-
-    if (ImGUI::TreeNodeEx("scenes", ImGuiTreeNodeFlags_DefaultOpen))
+    enum class FileOpKind
     {
-        for (const std::string &path : state.project.ListByExtension(state.project.config.scenesDir, ".scene"))
+        None,
+        CreateFile,
+        CreateFolder,
+        Rename
+    };
+
+    FileOpKind g_fileOpKind = FileOpKind::None;
+    char g_fileOpName[256]{};
+    std::string g_fileOpTarget;
+    std::string g_fileOpFolder;
+    std::string g_fileOpExtension;
+
+    static void beginFileOp(FileOpKind kind, const std::string &folder, const std::string &ext, const std::string &target = {})
+    {
+        g_fileOpKind = kind;
+        g_fileOpFolder = folder;
+        g_fileOpExtension = ext;
+        g_fileOpTarget = target;
+        std::memset(g_fileOpName, 0, sizeof(g_fileOpName));
+        if (kind == FileOpKind::Rename && !target.empty())
         {
-            const bool current = path == state.scenePath;
-            if (ImGUI::Selectable(path.c_str(), current))
+            const size_t slash = target.find_last_of("/\\");
+            std::string name = slash == std::string::npos ? target : target.substr(slash + 1);
+            const size_t dot = name.find_last_of('.');
+            if (dot != std::string::npos) name = name.substr(0, dot);
+            std::strncpy(g_fileOpName, name.c_str(), sizeof(g_fileOpName) - 1);
+        }
+        ImGUI::OpenPopup("ProjectFileOp");
+    }
+
+    static std::string joinProjectPath(const std::string &folder, const std::string &name, const std::string &ext)
+    {
+        std::string file = name;
+        if (!ext.empty() && (file.size() < ext.size() || file.substr(file.size() - ext.size()) != ext))
+            file += ext;
+        return FileSystem::Join(folder, file);
+    }
+
+    static void renderFileOpModal(EditorState &state)
+    {
+        if (g_fileOpKind == FileOpKind::None) return;
+
+        ImVec2 center = ImGUI::GetMainViewport()->GetCenter();
+        ImGUI::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+        if (!ImGUI::BeginPopupModal("ProjectFileOp", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+            return;
+
+        if (g_fileOpKind == FileOpKind::CreateFile) ImGUI::Text("New file in %s", g_fileOpFolder.c_str());
+        else if (g_fileOpKind == FileOpKind::CreateFolder) ImGUI::Text("New folder in %s", g_fileOpFolder.c_str());
+        else if (g_fileOpKind == FileOpKind::Rename) ImGUI::Text("Rename %s", g_fileOpTarget.c_str());
+
+        ImGUI::InputText("Name", g_fileOpName, sizeof(g_fileOpName));
+
+        if (ImGUI::Button("OK", ImVec2(120, 0)))
+        {
+            const std::string name = g_fileOpName;
+            if (!name.empty())
             {
-                if (ImGUI::IsMouseDoubleClicked(ImGuiMouseButton_Left)) state.LoadScene(path);
+                if (g_fileOpKind == FileOpKind::CreateFile)
+                {
+                    const std::string rel = joinProjectPath(g_fileOpFolder, name, g_fileOpExtension);
+                    std::string content;
+                    if (g_fileOpExtension == ".scene")
+                        content = "# Evelent Engine scene\nambient 0.35 0.36 0.4\nfog 0 24 80 0.42 0.46 0.5\n";
+                    else if (g_fileOpExtension == ".ses")
+                        content = "# SEScript\nfunc _ready():\n    log(\"ready\")\n\nfunc _update(dt):\n    pass\n";
+                    state.project.CreateFile(rel, content);
+                }
+                else if (g_fileOpKind == FileOpKind::CreateFolder)
+                {
+                    state.project.CreateFolder(joinProjectPath(g_fileOpFolder, name, ""));
+                }
+                else if (g_fileOpKind == FileOpKind::Rename)
+                {
+                    const size_t slash = g_fileOpTarget.find_last_of("/\\");
+                    const std::string dir = slash == std::string::npos ? "" : g_fileOpTarget.substr(0, slash + 1);
+                    const std::string ext = FileSystem::GetExtension(g_fileOpTarget);
+                    const std::string toRel = joinProjectPath(dir, name, ext);
+                    if (state.project.RenameRelative(g_fileOpTarget, toRel))
+                        state.OnProjectFileRenamed(g_fileOpTarget, toRel);
+                }
             }
+            g_fileOpKind = FileOpKind::None;
+            ImGUI::CloseCurrentPopup();
+        }
+        ImGUI::SameLine();
+        if (ImGUI::Button("Cancel", ImVec2(120, 0)))
+        {
+            g_fileOpKind = FileOpKind::None;
+            ImGUI::CloseCurrentPopup();
+        }
+        ImGUI::EndPopup();
+    }
+
+    static void projectFileContextMenu(EditorState &state, const std::string &path, bool canOpenScene, bool canOpenScript)
+    {
+        if (!ImGUI::BeginPopupContextItem()) return;
+
+        if (canOpenScene && ImGUI::MenuItem("Open Scene")) state.LoadScene(path);
+        if (canOpenScript && ImGUI::MenuItem("Open Script"))
+        {
+            state.scriptPath = path;
+            state.LoadScriptFromDisk();
+            state.activeTab = EditorTab::Script;
+            state.scriptDirty = false;
+        }
+        if (ImGUI::MenuItem("Rename")) beginFileOp(FileOpKind::Rename, "", "", path);
+        if (ImGUI::MenuItem("Delete") && !state.project.IsProtectedPath(path))
+        {
+            if (state.project.DeleteRelative(path)) state.OnProjectFileDeleted(path);
+        }
+        ImGUI::EndPopup();
+    }
+
+    static void renderProjectFolder(EditorState &state, const char *label, const std::string &folder, const char *ext,
+        bool canOpenScene, bool canOpenScript, const char *newButtonLabel)
+    {
+        if (!ImGUI::TreeNodeEx(label, ImGuiTreeNodeFlags_DefaultOpen)) return;
+
+        if (ImGUI::Button(newButtonLabel))
+            beginFileOp(FileOpKind::CreateFile, folder, ext);
+
+        for (const std::string &path : state.project.ListByExtension(folder, ext))
+        {
+            const bool selected = (canOpenScene && path == state.scenePath) || (canOpenScript && path == state.scriptPath);
+            if (ImGUI::Selectable(path.c_str(), selected))
+            {
+                if (ImGUI::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+                {
+                    if (canOpenScene) state.LoadScene(path);
+                    else if (canOpenScript)
+                    {
+                        state.scriptPath = path;
+                        state.LoadScriptFromDisk();
+                        state.activeTab = EditorTab::Script;
+                        state.scriptDirty = false;
+                    }
+                }
+            }
+            projectFileContextMenu(state, path, canOpenScene, canOpenScript);
+        }
+
+        ImGUI::TreePop();
+    }
+
+    static void renderProjectBrowser(EditorState &state)
+    {
+        ImGUI::Text("Evelent Engine");
+        ImGUI::Text("Root: %s", state.project.rootPath.c_str());
+        ImGUI::Separator();
+
+        if (ImGUI::Button("New Folder"))
+            beginFileOp(FileOpKind::CreateFolder, "", "");
+
+        renderProjectFolder(state, "scenes", state.project.config.scenesDir, ".scene", true, false, "New Scene");
+        renderProjectFolder(state, "scripts", state.project.config.scriptsDir, ".ses", false, true, "New Script");
+
+        if (ImGUI::TreeNode("docs"))
+        {
+            const std::string docRel = FileSystem::Join(state.project.config.docsDir, "SEScript.md");
+            if (ImGUI::Selectable(docRel.c_str())) state.showDocs = true;
             if (ImGUI::BeginPopupContextItem())
             {
-                if (ImGUI::MenuItem("Open Scene")) state.LoadScene(path);
+                if (ImGUI::MenuItem("Open Docs")) state.showDocs = true;
                 ImGUI::EndPopup();
             }
+            ImGUI::TreePop();
         }
-        ImGUI::TreePop();
-    }
 
-    if (ImGUI::TreeNodeEx("scripts", ImGuiTreeNodeFlags_DefaultOpen))
-    {
-        for (const std::string &path : state.project.ListByExtension(state.project.config.scriptsDir, ".ses"))
-        {
-            const bool sel = path == state.scriptPath;
-            if (ImGUI::Selectable(path.c_str(), sel))
-            {
-                state.scriptPath = path;
-                state.LoadScriptFromDisk();
-                state.activeTab = EditorTab::Script;
-                state.scriptDirty = false;
-            }
-        }
-        ImGUI::TreePop();
-    }
+        ImGUI::Separator();
+        if (ImGUI::Button("Open Docs")) state.showDocs = true;
 
-    if (ImGUI::TreeNode("docs"))
-    {
-        if (ImGUI::Selectable("SEScript.md")) state.showDocs = true;
-        ImGUI::TreePop();
+        renderFileOpModal(state);
     }
-
-    ImGUI::Separator();
-    if (ImGUI::Button("Open Docs")) state.showDocs = true;
 }
 
 static void renderLeftPanel(EditorState &state, const EditorLayout &layout, float bottomReserve)
@@ -482,9 +615,11 @@ static void renderViewport(EditorState &state, const EditorLayout &layout, float
         const bool viewportHovered = ImGUI::IsWindowHovered();
         const bool viewportFocused = ImGUI::IsWindowFocused();
 
-        const bool rmbFly = ImGUI::IsMouseDown(ImGuiMouseButton_Right);
+        const bool rmbOrbit = ImGUI::IsMouseDown(ImGuiMouseButton_Right);
+        const bool mmbPan = ImGUI::IsMouseDown(ImGuiMouseButton_Middle);
+        const bool viewportCameraDrag = rmbOrbit || mmbPan;
 
-        if (viewportHovered && (rmbFly || Input::IsMouseCaptured()))
+        if (viewportHovered && (viewportCameraDrag || Input::IsMouseCaptured()))
         {
             ImGUI::SetNextFrameWantCaptureMouse(false);
             ImGUI::SetNextFrameWantCaptureKeyboard(false);
@@ -492,9 +627,6 @@ static void renderViewport(EditorState &state, const EditorLayout &layout, float
 
         if (!state.isPlaying && viewportHovered)
         {
-            if (ImGUI::IsMouseClicked(ImGuiMouseButton_Right)) Input::SetMouseCaptured(true);
-            if (ImGUI::IsMouseReleased(ImGuiMouseButton_Right)) Input::SetMouseCaptured(false);
-
             if (viewportFocused)
             {
                 if (ImGUI::IsKeyPressed(ImGuiKey_1)) state.gizmoMode = GizmoMode::Select;
@@ -529,7 +661,7 @@ static void renderViewport(EditorState &state, const EditorLayout &layout, float
             {
                 if (ImGUI::IsMouseClicked(ImGuiMouseButton_Right)) Input::SetMouseCaptured(true);
                 if (ImGUI::IsMouseReleased(ImGuiMouseButton_Right)) Input::SetMouseCaptured(false);
-                if (rmbFly || Input::IsMouseCaptured())
+                if (ImGUI::IsMouseDown(ImGuiMouseButton_Right) || Input::IsMouseCaptured())
                 {
                     ImGUI::SetNextFrameWantCaptureMouse(false);
                     ImGUI::SetNextFrameWantCaptureKeyboard(false);
@@ -544,7 +676,16 @@ static void renderViewport(EditorState &state, const EditorLayout &layout, float
         }
         else if (!state.isPlaying)
         {
-            state.flyCamera.Update(delta, allowFly);
+            EditorCameraInput camInput;
+            if (allowFly && viewportHovered)
+            {
+                camInput.mouseDelta = glm::vec2(ImGUI::GetIO().MouseDelta.x, ImGUI::GetIO().MouseDelta.y);
+                camInput.scrollY = Input::GetScrollDelta().y;
+                camInput.orbiting = rmbOrbit;
+                camInput.panning = mmbPan;
+                Input::ClearScrollDelta();
+            }
+            state.flyCamera.Update(delta, allowFly, camInput);
             state.SyncEditorCameraObject();
         }
 

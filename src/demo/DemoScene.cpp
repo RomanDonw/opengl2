@@ -425,7 +425,7 @@ void DemoScene::renderWindowSettings()
 {
     WindowSettings &ws = Engine::GetWindowSettings();
 
-    static char titleBuffer[128] = "SuperEngine";
+    static char titleBuffer[128] = "Evelent Engine";
     if (ImGUI::IsWindowAppearing()) strncpy(titleBuffer, ws.title.c_str(), sizeof(titleBuffer) - 1);
 
     ImGUI::InputText("Title", titleBuffer, sizeof(titleBuffer));

@@ -82,7 +82,7 @@ EngineInitReturnCode Engine::Init(const WindowSettings &windowSettings, const AL
     Time::Init();
     Console::Init();
 
-    Logger::Info("SuperEngine initialized");
+    Logger::Info("Evelent Engine initialized");
 
     phys = new rp3d::PhysicsCommon(&physalloc);
 

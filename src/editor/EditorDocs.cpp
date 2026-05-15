@@ -10,7 +10,7 @@ void EditorDocs::RenderWindow(bool *open)
         return;
     }
 
-    ImGUI::TextWrapped("SEScript — line-based scripting on objects with a ScriptBehaviour child.");
+    ImGUI::TextWrapped("Evelent Engine — SEScript on objects with a ScriptBehaviour child.");
     ImGUI::Separator();
 
     if (ImGUI::CollapsingHeader("Script structure", ImGuiTreeNodeFlags_DefaultOpen))

@@ -53,7 +53,7 @@ bool EditorApplication::Init()
     }
 
     g_state.EnsureEditorCamera();
-    g_state.flyCamera.FocusOn(glm::vec3(0, 1, 0));
+    if (!g_state.FindFreeplayCamera()) g_state.flyCamera.FocusOn(glm::vec3(0, 1, 0));
     g_state.SetEditorVisualDefaults();
     Logger::Info("Editor scene ready, objects: " + std::to_string(g_state.GetSceneObjectCount()));
 
@@ -61,7 +61,7 @@ bool EditorApplication::Init()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    Console::Log("SuperEngine Editor — project: " + g_state.project.config.name);
+    Console::Log("Evelent Engine Editor — project: " + g_state.project.config.name);
     Logger::Info("Editor initialized");
     return true;
 }
