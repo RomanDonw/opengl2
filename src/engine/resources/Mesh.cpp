@@ -1,8 +1,11 @@
 #include "Mesh.hpp"
 
+#include <cctype>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
 #include <iterator>
+#include <sstream>
 
 struct
 {
@@ -114,6 +117,147 @@ void Mesh::FlipMesh()
         glm::uvec3 tri = indices[i];
         indices[i] = glm::uvec3(tri.z, tri.y, tri.x);
     }
+}
+
+static int parseObjIndex(const std::string &token, int count)
+{
+    if (token.empty()) return -1;
+    size_t slash = token.find('/');
+    const std::string idxStr = token.substr(0, slash);
+    int idx = std::stoi(idxStr);
+    if (idx < 0) idx = count + idx + 1;
+    return idx - 1;
+}
+
+static void pushTri(Mesh *mesh, const glm::vec3 &p0, const glm::vec3 &p1, const glm::vec3 &p2,
+    const glm::vec2 &uv0, const glm::vec2 &uv1, const glm::vec2 &uv2, const glm::vec3 &n)
+{
+    const unsigned int base = static_cast<unsigned int>(mesh->vertices.size());
+    mesh->vertices.push_back(p0);
+    mesh->vertices.push_back(p1);
+    mesh->vertices.push_back(p2);
+    mesh->uvs.push_back(uv0);
+    mesh->uvs.push_back(uv1);
+    mesh->uvs.push_back(uv2);
+    mesh->normals.push_back(n);
+    mesh->normals.push_back(n);
+    mesh->normals.push_back(n);
+    mesh->indices.push_back(glm::uvec3(base, base + 1, base + 2));
+}
+
+bool Mesh::LoadFromObjFile(const std::string &filename)
+{
+    if (!std::filesystem::is_regular_file(filename)) return false;
+
+    std::ifstream file(filename);
+    if (!file) return false;
+
+    std::vector<glm::vec3> positions;
+    std::vector<glm::vec2> texcoords;
+    std::vector<glm::vec3> normcoords;
+
+    ClearMesh();
+
+    std::string line;
+    while (std::getline(file, line))
+    {
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        std::string tag;
+        iss >> tag;
+
+        if (tag == "v")
+        {
+            glm::vec3 p;
+            iss >> p.x >> p.y >> p.z;
+            positions.push_back(p);
+        }
+        else if (tag == "vt")
+        {
+            glm::vec2 t;
+            iss >> t.x >> t.y;
+            texcoords.push_back(t);
+        }
+        else if (tag == "vn")
+        {
+            glm::vec3 n;
+            iss >> n.x >> n.y >> n.z;
+            normcoords.push_back(n);
+        }
+        else if (tag == "f")
+        {
+            std::vector<std::string> tokens;
+            std::string part;
+            while (iss >> part) tokens.push_back(part);
+            if (tokens.size() < 3) continue;
+
+            auto corner = [&](const std::string &tok) -> std::tuple<glm::vec3, glm::vec2, glm::vec3>
+            {
+                const int vi = parseObjIndex(tok, static_cast<int>(positions.size()));
+                glm::vec3 p = vi >= 0 && vi < static_cast<int>(positions.size()) ? positions[vi] : glm::vec3(0);
+
+                size_t slash1 = tok.find('/');
+                size_t slash2 = tok.find('/', slash1 + 1);
+                glm::vec2 uv(0);
+                glm::vec3 n(0, 1, 0);
+
+                if (slash1 != std::string::npos)
+                {
+                    const std::string tStr = tok.substr(slash1 + 1, slash2 == std::string::npos ? std::string::npos : slash2 - slash1 - 1);
+                    if (!tStr.empty())
+                    {
+                        const int ti = parseObjIndex(tStr, static_cast<int>(texcoords.size()));
+                        if (ti >= 0 && ti < static_cast<int>(texcoords.size())) uv = texcoords[ti];
+                    }
+                }
+
+                if (slash2 != std::string::npos)
+                {
+                    const std::string nStr = tok.substr(slash2 + 1);
+                    if (!nStr.empty())
+                    {
+                        const int ni = parseObjIndex(nStr, static_cast<int>(normcoords.size()));
+                        if (ni >= 0 && ni < static_cast<int>(normcoords.size())) n = normcoords[ni];
+                    }
+                }
+
+                return {p, uv, n};
+            };
+
+            const auto [p0, uv0, n0] = corner(tokens[0]);
+            for (size_t i = 1; i + 1 < tokens.size(); ++i)
+            {
+                const auto [p1, uv1, n1] = corner(tokens[i]);
+                const auto [p2, uv2, n2] = corner(tokens[i + 1]);
+                glm::vec3 fn = n0;
+                if (glm::length(fn) < 0.001f)
+                {
+                    fn = glm::normalize(glm::cross(p1 - p0, p2 - p0));
+                    if (glm::length(fn) < 0.001f) fn = glm::vec3(0, 1, 0);
+                }
+                pushTri(this, p0, p1, p2, uv0, uv1, uv2, fn);
+            }
+        }
+    }
+
+    if (vertices.empty() || indices.empty()) return false;
+
+    RegenerateBuffers();
+    return true;
+}
+
+bool Mesh::LoadFromFile(const std::string &filename)
+{
+    if (filename.size() > 4 && filename.substr(filename.size() - 4) == ".obj") return LoadFromObjFile(filename);
+
+    const std::string objPath = filename.size() > 7 && filename.substr(filename.size() - 7) == ".ucmesh"
+        ? filename.substr(0, filename.size() - 7) + ".obj"
+        : filename + ".obj";
+
+    if (std::filesystem::is_regular_file(objPath)) return LoadFromObjFile(objPath);
+    if (std::filesystem::is_regular_file(filename)) return LoadFromUCMESHFile(filename);
+    return false;
 }
 
 bool Mesh::LoadFromUCMESHFile(std::string filename)

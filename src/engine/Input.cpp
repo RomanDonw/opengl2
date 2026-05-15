@@ -123,7 +123,7 @@ void Input::updateMouseCapture()
 
     if (uiBlocksMouse)
     {
-        if (mouseCaptured) applyMouseCapture(false);
+        if (mouseCaptured) return;
         return;
     }
 
@@ -234,14 +234,30 @@ void Input::UpdateMouseLook()
 {
     mouseLookDelta = glm::vec2(0.0f);
 
-    if (!window || !isMouseAllowed()) return;
-    if (glfwGetMouseButton(window, captureButton) != GLFW_PRESS) return;
+    if (!window || !HasFocus()) return;
+
+    const bool active = mouseCaptured || glfwGetMouseButton(window, captureButton) == GLFW_PRESS;
+    if (!active) return;
+    if (!mouseCaptured && !isMouseAllowed()) return;
 
     mouseLookDelta.x = -glm::radians(static_cast<float>(mouseX - lastMouseX) * mouseSensitivity.x);
     mouseLookDelta.y = -glm::radians(static_cast<float>(mouseY - lastMouseY) * mouseSensitivity.y);
 
     lastMouseX = mouseX;
     lastMouseY = mouseY;
+
+    if (mouseCaptured)
+    {
+        int w, h;
+        glfwGetWindowSize(window, &w, &h);
+        const double cx = w / 2.0;
+        const double cy = h / 2.0;
+        glfwSetCursorPos(window, cx, cy);
+        lastMouseX = cx;
+        lastMouseY = cy;
+        mouseX = cx;
+        mouseY = cy;
+    }
 }
 
 void Input::SetUIBlocking(bool keyboard, bool mouse)

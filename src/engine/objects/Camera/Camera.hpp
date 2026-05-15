@@ -8,11 +8,11 @@
 
 class Scene;
 
-class Camera final : public GameObject
+class Camera : public GameObject
 {
     friend class Scene;
 
-    private:
+    protected:
         Camera(Scene *s, Transform t);
         Camera(Scene *s);
 

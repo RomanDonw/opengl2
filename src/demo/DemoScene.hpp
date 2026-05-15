@@ -16,6 +16,9 @@ class Entity;
 class AudioSource;
 class Button;
 class AudioClip;
+class DirectionalLight;
+class PointLight;
+class ParticleEmitter;
 
 struct EAXReverbEffectSettings
 {
@@ -63,6 +66,9 @@ class DemoScene
         AudioSource *zapSource = nullptr;
         AudioSource *music = nullptr;
         Button *button = nullptr;
+        DirectionalLight *sunLight = nullptr;
+        PointLight *zapLight = nullptr;
+        ParticleEmitter *sparks = nullptr;
 
         AudioClip *hit1sfx = nullptr;
         AudioClip *hit2sfx = nullptr;

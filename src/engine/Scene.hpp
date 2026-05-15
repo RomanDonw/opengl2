@@ -6,10 +6,12 @@
 #include <map>
 #include <unordered_map>
 #include <functional>
+#include <vector>
 
 #include "Engine.hpp"
 
 #include "FogRenderSettings.hpp"
+#include "LightRenderSettings.hpp"
 #include "physics/RaycastCallbackState.hpp"
 #include "physics/RaycastInfo.hpp"
 
@@ -19,6 +21,7 @@ class AudioListener;
 class RigidBody;
 class GameObject;
 class Collider;
+class Light;
 class SceneRaycastCallback;
 
 template <typename T>
@@ -43,6 +46,7 @@ class Scene final
         std::map<int32_t, std::unordered_set<GameObject *>, std::less<int32_t>> objects;
         Camera *currcam = nullptr;
         bool hasAudioListener = false;
+        glm::uvec2 renderTargetSize = glm::uvec2(0);
 
         void Render();
         void Update(double delta);
@@ -52,6 +56,7 @@ class Scene final
 
     public:
         FogRenderSettings fog;
+        glm::vec3 ambientLight = glm::vec3(0.12f);
 
         bool HasObject(GameObject *obj);
 
@@ -74,6 +79,10 @@ class Scene final
         void ForEachAllObjects(std::function<bool (GameObject *)> callback);
         void ForEachAllOrders(std::function<bool (std::unordered_set<GameObject *>)> callback);
 
+        size_t GetObjectCount();
+        std::vector<GameObject *> FindObjectsWithTag(const std::string &tag);
+        GameObject *FindFirstObjectWithTag(const std::string &tag);
+
         Camera *GetCurrentCamera(); // can return nullptr.
         void SetCurrentCamera(Camera *cam); // can be nullptr.
 
@@ -81,6 +90,9 @@ class Scene final
         void SetGravity(glm::vec3 v);
 
         bool Raycast(glm::vec3 start, glm::vec3 end, std::function<RaycastCallbackState (RaycastInfo)> callback, unsigned short collidewithmaskbits = 0xFFFF);
+
+        void SetRenderTargetSize(unsigned int width, unsigned int height);
+        void ClearRenderTargetSize();
 };
 
 #endif

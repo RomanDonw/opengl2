@@ -1,6 +1,7 @@
 #include "Model.hpp"
 
 #include "../../ResourceManager.hpp"
+#include "../../render/LightingUniforms.hpp"
 
 #include "../../resources/Mesh.hpp"
 #include "../../resources/Texture.hpp"
@@ -33,6 +34,8 @@ void Model::Render(const GameObjectRenderData *data)
     sp->SetUniformFloat("fogStartDistance", data->fog->startDistance);
     sp->SetUniformFloat("fogEndDistance", data->fog->endDistance);
     sp->SetUniformVector3("fogColor", data->fog->color);
+
+    LightingUniforms::Apply(sp, data->lights);
 
     const glm::mat4 modelMatrix = GetGlobalTransform().GetTransformationMatrix();
 

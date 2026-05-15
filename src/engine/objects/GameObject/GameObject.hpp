@@ -45,6 +45,9 @@ class GameObject
     public:
         GameObjectTransform transform;
         std::unordered_set<std::string> tags;
+        std::string displayName = "Object";
+        bool editorVisible = true;
+        bool hiddenInPlay = false;
 
         GameObject *GetParent() const; // can return nullptr.
         bool SetParent(GameObject *newparent, bool saveglobalpos = true); // newparent can be nullptr; returns true if parent was changed, otherwise returns false.

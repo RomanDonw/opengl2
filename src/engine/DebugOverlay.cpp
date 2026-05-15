@@ -1,7 +1,9 @@
 #include "DebugOverlay.hpp"
 
 #include "Input.hpp"
+#include "Profiler.hpp"
 #include "Time.hpp"
+#include "Timer.hpp"
 #include "Window.hpp"
 #include "external/imgui.hpp"
 
@@ -33,7 +35,17 @@ void DebugOverlay::Render()
     oss << "\nWindow: " << size.x << " x " << size.y;
     oss << "\nVSync: " << (Window::IsVSyncEnabled() ? "on" : "off");
     oss << "\nFullscreen: " << (Window::IsFullscreen() ? "yes" : "no");
-    oss << "\nF3 overlay | P pause";
+    oss << "\nFrame ms: " << Profiler::GetFrameMilliseconds();
+    oss << "\nTimers: " << Timer::GetActiveCount();
+    oss << "\nF3 overlay | ` console | P pause";
 
     ImGUI::GetForegroundDrawList()->AddText(ImVec2(10, 36), IM_COL32(200, 255, 200, 255), oss.str().c_str());
+
+    if (!Profiler::GetSamples().empty())
+    {
+        std::ostringstream prof;
+        prof << "Profiler:";
+        for (const ProfilerSample &s : Profiler::GetSamples()) prof << "\n  " << s.name << ": " << s.milliseconds << " ms";
+        ImGUI::GetForegroundDrawList()->AddText(ImVec2(10, 150), IM_COL32(180, 220, 255, 255), prof.str().c_str());
+    }
 }

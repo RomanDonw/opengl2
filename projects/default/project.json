@@ -1,0 +1,9 @@
+# SuperEngine project config
+name default
+entry_scene scenes/main.scene
+scripts_dir scripts
+scenes_dir scenes
+docs_dir docs
+prefer_freeplay_camera 1
+move_speed 10
+look_speed 1

@@ -3,11 +3,14 @@
 #include <exception>
 #include <stdexcept>
 
+#include "Console.hpp"
 #include "Events.hpp"
 #include "Input.hpp"
+#include "Logger.hpp"
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
 #include "Time.hpp"
+#include "Timer.hpp"
 #include "Window.hpp"
 
 // === PRIVATE ===
@@ -77,6 +80,9 @@ EngineInitReturnCode Engine::Init(const WindowSettings &windowSettings, const AL
     Input::Init(window);
     ImGui_ImplGlfw_InstallCallbacks(window);
     Time::Init();
+    Console::Init();
+
+    Logger::Info("SuperEngine initialized");
 
     phys = new rp3d::PhysicsCommon(&physalloc);
 
@@ -104,6 +110,8 @@ bool Engine::Shutdown()
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
 
+    Console::Shutdown();
+    Timer::ClearAll();
     Input::Shutdown();
     Events::ClearAll();
     ImGUI::DestroyContext();
@@ -120,6 +128,8 @@ GLFWwindow *Engine::GetWindow() { return window; }
 bool Engine::Update(double delta)
 {
     if (!inited) return false;
+
+    Timer::Update(delta);
 
     if (Engine::HasScene(currscene)) Engine::GetScene(currscene)->Update(delta);
 

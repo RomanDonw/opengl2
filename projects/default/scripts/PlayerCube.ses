@@ -1,0 +1,7 @@
+# PlayerCube
+func _ready():
+    log("PlayerCube ready")
+
+func _update(dt):
+    if Input.key_down("W"):
+        self.translate(0, 0, -4 * dt)

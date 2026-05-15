@@ -35,6 +35,7 @@ namespace Utils
     rp3d::Transform transformtorp3dtransform(Transform t);
 
     bool ReadTextFile(const std::string &filename, std::string *output);
+    bool WriteTextFile(const std::string &filename, const std::string &content);
 }
 
 #endif

@@ -18,9 +18,11 @@ void main()
 {
     vec4 globvpos4 = model * vec4(vertexPosition, 1.0);
 
-    globalVertexPosition = vec3(globvpos4.x, globvpos4.y, globvpos4.z);
+    globalVertexPosition = vec3(globvpos4);
     texturePosition = (textureTransformation * vec3(vertexTexturePosition, 1.0)).xy;
-    normal = vertexNormal;
+
+    mat3 normalMatrix = mat3(transpose(inverse(model)));
+    normal = normalize(normalMatrix * vertexNormal);
 
     gl_Position = projection * view * globvpos4;
 }

@@ -1,0 +1,41 @@
+# SuperEngine scene — use Project tab to open; scripts in scripts/*.ses
+ambient 0.35 0.36 0.4
+fog 0 24 80 0.42 0.46 0.5
+object "Sun"
+  type DirectionalLight
+  pos 0 0 0
+  rot -40 35 0
+  scale 1 1 1
+  light_color 1 0.95 0.85
+  light_intensity 1.2
+end
+object "Ground"
+  type Entity
+  pos 0 -0.5 0
+  rot 0 0 0
+  scale 12 1 12
+  mesh cube
+  texture 
+  color 0.45 0.48 0.52 1
+  body kinematic
+  mass 1
+end
+object "PlayerCube"
+  type Entity
+  pos 0 1.5 0
+  rot 0 0 0
+  scale 1 1 1
+  mesh cube
+  texture 
+  color 0.2 0.65 1 1
+  body dynamic
+  mass 5
+  script_file "scripts/PlayerCube.ses"
+end
+object "FreeplayCamera"
+  type FreeplayCamera
+  pos 0 2 8
+  rot -20 -135 0
+  scale 1 1 1
+  fov 70
+end

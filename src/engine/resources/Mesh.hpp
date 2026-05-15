@@ -41,6 +41,8 @@ class Mesh final
         void FlipMesh();
 
         bool LoadFromUCMESHFile(std::string filename);
+        bool LoadFromObjFile(const std::string &filename);
+        bool LoadFromFile(const std::string &filename);
         bool RenderMesh();
 };
 

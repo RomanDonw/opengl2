@@ -4,6 +4,7 @@
 #include "../../external/glm.hpp"
 
 #include "../../FogRenderSettings.hpp"
+#include "../../LightRenderSettings.hpp"
 
 class Transform;
 
@@ -13,6 +14,7 @@ struct GameObjectRenderData
     const glm::mat4 *view = nullptr;
     const Transform *camt = nullptr;
     const FogRenderSettings *fog = nullptr;
+    const LightRenderSettings *lights = nullptr;
 
     glm::vec3 cameraPosition = glm::vec3(0.0f);
     glm::vec3 cameraRotation = glm::vec3(0.0f);

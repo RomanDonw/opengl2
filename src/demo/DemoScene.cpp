@@ -12,8 +12,11 @@
 #include "MaxwellCat.hpp"
 
 #include "engine/Application.hpp"
+#include "engine/Console.hpp"
 #include "engine/DebugOverlay.hpp"
 #include "engine/Engine.hpp"
+#include "engine/Logger.hpp"
+#include "engine/Timer.hpp"
 #include "engine/Input.hpp"
 #include "engine/Input.hpp"
 #include "engine/Settings.hpp"
@@ -32,6 +35,9 @@
 #include "engine/objects/Model/Surface.hpp"
 #include "engine/objects/RigidBody/RigidBody.hpp"
 #include "engine/objects/TemporaryAudioSource/TemporaryAudioSource.hpp"
+#include "engine/objects/Light/DirectionalLight.hpp"
+#include "engine/objects/Light/PointLight.hpp"
+#include "engine/objects/ParticleEmitter/ParticleEmitter.hpp"
 #include "engine/physics/CollisionLayers.hpp"
 #include "engine/physics/RaycastCallbackState.hpp"
 #include "engine/physics/RaycastInfo.hpp"
@@ -88,16 +94,16 @@ bool DemoScene::loadResources()
 
     if (!sh->LinkShaderProgram(&log)) std::cout << "Error linking shader program: " << std::endl << log << std::endl;
 
-    if (ResourceManager::CreateMesh("crowbar_cyl")->LoadFromUCMESHFile("./res/models/cyl.ucmesh")) printf("loaded model crowbar_cyl\n");
-    if (ResourceManager::CreateMesh("crowbar_head")->LoadFromUCMESHFile("./res/models/head.ucmesh")) printf("loaded model crowbar_head\n");
+    if (ResourceManager::CreateMesh("crowbar_cyl")->LoadFromObjFile("./res/models/cyl.obj")) printf("loaded model crowbar_cyl\n");
+    if (ResourceManager::CreateMesh("crowbar_head")->LoadFromObjFile("./res/models/head.obj")) printf("loaded model crowbar_head\n");
     if (ResourceManager::CreateTexture("crowbar_cyl")->LoadFromTextureFile("./res/textures/cyl.png")) printf("loaded texture crowbar_cyj\n");
     if (ResourceManager::CreateTexture("crowbar_head")->LoadFromTextureFile("./res/textures/head.png")) printf("loaded texture crowbar_head\n");
-    if (ResourceManager::CreateMesh("cube")->LoadFromUCMESHFile("./res/models/cube.ucmesh")) printf("loaded model cube\n");
-    if (ResourceManager::CreateMesh("hl1_reactor_demo")->LoadFromUCMESHFile("./res/models/hl1_reactor_demo.ucmesh")) printf("loaded model hl1_reactor_demo\n");
-    if (ResourceManager::CreateMesh("sphere")->LoadFromUCMESHFile("./res/models/sphere.ucmesh")) puts("loaded model sphere");
-    if (ResourceManager::CreateMesh("decal")->LoadFromUCMESHFile("./res/models/decal.ucmesh")) puts("loaded model decal");
-    if (ResourceManager::CreateMesh("button_3")->LoadFromUCMESHFile("./res/models/buttons/3.ucmesh")) puts("loaded button 3 model");
-    if (ResourceManager::CreateMesh("button_4")->LoadFromUCMESHFile("./res/models/buttons/4.ucmesh")) puts("loaded button 4 model");
+    if (ResourceManager::CreateMesh("cube")->LoadFromObjFile("./res/models/cube.obj")) printf("loaded model cube\n");
+    if (ResourceManager::CreateMesh("hl1_reactor_demo")->LoadFromObjFile("./res/models/hl1_reactor_demo.obj")) printf("loaded model hl1_reactor_demo\n");
+    if (ResourceManager::CreateMesh("sphere")->LoadFromObjFile("./res/models/sphere.obj")) puts("loaded model sphere");
+    if (ResourceManager::CreateMesh("decal")->LoadFromObjFile("./res/models/decal.obj")) puts("loaded model decal");
+    if (ResourceManager::CreateMesh("button_3")->LoadFromObjFile("./res/models/buttons/3.obj")) puts("loaded button 3 model");
+    if (ResourceManager::CreateMesh("button_4")->LoadFromObjFile("./res/models/buttons/4.obj")) puts("loaded button 4 model");
     if (ResourceManager::CreateTexture("button_3_on")->LoadFromTextureFile("./res/textures/buttons/3_on.png")) puts("loaded button 3 on texture");
     if (ResourceManager::CreateTexture("button_3_off")->LoadFromTextureFile("./res/textures/buttons/3_off.png")) puts("loaded button 3 off texture");
     if (ResourceManager::CreateTexture("button_4_on")->LoadFromTextureFile("./res/textures/buttons/4_on.png")) puts("loaded button 4 on texture");
@@ -105,7 +111,7 @@ bool DemoScene::loadResources()
     if (ResourceManager::CreateTexture("bullethole1")->LoadFromTextureFile("./res/textures/bullethole1.png")) puts("loaded bullethole1 texture");
     if (ResourceManager::CreateTexture("bullethole2")->LoadFromTextureFile("./res/textures/bullethole2.png")) puts("loaded bullethole2 texture");
     if (ResourceManager::CreateTexture("maxwellcat")->LoadFromTextureFile("./res/textures/maxwellcat.png")) puts("loaded maxwellcat texture");
-    if (ResourceManager::CreateMesh("maxwellcat")->LoadFromUCMESHFile("./res/models/maxwellcat.ucmesh")) puts("loaded maxwellact model");
+    if (ResourceManager::CreateMesh("maxwellcat")->LoadFromObjFile("./res/models/maxwellcat.obj")) puts("loaded maxwellcat model");
 
     if (ResourceManager::CreateAudioClip("zapsfx")->LoadFromAudioFile("./res/sounds/zapmachine.wav")) printf("loaded zapmachine sound\n");
     if (ResourceManager::CreateAudioClip("alienbuildersfx")->LoadFromAudioFile("./res/sounds/alien_builder.wav")) printf("loaded alienbuilder sound\n");
@@ -132,6 +138,13 @@ void DemoScene::buildScene()
     scene->fog.startDistance = 0;
     scene->fog.endDistance = 32;
     scene->fog.color = glm::vec3(106 / 255.0f, 117 / 255.0f, 129 / 255.0f);
+    scene->ambientLight = glm::vec3(0.08f, 0.09f, 0.12f);
+
+    sunLight = scene->CreateObject<DirectionalLight>();
+    sunLight->transform.SetRotation(glm::quat(glm::radians(glm::vec3(-35.0f, 45.0f, 0.0f))));
+    sunLight->color = glm::vec3(1.0f, 0.95f, 0.85f);
+    sunLight->intensity = 1.1f;
+    sunLight->tags.insert("sun");
 
     camera = scene->CreateObject<Camera>();
     camera->FOV = glm::radians(70.0f);
@@ -206,6 +219,22 @@ void DemoScene::buildScene()
     zapSource->SetCurrentClip(ResourceManager::GetAudioClip("zapsfx"));
     zapSource->SetLooping(true);
 
+    zapLight = scene->CreateObject<PointLight>();
+    zapLight->SetParent(cube2, false);
+    zapLight->transform.SetPosition(glm::vec3(0, 0.5f, 0));
+    zapLight->color = glm::vec3(0.3f, 0.7f, 1.0f);
+    zapLight->intensity = 2.5f;
+    zapLight->range = 10.0f;
+    zapLight->tags.insert("interactive-light");
+
+    sparks = scene->CreateObject<ParticleEmitter>(Transform({-2.5f, 0.5f, -2.5f}));
+    sparks->spawnRate = 55.0f;
+    sparks->velocityMin = glm::vec3(-0.3f, 1.5f, -0.3f);
+    sparks->velocityMax = glm::vec3(0.3f, 3.5f, 0.3f);
+    sparks->colorStart = glm::vec4(1.0f, 0.85f, 0.2f, 1.0f);
+    sparks->colorEnd = glm::vec4(0.8f, 0.1f, 0.0f, 0.0f);
+    sparks->tags.insert("fx");
+
     playerBody = scene->CreateObject<RigidBody>(Transform({-2.5f, 1, -2.5f}));
     CapsuleCollider *playercoll = playerBody->AddCollider<CapsuleCollider>(Transform(), 0.5f, 1.5f);
     playercoll->SetFrictionCoefficient(0.5f);
@@ -269,6 +298,13 @@ bool DemoScene::Load()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(scene->fog.color.x, scene->fog.color.y, scene->fog.color.z, 1);
+
+    Logger::Info("Demo scene loaded, objects: " + std::to_string(scene->GetObjectCount()));
+
+    Timer::Every(5.0, [this]()
+    {
+        if (zapLight) zapLight->intensity = zapLight->intensity > 1.5f ? 0.8f : 2.8f;
+    });
 
     return true;
 }
@@ -438,6 +474,9 @@ void DemoScene::renderWindowSettings()
 
 void DemoScene::renderEnginePanel()
 {
+    ImGUI::Text("Scene objects: %zu", scene->GetObjectCount());
+    ImGUI::Text("Tagged FX: %zu", scene->FindObjectsWithTag("fx").size());
+
     float timeScale = Time::GetTimeScale();
     if (ImGUI::SliderFloat("Time scale", &timeScale, 0.0f, 3.0f)) Time::SetTimeScale(timeScale);
 
@@ -489,6 +528,7 @@ void DemoScene::RenderUI()
     ImGUI::GetForegroundDrawList()->AddText(ImVec2(10, 10), IM_COL32(255, 255, 255, 255), oss.str().c_str());
 
     DebugOverlay::Render();
+    Console::Render();
 
     ImGUI::SetNextWindowSize(ImVec2(420, 140), ImGuiCond_FirstUseEver);
     ImGUI::Begin("Engine");
@@ -586,6 +626,12 @@ void DemoScene::RenderUI()
 
     if (ImGUI::Button("Spawn Maxwell the Cat"))
         scene->CreateObject<MaxwellCat>(Transform(player.GetBody()->transform.GetPosition()));
+
+    if (sparks && ImGUI::Button("Toggle sparks"))
+    {
+        sparks->playing = !sparks->playing;
+        if (!sparks->playing) sparks->Clear();
+    }
 
     ImGUI::End();
 }

@@ -1,8 +1,10 @@
 #include "Application.hpp"
 
+#include "Console.hpp"
 #include "DebugOverlay.hpp"
 #include "Engine.hpp"
 #include "Input.hpp"
+#include "Profiler.hpp"
 #include "Time.hpp"
 #include "Window.hpp"
 
@@ -32,11 +34,15 @@ void Application::Run()
 
     Time::Init();
 
+    Console::SetApplication(this);
+
     if (onInit) onInit();
 
     while (running && !Window::ShouldClose())
     {
+        Profiler::BeginFrame();
         Input::Poll();
+        Console::Update();
         DebugOverlay::Update();
         Time::Tick(targetFPS);
 
@@ -70,6 +76,7 @@ void Application::Run()
 
         if (onRender) onRender();
 
+        Profiler::EndFrame();
         Input::EndFrame();
         glfwSwapBuffers(Window::GetHandle());
     }

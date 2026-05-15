@@ -66,4 +66,13 @@ namespace Utils
         *output = oss.str();
         return true;
     }
+
+    bool WriteTextFile(const std::string &filename, const std::string &content)
+    {
+        FILE *f = fopen(filename.c_str(), "w");
+        if (!f) return false;
+        const size_t written = fwrite(content.data(), 1, content.size(), f);
+        fclose(f);
+        return written == content.size();
+    }
 }
