@@ -28,7 +28,11 @@ set(ENV{PKG_CONFIG} "pkg-config --static")
 
 # set includes path.
 
-target_include_directories(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(opengl2 PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/engine"
+)
 
 # link static libs.
 

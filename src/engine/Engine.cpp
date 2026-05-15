@@ -3,8 +3,12 @@
 #include <exception>
 #include <stdexcept>
 
+#include "Events.hpp"
+#include "Input.hpp"
 #include "ResourceManager.hpp"
 #include "Scene.hpp"
+#include "Time.hpp"
+#include "Window.hpp"
 
 // === PRIVATE ===
 
@@ -14,8 +18,7 @@ void Engine::resizecallback(GLFWwindow *w, int width, int height) { if (width > 
 
 void Engine::shutdownwin()
 {
-    glfwMakeContextCurrent(NULL);
-    glfwTerminate();
+    Window::Destroy();
     window = nullptr;
 }
 
@@ -31,13 +34,14 @@ void Engine::shutdownaudio()
 
 // === PUBLIC ===
 
-EngineInitReturnCode Engine::Init(unsigned short windowWidth, unsigned short windowHeight, const ALchar *audiodevname, bool enableHRTF)
+EngineInitReturnCode Engine::Init(const WindowSettings &windowSettings, const ALchar *audiodevname, bool enableHRTF)
 {
     if (inited) return ERROR_ALREADY_INITED;
 
-    // init OpenGL.
+    Window::GetSettings() = windowSettings;
+    if (!Window::Create()) return ERROR_OPENGL_INIT;
 
-    if (initOpenGL(&window, windowWidth, windowHeight) != INITOPENGL_SUCCESS) return ERROR_OPENGL_INIT;
+    window = Window::GetHandle();
     glfwSetWindowSizeCallback(window, resizecallback);
 
     // init audio.
@@ -66,14 +70,29 @@ EngineInitReturnCode Engine::Init(unsigned short windowWidth, unsigned short win
     IMGUI_CHECKVERSION();
     ImGUI::CreateContext();
 
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplGlfw_InitForOpenGL(window, false);
     ImGui_ImplOpenGL3_Init();
+    ImGUI::GetIO().IniFilename = nullptr;
+
+    Input::Init(window);
+    ImGui_ImplGlfw_InstallCallbacks(window);
+    Time::Init();
 
     phys = new rp3d::PhysicsCommon(&physalloc);
 
     inited = true;
     return SUCCESS;
 }
+
+EngineInitReturnCode Engine::Init(unsigned short windowWidth, unsigned short windowHeight, const ALchar *audiodevname, bool enableHRTF)
+{
+    WindowSettings ws;
+    ws.width = windowWidth;
+    ws.height = windowHeight;
+    return Init(ws, audiodevname, enableHRTF);
+}
+
+WindowSettings &Engine::GetWindowSettings() { return Window::GetSettings(); }
 
 bool Engine::Shutdown()
 {
@@ -84,6 +103,9 @@ bool Engine::Shutdown()
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
+
+    Input::Shutdown();
+    Events::ClearAll();
     ImGUI::DestroyContext();
 
     shutdownaudio();
@@ -107,25 +129,7 @@ bool Engine::Update(double delta)
 glm::uvec2 Engine::GetWindowSize()
 {
     if (!inited) throw std::runtime_error("engine isn't initialized");
-
-    int w, h;
-    glfwGetWindowSize(window, &w, &h);
-
-    return glm::uvec2(w, h);
-}
-
-bool Engine::IsKeyPressed(unsigned short keycode)
-{
-    if (!inited) throw std::runtime_error("engine isn't initialized");
-
-    return glfwGetKey(window, keycode) == GLFW_PRESS;
-}
-
-bool Engine::IsMouseButtonPressed(unsigned char button)
-{
-    if (!inited) throw std::runtime_error("engine isn't initialized");
-
-    return glfwGetMouseButton(window, button) == GLFW_PRESS;
+    return Window::GetSize();
 }
 
 void Engine::SetAudioDistanceModel(ALenum model) { alDistanceModel(model); }
@@ -134,9 +138,8 @@ bool Engine::Render()
 {
     if (!inited) return false;
 
-    int w, h;
-    glfwGetWindowSize(window, &w, &h);
-    if (w <= 0 || h <= 0) return false;
+    const glm::uvec2 size = Window::GetSize();
+    if (size.x == 0 || size.y == 0) return false;
 
     if (Engine::HasScene(currscene)) Engine::GetScene(currscene)->Render();
 
@@ -205,6 +208,8 @@ bool Engine::EndRenderUI()
 
     ImGUI::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGUI::GetDrawData());
+
+    Input::SetUIBlocking(ImGUI::GetIO().WantCaptureKeyboard, ImGUI::GetIO().WantCaptureMouse);
 
     return true;
 }

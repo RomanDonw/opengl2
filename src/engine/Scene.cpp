@@ -1,7 +1,5 @@
 #include "Scene.hpp"
 
-#include <iterator>
-#include <algorithm>
 #include <exception>
 #include <stdexcept>
 
@@ -11,12 +9,9 @@
 
 #include "Utils.hpp"
 
-// === PRIVATE ===
-
 Scene::Scene()
 {
     objects.insert({0, std::unordered_set<GameObject *>()});
-
     world = Engine::phys->createPhysicsWorld();
 }
 
@@ -42,25 +37,29 @@ void Scene::Render()
 {
     if (!currcam) return;
 
-    glm::mat4 proj = currcam->GetProjectionMatrix(Engine::GetWindowSize());
-    glm::mat4 view = currcam->GetViewMatrix();
-    Transform globt = currcam->GetGlobalTransform();
+    const glm::uvec2 scrsize = Engine::GetWindowSize();
+    if (scrsize.x == 0 || scrsize.y == 0) return;
+
+    const glm::mat4 proj = currcam->GetProjectionMatrix(scrsize);
+    const glm::mat4 view = currcam->GetViewMatrix();
+    const Transform camt = currcam->GetGlobalTransform();
 
     GameObjectRenderData data;
     data.proj = &proj;
     data.view = &view;
-    data.camt = &globt;
+    data.camt = &camt;
     data.fog = &fog;
-    
+    data.cameraPosition = camt.GetPosition();
+    data.cameraRotation = glm::eulerAngles(camt.GetRotation());
+    data.cameraFront = camt.GetFront();
+    data.cameraUp = camt.GetUp();
+    data.cameraRight = camt.GetRight();
+
     ForEachAllObjects([&](GameObject *obj) -> bool { obj->Render(&data); return true; });
 }
 
 void Scene::OnSceneLoad() { ForEachAllObjects([&](GameObject *obj) -> bool { obj->OnSceneLoad(); return true; }); }
 void Scene::OnSceneUnload() { ForEachAllObjects([&](GameObject *obj) -> bool { obj->OnSceneUnload(); return true; }); }
-
-// === PUBLIC ===
-
-// ============================================================================================================
 
 bool Scene::HasObject(GameObject *obj)
 {
@@ -84,8 +83,6 @@ void Scene::DeleteObject(GameObject *obj)
     delete obj;
 }
 
-// ============================================================================================================
-
 int32_t Scene::GetObjectOrder(GameObject *obj) { return obj->order; }
 
 void Scene::SetObjectOrder(GameObject *obj, int32_t order)
@@ -102,24 +99,27 @@ void Scene::SetObjectOrder(GameObject *obj, int32_t order)
     obj->order = order;
 }
 
-// ============================================================================================================
-
 void Scene::ForEachAllObjects(std::function<bool (GameObject *)> callback)
 {
-    for (std::pair<int32_t, std::unordered_set<GameObject *>> pair : objects)
+    for (const auto &pair : objects)
     {
-        for (GameObject *obj : pair.second) if (!callback(obj)) return;
+        for (GameObject *obj : pair.second)
+        {
+            if (!callback(obj)) return;
+        }
     }
 }
 
 void Scene::ForEachAllOrders(std::function<bool (std::unordered_set<GameObject *>)> callback)
 {
-    for (std::pair<int32_t, std::unordered_set<GameObject *>> pair : objects) if (!callback(pair.second)) return;
+    for (const auto &pair : objects)
+    {
+        if (!callback(pair.second)) return;
+    }
 }
 
-// ============================================================================================================
-
 Camera *Scene::GetCurrentCamera() { return currcam; }
+
 void Scene::SetCurrentCamera(Camera *camera)
 {
     if (!HasObject(camera)) throw std::runtime_error("this scene doesn't have this object");
@@ -127,6 +127,7 @@ void Scene::SetCurrentCamera(Camera *camera)
 }
 
 glm::vec3 Scene::GetGravity() { return Utils::rp3dvec3toglmvec3(world->getGravity()); }
+
 void Scene::SetGravity(glm::vec3 v) { world->setGravity(Utils::glmvec3torp3dvec3(v)); }
 
 bool Scene::Raycast(glm::vec3 start, glm::vec3 end, std::function<RaycastCallbackState (RaycastInfo)> callback, unsigned short collidewithmaskbits)

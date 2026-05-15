@@ -171,7 +171,12 @@ bool ShaderProgram::UseThisProgram()
 {
     if (!HasShaderProgram()) return false;
 
-    glUseProgram(shaderProgram);
+    static GLuint boundProgram = 0;
+    if (boundProgram != shaderProgram)
+    {
+        glUseProgram(shaderProgram);
+        boundProgram = shaderProgram;
+    }
 
     return true;
 }

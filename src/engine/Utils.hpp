@@ -33,6 +33,8 @@ namespace Utils
 
     Transform rp3dtransformtotransform(rp3d::Transform t);
     rp3d::Transform transformtorp3dtransform(Transform t);
+
+    bool ReadTextFile(const std::string &filename, std::string *output);
 }
 
 #endif

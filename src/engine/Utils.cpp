@@ -1,5 +1,8 @@
 #include "Utils.hpp"
 
+#include <cstdio>
+#include <sstream>
+
 namespace Utils
 {
     glm::vec3 normalize(glm::vec3 v)
@@ -43,4 +46,24 @@ namespace Utils
 
     Transform rp3dtransformtotransform(rp3d::Transform t) { return Transform(rp3dvec3toglmvec3(t.getPosition()), rp3dquattoglmquat(t.getOrientation())); }
     rp3d::Transform transformtorp3dtransform(Transform t) { return rp3d::Transform(glmvec3torp3dvec3(t.GetPosition()), glmquattorp3dquat(t.GetRotation())); }
+
+    bool ReadTextFile(const std::string &filename, std::string *output)
+    {
+        const size_t BUFFER_SIZE = 4096;
+        char buffer[BUFFER_SIZE];
+        std::ostringstream oss;
+
+        FILE *f = fopen(filename.c_str(), "r");
+        if (!f) return false;
+
+        while (!feof(f))
+        {
+            const size_t readbytes = fread(buffer, sizeof(char), BUFFER_SIZE, f);
+            for (size_t i = 0; i < readbytes; i++) oss << buffer[i];
+        }
+
+        fclose(f);
+        *output = oss.str();
+        return true;
+    }
 }

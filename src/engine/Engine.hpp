@@ -10,6 +10,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "WindowSettings.hpp"
 #include "physics/PhysicsHeapAllocator.hpp"
 
 class Scene;
@@ -55,13 +56,13 @@ class Engine final
         static void shutdownaudio();
 
     public:
+        static EngineInitReturnCode Init(const WindowSettings &windowSettings, const ALchar *audiodevname, bool enableHRTF = false);
         static EngineInitReturnCode Init(unsigned short windowWidth, unsigned short windowHeight, const ALchar *audiodevname, bool enableHRTF = false);
         static bool Shutdown();
 
-        static GLFWwindow *GetWindow(); // can return nullptr.
+        static GLFWwindow *GetWindow();
         static glm::uvec2 GetWindowSize();
-        static bool IsKeyPressed(unsigned short keycode);
-        static bool IsMouseButtonPressed(unsigned char button);
+        static WindowSettings &GetWindowSettings();
 
         static void SetAudioDistanceModel(ALenum model);
 
