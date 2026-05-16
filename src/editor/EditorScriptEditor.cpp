@@ -84,17 +84,21 @@ void EditorScriptEditor::Render(EditorState &state, const ImVec2 &pos, const ImV
 
     if (ImGUI::Button("Apply") && state.selected)
     {
-        ScriptBehaviour *sb = state.EnsureScript(state.selected);
-        if (state.scriptPath.empty()) state.scriptPath = state.GetScriptPathFor(state.selected);
+        state.scriptBuffer = g_buffer;
+        if (state.scriptPath.empty())
+            state.scriptPath = state.GetScriptPathFor(state.selected);
+
+        ScriptBehaviour *sb = state.EnsureScript(state.selected, false);
         sb->SetScriptFile(state.scriptPath);
         sb->SetSource(g_buffer);
-        state.scriptBuffer = g_buffer;
         state.scriptDirty = false;
     }
     ImGUI::SameLine();
-    if (ImGUI::Button("Save .ses") && !state.scriptPath.empty())
+    if (ImGUI::Button("Save .ses") && state.selected)
     {
         state.scriptBuffer = g_buffer;
+        if (state.scriptPath.empty())
+            state.scriptPath = state.GetScriptPathFor(state.selected);
         state.SaveScriptToDisk();
         g_lastPath.clear();
     }

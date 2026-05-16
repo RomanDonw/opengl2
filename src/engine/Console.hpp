@@ -1,6 +1,8 @@
 #ifndef CONSOLE_HPP
 #define CONSOLE_HPP
 
+#include "external/imgui/imgui.h"
+
 #include <functional>
 #include <string>
 #include <unordered_map>
@@ -36,6 +38,7 @@ class Console final
         static void registerDefaults();
         static std::vector<std::string> tokenize(const std::string &line);
         static void execute(const std::string &line);
+        static int inputCallback(ImGuiInputTextCallbackData *data);
 
     public:
         static void Init();

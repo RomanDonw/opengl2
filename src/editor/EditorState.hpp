@@ -78,7 +78,7 @@ class EditorState final
         void Select(GameObject *obj);
         void ClearSelection();
         ScriptBehaviour *GetScriptFor(GameObject *obj);
-        ScriptBehaviour *EnsureScript(GameObject *obj);
+        ScriptBehaviour *EnsureScript(GameObject *obj, bool reselect = true);
         void BeginPlay();
         void EndPlay();
         void SyncEditorCameraObject();

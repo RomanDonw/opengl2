@@ -5,3 +5,11 @@ func _ready():
 func _update(dt):
     if Input.key_down("W"):
         self.translate(0, 0, -4 * dt)
+    if Input.key_down("S"):
+        self.translate(0, 0, 4 * dt)
+    if Input.key_down("A"):
+        self.translate(4 * dt, 0, 0)
+    if Input.key_down("D"):
+        self.translate(-4 * dt, 0, 0)
+    if Input.key_down("Space"):
+        self.translate(0, 4 * dt, 0)

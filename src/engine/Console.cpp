@@ -113,7 +113,7 @@ void Console::execute(const std::string &line)
 
     Log("> " + line);
     history.push_back(line);
-    historyIndex = static_cast<int>(history.size());
+    historyIndex = -1;
 
     const std::vector<std::string> tokens = tokenize(line);
     if (tokens.empty()) return;
@@ -126,6 +126,35 @@ void Console::execute(const std::string &line)
     }
 
     it->second.handler(tokens);
+}
+
+int Console::inputCallback(ImGuiInputTextCallbackData *data)
+{
+    if (data->EventFlag != ImGuiInputTextFlags_CallbackHistory)
+        return 0;
+
+    const int prevIndex = historyIndex;
+    if (data->EventKey == ImGuiKey_UpArrow)
+    {
+        if (historyIndex == -1)
+            historyIndex = static_cast<int>(history.size()) - 1;
+        else if (historyIndex > 0)
+            --historyIndex;
+    }
+    else if (data->EventKey == ImGuiKey_DownArrow)
+    {
+        if (historyIndex != -1 && ++historyIndex >= static_cast<int>(history.size()))
+            historyIndex = -1;
+    }
+
+    if (prevIndex != historyIndex)
+    {
+        const char *historyStr = (historyIndex >= 0) ? history[historyIndex].c_str() : "";
+        data->DeleteChars(0, data->BufTextLen);
+        data->InsertChars(0, historyStr);
+    }
+
+    return 0;
 }
 
 void Console::Render()
@@ -152,7 +181,7 @@ void Console::Render()
     ImGUI::EndChild();
 
     const ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackHistory;
-    if (ImGUI::InputText("##input", inputBuffer, sizeof(inputBuffer), flags))
+    if (ImGUI::InputText("##input", inputBuffer, sizeof(inputBuffer), flags, inputCallback))
     {
         execute(inputBuffer);
         inputBuffer[0] = '\0';

@@ -114,15 +114,20 @@ void EditorState::OnProjectFileRenamed(const std::string &fromRel, const std::st
 
 void EditorState::SaveScriptToDisk()
 {
-    if (scriptPath.empty()) return;
+    if (!selected) return;
+
+    if (scriptPath.empty())
+        scriptPath = GetScriptPathFor(selected);
+
+    ScriptBehaviour *sb = GetScriptFor(selected);
+    if (!sb)
+        sb = EnsureScript(selected, false);
+
+    if (scriptPath.empty() || !sb) return;
 
     project.WriteTextFile(scriptPath, scriptBuffer);
-
-    if (ScriptBehaviour *sb = GetScriptFor(selected))
-    {
-        sb->SetScriptFile(scriptPath);
-        sb->SetSource(scriptBuffer);
-    }
+    sb->SetScriptFile(scriptPath);
+    sb->SetSource(scriptBuffer);
     scriptDirty = false;
 }
 
@@ -268,8 +273,20 @@ void EditorState::Select(GameObject *obj)
     }
     else
     {
+        scriptPath = GetScriptPathFor(obj);
         scriptBuffer.clear();
-        scriptPath.clear();
+        LoadScriptFromDisk();
+
+        if (scriptBuffer.empty())
+        {
+            scriptBuffer =
+                "# SEScript\n"
+                "func _ready():\n"
+                "    log(\"ready\")\n"
+                "\n"
+                "func _update(dt):\n"
+                "    pass\n";
+        }
         scriptDirty = false;
     }
 }
@@ -292,23 +309,32 @@ ScriptBehaviour *EditorState::GetScriptFor(GameObject *obj)
     return nullptr;
 }
 
-ScriptBehaviour *EditorState::EnsureScript(GameObject *obj)
+ScriptBehaviour *EditorState::EnsureScript(GameObject *obj, bool reselect)
 {
     if (!obj || !scene) return nullptr;
     if (ScriptBehaviour *existing = GetScriptFor(obj)) return existing;
 
     ScriptBehaviour *sb = scene->CreateObject<ScriptBehaviour>();
     sb->SetParent(obj, false);
-    sb->SetScriptFile(project.DefaultScriptPath(obj->displayName));
-    sb->SetSource(
-        "# SEScript\n"
-        "func _ready():\n"
-        "    log(\"ready\")\n"
-        "\n"
-        "func _update(dt):\n"
-        "    if Input.key_down(\"W\"):\n"
-        "        self.translate(0, 0, -4 * dt)\n");
-    Select(obj);
+
+    const std::string path = scriptPath.empty() ? GetScriptPathFor(obj) : scriptPath;
+    sb->SetScriptFile(path);
+
+    if (!scriptBuffer.empty())
+        sb->SetSource(scriptBuffer);
+    else
+    {
+        sb->SetSource(
+            "# SEScript\n"
+            "func _ready():\n"
+            "    log(\"ready\")\n"
+            "\n"
+            "func _update(dt):\n"
+            "    if Input.key_down(\"W\"):\n"
+            "        self.translate(0, 0, -4 * dt)\n");
+    }
+
+    if (reselect) Select(obj);
     return sb;
 }
 

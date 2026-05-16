@@ -1,6 +1,7 @@
 #include "EditorUI.hpp"
 
 #include "EditorDocs.hpp"
+#include "EditorGizmos.hpp"
 #include "EditorMode.hpp"
 #include "EditorScriptEditor.hpp"
 #include "EditorState.hpp"
@@ -64,6 +65,13 @@ namespace
     }
 }
 
+static GameObject *createAndSelect(EditorState &state, const std::string &typeName, const std::string &displayName)
+{
+    GameObject *obj = ObjectFactory::Create(state.scene, typeName, displayName);
+    if (obj) state.Select(obj);
+    return obj;
+}
+
 static void renderMainBar(EditorState &state)
 {
     if (!ImGUI::BeginMainMenuBar()) return;
@@ -91,12 +99,12 @@ static void renderMainBar(EditorState &state)
 
     if (ImGUI::BeginMenu("Add"))
     {
-        if (ImGUI::MenuItem("Entity")) ObjectFactory::Create(state.scene, "Entity", "Entity");
-        if (ImGUI::MenuItem("Model")) ObjectFactory::Create(state.scene, "Model", "Model");
-        if (ImGUI::MenuItem("Camera")) ObjectFactory::Create(state.scene, "Camera", "Camera");
-        if (ImGUI::MenuItem("Freeplay Camera")) ObjectFactory::Create(state.scene, "FreeplayCamera", "FreeplayCamera");
-        if (ImGUI::MenuItem("Directional Light")) ObjectFactory::Create(state.scene, "DirectionalLight", "Sun");
-        if (ImGUI::MenuItem("Point Light")) ObjectFactory::Create(state.scene, "PointLight", "Light");
+        if (ImGUI::MenuItem("Entity")) createAndSelect(state, "Entity", "Entity");
+        if (ImGUI::MenuItem("Model")) createAndSelect(state, "Model", "Model");
+        if (ImGUI::MenuItem("Camera")) createAndSelect(state, "Camera", "Camera");
+        if (ImGUI::MenuItem("Freeplay Camera")) createAndSelect(state, "FreeplayCamera", "FreeplayCamera");
+        if (ImGUI::MenuItem("Directional Light")) createAndSelect(state, "DirectionalLight", "Sun");
+        if (ImGUI::MenuItem("Point Light")) createAndSelect(state, "PointLight", "Light");
         ImGUI::EndMenu();
     }
 
@@ -235,9 +243,9 @@ static void renderHierarchyList(EditorState &state)
 
     if (ImGUI::BeginPopupContextWindow("hierarchy_bg", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
     {
-        if (ImGUI::MenuItem("Create Entity")) ObjectFactory::Create(state.scene, "Entity", "Entity");
-        if (ImGUI::MenuItem("Create Model")) ObjectFactory::Create(state.scene, "Model", "Model");
-        if (ImGUI::MenuItem("Create Freeplay Camera")) ObjectFactory::Create(state.scene, "FreeplayCamera", "FreeplayCamera");
+        if (ImGUI::MenuItem("Create Entity")) createAndSelect(state, "Entity", "Entity");
+        if (ImGUI::MenuItem("Create Model")) createAndSelect(state, "Model", "Model");
+        if (ImGUI::MenuItem("Create Freeplay Camera")) createAndSelect(state, "FreeplayCamera", "FreeplayCamera");
         ImGUI::EndPopup();
     }
 }
@@ -485,17 +493,34 @@ static void renderInspector(EditorState &state, const EditorLayout &layout, floa
         if (ImGUI::DragFloat("Mass", &mass, 0.1f, 0.01f, 10000.0f)) e->SetMass(mass);
     }
 
+    if (Camera *cam = dynamic_cast<Camera *>(state.selected))
+    {
+        float fovDeg = glm::degrees(cam->FOV);
+        if (ImGUI::DragFloat("FOV", &fovDeg, 0.5f, 10.0f, 120.0f)) cam->FOV = glm::radians(fovDeg);
+        ImGUI::DragFloat("Near", &cam->nearDistance, 0.01f, 0.01f, 10.0f);
+        ImGUI::DragFloat("Far", &cam->farDistance, 1.0f, 10.0f, 5000.0f);
+        if (ImGUI::Button("Set as View Camera") && state.scene) state.scene->SetCurrentCamera(cam);
+    }
+
     if (PointLight *pl = dynamic_cast<PointLight *>(state.selected))
     {
+        ImGUI::Checkbox("Enabled", &pl->enabled);
         ImGUI::ColorEdit3("Light Color", &pl->color.x);
         ImGUI::DragFloat("Intensity", &pl->intensity, 0.05f, 0, 20);
         ImGUI::DragFloat("Range", &pl->range, 0.1f, 0.1f, 100);
     }
 
+    if (DirectionalLight *dl = dynamic_cast<DirectionalLight *>(state.selected))
+    {
+        ImGUI::Checkbox("Enabled", &dl->enabled);
+        ImGUI::ColorEdit3("Light Color", &dl->color.x);
+        ImGUI::DragFloat("Intensity", &dl->intensity, 0.05f, 0, 20);
+        ImGUI::TextWrapped("Arrow in viewport = light direction (local -Z / front).");
+    }
+
     if (ImGUI::Button("Add / Edit Script"))
     {
-        ScriptBehaviour *sb = state.EnsureScript(state.selected);
-        state.scriptBuffer = sb->GetSource();
+        state.EnsureScript(state.selected, false);
         state.activeTab = EditorTab::Script;
     }
 
@@ -706,6 +731,8 @@ static void renderViewport(EditorState &state, const EditorLayout &layout, float
         }
 
         ImGUI::Image(static_cast<ImTextureID>(static_cast<intptr_t>(state.viewportTarget->GetColorTexture())), inner, ImVec2(0, 1), ImVec2(1, 0));
+        if (!state.isPlaying)
+            EditorGizmos::DrawViewportOverlay(state, ImGUI::GetItemRectMin(), inner);
     }
     else ImGUI::Text("Viewport too small");
 
