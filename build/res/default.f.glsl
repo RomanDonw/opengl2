@@ -26,7 +26,7 @@ out vec4 FragColor;
 uniform vec4 color;
 
 uniform bool hasTexture;
-uniform sampler2D texture;
+uniform sampler2D tex;
 
 uniform bool fogEnabled;
 uniform float fogStartDistance;
@@ -42,7 +42,7 @@ uniform vec3 cameraRight;
 
 void main()
 {
-    vec4 vertcol = (hasTexture ? texture2D(texture, texturePosition) : vec4(1.0)) * color;
+    vec4 vertcol = (hasTexture ? texture(tex, texturePosition) : vec4(1.0)) * color;
 
     vec3 light = vec3(0);
     for (uint i = 0; i < pointLightsCount; i++)
