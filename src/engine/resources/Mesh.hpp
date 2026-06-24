@@ -38,6 +38,8 @@ class Mesh final
         void ApplyTransformation(glm::mat4 mat);
         void ApplyTransformation(Transform t);
 
+        void FlipMesh();
+
         bool LoadFromUCMESHFile(std::string filename);
         bool RenderMesh();
 };
