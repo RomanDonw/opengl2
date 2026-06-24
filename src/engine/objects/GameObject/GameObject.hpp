@@ -22,7 +22,10 @@ class GameObject
         // for security reasons moved to private section.
         Scene *scene;
         GameObject *parent = nullptr;
+        bool isshadowchild = false;
+
         std::unordered_set<GameObject *> children = std::unordered_set<GameObject *>();
+        std::unordered_set<GameObject *> shadowchildren = std::unordered_set<GameObject *>();
 
     protected:
         virtual void OnLocalTransformChanged();
@@ -41,6 +44,9 @@ class GameObject
 
         virtual void OnSceneLoad();
         virtual void OnSceneUnload();
+
+        std::unordered_set<GameObject *> GetShadowChildren() const;
+        bool AddShadowChild(GameObject *child, bool saveglobalpos = true);
 
     public:
         GameObjectTransform transform;

@@ -10,7 +10,14 @@ void GameObjectTransform::OnTransformChanged()
 {
     Transform::OnTransformChanged();
     
+    if (locknotifyinggameobject) { locknotifyinggameobject = false; return; }
     object->OnLocalTransformChanged();
+}
+
+void GameObjectTransform::SetTransformSilently(Transform transform)
+{
+    locknotifyinggameobject = true;
+    *this = transform;
 }
 
 GameObjectTransform *GameObjectTransform::operator=(Transform other)

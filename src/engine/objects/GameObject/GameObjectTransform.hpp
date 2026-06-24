@@ -12,7 +12,10 @@ class GameObjectTransform final : public Transform
     private:
         GameObject *object;
 
+        bool locknotifyinggameobject = false;
         void OnTransformChanged() override;
+
+        void SetTransformSilently(Transform transform);
 
         GameObjectTransform(GameObject *obj);
 

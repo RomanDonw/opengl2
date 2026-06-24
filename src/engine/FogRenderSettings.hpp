@@ -3,7 +3,7 @@
 
 #include "external/glm.hpp"
 
-struct
+struct FogRenderSettings
 {
     bool enabled = false;
     float startDistance = 0;

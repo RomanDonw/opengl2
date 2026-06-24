@@ -46,7 +46,7 @@ const glm::vec3 crowbar_rot = glm::vec3(-3.04567, -0.648789, 3.12098);
 double lastX = WWIDTH / 2, lastY = WHEIGHT / 2;
 const float MOUSE_SENSITIVITY = 0.1;
 
-struct
+struct EAXReverbEffectSettings
 {
     float density = 1;
     float diffusion = 1;

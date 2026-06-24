@@ -2,6 +2,9 @@
 
 This is attempt to create yet another 3D game engine with using OpenGL.
 
+> [!WARNING]
+> This building instructions are deprecated. I wiil update it later. Sorry :( .
+
 ## Building
 ### Windows
 

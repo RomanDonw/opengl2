@@ -52,8 +52,10 @@ void Scene::Render()
     for (PointLight *light : pointlights) pointlightsdata.push_back(light->GetLightData());
 
     Engine::pointlightsssbo->SetBufferData(pointlightsdata.data(), pointlightsdata.size() * sizeof(PointLightData), GL_STREAM_DRAW);
+    /*
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
     //glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_BUFFER_UPDATE_BARRIER_BIT);
+    */
 
     GameObjectRenderData data;
     data.proj = &proj;
@@ -89,11 +91,12 @@ void Scene::DeleteObject(GameObject *obj)
 {
     if (!HasObject(obj)) throw std::runtime_error("this scene doesn't have this object");
 
-    std::unordered_set<GameObject *> *group = &objects.at(obj->order);
-    group->erase(obj);
-    if (!group->size()) objects.erase(obj->order);
-
+    int32_t order = obj->order;
     delete obj;
+    
+    std::unordered_set<GameObject *> *group = &objects.at(order);
+    group->erase(obj);
+    if (!group->size()) objects.erase(order);
 }
 
 // ============================================================================================================
@@ -118,7 +121,8 @@ void Scene::SetObjectOrder(GameObject *obj, int32_t order)
 
 void Scene::ForEachAllObjects(std::function<bool (GameObject *)> callback)
 {
-    for (std::pair<int32_t, std::unordered_set<GameObject *>> pair : objects)
+    auto objs = objects;
+    for (std::pair<int32_t, std::unordered_set<GameObject *>> pair : objs)
     {
         for (GameObject *obj : pair.second) if (!callback(obj)) return;
     }
@@ -126,7 +130,8 @@ void Scene::ForEachAllObjects(std::function<bool (GameObject *)> callback)
 
 void Scene::ForEachAllOrders(std::function<bool (std::unordered_set<GameObject *>)> callback)
 {
-    for (std::pair<int32_t, std::unordered_set<GameObject *>> pair : objects) if (!callback(pair.second)) return;
+    auto objs = objects;
+    for (std::pair<int32_t, std::unordered_set<GameObject *>> pair : objs) if (!callback(pair.second)) return;
 }
 
 // ============================================================================================================

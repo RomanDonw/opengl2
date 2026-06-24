@@ -32,7 +32,7 @@ target_include_directories(opengl2 PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include"
 
 # link static libs.
 
-find_package(glfw3 3.3 REQUIRED)
+find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 target_link_libraries(opengl2 PRIVATE glfw OpenGL::GL)
 
@@ -42,4 +42,5 @@ target_link_libraries(opengl2 PRIVATE OpenAL::OpenAL)
 find_package(ReactPhysics3D REQUIRED)
 target_link_libraries(opengl2 PRIVATE ReactPhysics3D::ReactPhysics3D)
 
-target_link_libraries(opengl2 PRIVATE -lsndfile)
+find_package(SndFile REQUIRED)
+target_link_libraries(opengl2 PRIVATE SndFile::sndfile)

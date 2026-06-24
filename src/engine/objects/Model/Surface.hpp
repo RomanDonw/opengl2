@@ -8,7 +8,7 @@
 #include "../../Transform.hpp"
 #include "../../Transform2D.hpp"
 
-enum
+enum FaceCullingType
 {
     NoCulling = 0,
     BackFace = 1,
@@ -16,7 +16,7 @@ enum
     BothFaces = 3
 } typedef FaceCullingType;
 
-struct
+struct Surface
 {
     Transform transform = Transform();
     bool enableRender = true;

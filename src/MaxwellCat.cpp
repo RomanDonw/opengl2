@@ -23,7 +23,7 @@ void MaxwellCat::constructor()
     coll->SetBounciness(0.75);
 
     model = scene->CreateObject<Model>();
-    model->SetParent(this, false);
+    AddShadowChild(model, false);
     model->transform.SetScale(glm::vec3(0.03));
     {
         model->usedShaderProgram = "default";
@@ -35,7 +35,7 @@ void MaxwellCat::constructor()
     }
 
     src = scene->CreateObject<AudioSource>();
-    src->SetParent(this, false);
+    AddShadowChild(src, false);
 
     src->SetSourceFloat(AL_GAIN, 0.3);
     src->SetSourceFloat(AL_REFERENCE_DISTANCE, 0);
