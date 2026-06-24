@@ -1,11 +1,13 @@
 #ifndef BUTTON_HPP
 #define BUTTON_HPP
 
+#include "engine/external/glm.hpp"
 #include "engine/objects/Entity/Entity.hpp"
 
 #include <functional>
 
 class Scene;
+class PointLight;
 
 class Button final : public Entity
 {
@@ -13,6 +15,8 @@ class Button final : public Entity
 
     private:
         bool enabled;
+
+        PointLight *light;
 
         void constructor();
 
@@ -26,6 +30,11 @@ class Button final : public Entity
         std::string textureon;
         std::string textureoff;
         std::string togglesfx;
+
+        bool lightstateon = false;
+        glm::vec3 lightcoloron = glm::vec3(0);
+        bool lightstateoff = false;
+        glm::vec3 lightcoloroff = glm::vec3(0);
 
         std::function<void (Button *, bool)> toggleCallback;
 

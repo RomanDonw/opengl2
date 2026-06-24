@@ -221,6 +221,9 @@ int main()
     AudioClip *button8sfx = ResourceManager::CreateAudioClip("button8sfx");
     if (button8sfx->LoadFromAudioFile("./res/sounds/buttons/8.wav")) puts("loaded button 8 sound");
 
+    AudioClip *button3sfx = ResourceManager::CreateAudioClip("button3sfx");
+    if (button3sfx->LoadFromAudioFile("./res/sounds/buttons/3.wav")) puts("loaded button 3 sound");
+
     AudioClip *mus_maxwellcat = ResourceManager::CreateAudioClip("mus_maxwellcat");
     if (mus_maxwellcat->LoadFromAudioFile("./res/music/maxwellcat.ogg")) puts("loaded maxwellcat music");
 
@@ -324,11 +327,27 @@ int main()
     button->textureoff = "button_4_off";
     button->textureon = "button_4_on";
     button->togglesfx = "button8sfx";
+    button->lightstateon = true;
+    button->lightcoloron = glm::vec3(0, 1, 0);
+    button->lightstateoff = true;
+    button->lightcoloroff = glm::vec3(1, 0, 0);
     button->SetButtonState(false, false);
 
+    Button *button2 = s->CreateObject<Button>();
+    button2->SetParent(ground);
+    button2->transform.SetPosition({1, 2, 5});
+    button2->usedShaderProgram = "default";
+    button2->model = "button_3";
+    button2->textureoff = "button_3_off";
+    button2->textureon = "button_3_on";
+    button2->togglesfx = "button3sfx";
+    button2->lightstateon = true;
+    button2->lightcoloron = glm::vec3(0.9, 0.84, 0);
+    button2->SetButtonState(false, false);
+
     PointLight *light = s->CreateObject<PointLight>(Transform({0, -7, 0}));
-    light->radius = 10;
-    light->color = glm::vec3(1, 0, 0);
+    light->radius = 5;
+    light->color = glm::vec3(0.87, 0.92, 1);
 
     Surface surf;
     surf.mesh = "crowbar_cyl";
@@ -424,7 +443,7 @@ int main()
             if (button->GetButtonState())
             {
                 if (groundsrc->GetState() != AudioSourceState::PLAYING) groundsrc->Play();
-                ground->SetLinearVelocity({1, 0, 0});
+                ground->SetLinearVelocity(button2->GetButtonState() ? glm::vec3(-1, 0, 0) : glm::vec3(1, 0, 0));
             }
             else
             {
@@ -506,10 +525,10 @@ int main()
                         tmpsrc->SetCurrentClip((rand() % 2) ? hit1sfx : hit2sfx);
                         tmpsrc->Play();
 
-                        info.rigidbody->ApplyGlobalForceAtGlobalPoint(-2000.0f * info.normal, info.point);
+                        info.rigidbody->ApplyGlobalForceAtGlobalPoint(-800.0f * info.normal, info.point);
                     }
 
-                    return STOP;
+                    return RaycastCallbackState::STOP;
                 });
 
                 if (swing)

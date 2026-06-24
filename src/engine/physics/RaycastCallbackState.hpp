@@ -1,11 +1,11 @@
 #ifndef RAYCASTCALLBACKSTATE_HPP
 #define RAYCASTCALLBACKSTATE_HPP
 
-enum
+enum class RaycastCallbackState
 {
     STOP,
     CONTINUE,
     IGNORECOLLIDER
-} typedef RaycastCallbackState;
+};
 
 #endif

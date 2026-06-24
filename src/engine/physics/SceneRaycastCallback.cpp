@@ -24,13 +24,13 @@ float SceneRaycastCallback::notifyRaycastHit(const rp3d::RaycastInfo &info)
 
     switch (callback(i))
     {
-        case STOP:
+        case RaycastCallbackState::STOP:
             return 0;
 
-        case CONTINUE:
+        case RaycastCallbackState::CONTINUE:
             return 1;
 
-        case IGNORECOLLIDER:
+        case RaycastCallbackState::IGNORECOLLIDER:
             return -1;
     }
 

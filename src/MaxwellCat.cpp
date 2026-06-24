@@ -14,12 +14,13 @@ void MaxwellCat::constructor()
 {
     Scene *scene = GetScene();
     //tags.insert("Maxwell the Cat");
+    scene->SetObjectOrder(this, 64);
 
     SetRigidBodyType(DYNAMIC);
     SetMass(4.5);
     //AddCollider<SphereCollider>(Transform(), 0.3);
     //SetAngularLockAxisFactor({0, 1, 0});
-    BoxCollider *coll = AddCollider<BoxCollider>(Transform({0, 0.1, 0}), glm::vec3(0.3, 0.2, 0.3));
+    BoxCollider *coll = AddCollider<BoxCollider>(Transform({0, 0.2, 0}), glm::vec3(0.3, 0.4, 0.3));
     coll->SetBounciness(0.75);
 
     model = scene->CreateObject<Model>();
@@ -51,8 +52,8 @@ MaxwellCat::~MaxwellCat()
 {
     Scene *scene = GetScene();
 
-    scene->DeleteObject(src);
-    scene->DeleteObject(model);
+    //scene->DeleteObject(src);
+    //scene->DeleteObject(model);
 
     for (GameObject *obj : GetChildren()) if (obj->tags.contains("Decal")) scene->DeleteObject(obj);
 }
