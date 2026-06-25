@@ -17,6 +17,8 @@ class Decal : public Model
 
         ~Decal() override;
 
+        void AfterCreation() override;
+
         void Update(double delta) override;
 
     public:

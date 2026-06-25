@@ -9,6 +9,11 @@ Decal::Decal(Scene *s, double lifetime) : GameObject(s), Model(s), lifetime(life
 
 Decal::~Decal() {}
 
+void Decal::AfterCreation()
+{
+    GetScene()->SetObjectOrder(this, 128);
+}
+
 void Decal::Update(double delta)
 {
     Model::Update(delta);

@@ -22,7 +22,6 @@ MaxwellCat::~MaxwellCat()
 void MaxwellCat::AfterCreation()
 {
     Scene *scene = GetScene();
-    scene->SetObjectOrder(this, 64);
 
     SetRigidBodyType(DYNAMIC);
     SetMass(4.5);
@@ -31,6 +30,7 @@ void MaxwellCat::AfterCreation()
 
     model = scene->CreateObject<Model>();
     AddShadowChild(model, false);
+    scene->SetObjectOrder(model, 32);
     model->transform.SetScale(glm::vec3(0.03));
     {
         model->usedShaderProgram = "default";

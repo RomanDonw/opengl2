@@ -508,7 +508,6 @@ int main()
                         Decal *d = s->CreateObject<Decal>(Transform(info.point + offset, rot, glm::vec3(0.3)), 60);
                         d->fadeoutstart = 50;
                         d->usedShaderProgram = "default";
-                        s->SetObjectOrder(d, 1);
                         d->SetParent(info.rigidbody, true);
                         
                         Surface sf;
