@@ -51,10 +51,6 @@ MaxwellCat::MaxwellCat(Scene *s) : GameObject(s), RigidBody(s) { constructor(); 
 MaxwellCat::~MaxwellCat()
 {
     Scene *scene = GetScene();
-
-    //scene->DeleteObject(src);
-    //scene->DeleteObject(model);
-
     for (GameObject *obj : GetChildren()) if (obj->tags.contains("Decal")) scene->DeleteObject(obj);
 }
 

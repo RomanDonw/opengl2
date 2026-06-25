@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <iterator>
 
+#pragma push(1)
+
 struct
 {
     float x, y, z;
@@ -19,6 +21,8 @@ struct
 {
     unsigned int v0, v1, v2, v3;
 } typedef UCMESHQuadInfo;
+
+#pragma pop()
 
 Mesh::Mesh() {}
 Mesh::~Mesh() { DeleteBuffers(); }
