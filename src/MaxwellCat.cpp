@@ -21,6 +21,8 @@ MaxwellCat::~MaxwellCat()
 
 void MaxwellCat::AfterCreation()
 {
+    RigidBody::AfterCreation();
+
     Scene *scene = GetScene();
 
     SetRigidBodyType(DYNAMIC);

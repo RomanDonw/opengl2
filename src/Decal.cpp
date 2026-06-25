@@ -11,6 +11,8 @@ Decal::~Decal() {}
 
 void Decal::AfterCreation()
 {
+    Model::AfterCreation();
+
     GetScene()->SetObjectOrder(this, 128);
 }
 

@@ -15,6 +15,8 @@ Button::~Button() {}
 
 void Button::AfterCreation()
 {
+    Entity::AfterCreation();
+
     Scene *s = GetScene();
 
     surfaces.push_back(Surface());
