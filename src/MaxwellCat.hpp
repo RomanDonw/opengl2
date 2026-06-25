@@ -15,7 +15,7 @@ class MaxwellCat final : public RigidBody
         AudioSource *src;
         Model *model;
 
-        void constructor();
+        void AfterCreation() override;
 
         MaxwellCat(Scene *s, Transform t);
         MaxwellCat(Scene *s);

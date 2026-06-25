@@ -67,7 +67,8 @@ class Scene final
 
             objects.at(0).insert(ret);
             ret->order = 0;
-            
+
+            ret->AfterCreation();
             return ret;
         }
         

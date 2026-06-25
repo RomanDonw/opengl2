@@ -8,7 +8,7 @@
 #include "../../Engine.hpp"
 #include "../../Scene.hpp"
 
-struct
+struct ALListenerOrientation
 {
     glm::vec3 front;
     glm::vec3 up;

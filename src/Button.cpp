@@ -8,7 +8,12 @@
 
 // === PRIVATE ===
 
-void Button::constructor()
+Button::Button(Scene *s, Transform t) : GameObject(s, t), Entity(s, t) {}
+Button::Button(Scene *s) : GameObject(s), Entity(s) {}
+
+Button::~Button() {}
+
+void Button::AfterCreation()
 {
     Scene *s = GetScene();
 
@@ -21,11 +26,6 @@ void Button::constructor()
     AddShadowChild(light, false);
     light->radius = 2.5;
 }
-
-Button::Button(Scene *s, Transform t) : GameObject(s, t), Entity(s, t) { constructor(); }
-Button::Button(Scene *s) : GameObject(s), Entity(s) { constructor(); }
-
-Button::~Button() {}
 
 // === PUBLIC ===
 

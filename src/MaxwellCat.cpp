@@ -10,16 +10,22 @@
 
 // === PRIVATE ===
 
-void MaxwellCat::constructor()
+MaxwellCat::MaxwellCat(Scene *s, Transform t) : GameObject(s, t), RigidBody(s, t) {}
+MaxwellCat::MaxwellCat(Scene *s) : GameObject(s), RigidBody(s) {}
+
+MaxwellCat::~MaxwellCat()
 {
     Scene *scene = GetScene();
-    //tags.insert("Maxwell the Cat");
+    for (GameObject *obj : GetChildren()) if (obj->tags.contains("Decal")) scene->DeleteObject(obj);
+}
+
+void MaxwellCat::AfterCreation()
+{
+    Scene *scene = GetScene();
     scene->SetObjectOrder(this, 64);
 
     SetRigidBodyType(DYNAMIC);
     SetMass(4.5);
-    //AddCollider<SphereCollider>(Transform(), 0.3);
-    //SetAngularLockAxisFactor({0, 1, 0});
     BoxCollider *coll = AddCollider<BoxCollider>(Transform({0, 0.2, 0}), glm::vec3(0.3, 0.4, 0.3));
     coll->SetBounciness(0.75);
 
@@ -43,15 +49,6 @@ void MaxwellCat::constructor()
     src->SetSourceFloat(AL_MAX_DISTANCE, 16);
     src->SetLooping(true);
     src->SetCurrentClip(ResourceManager::GetAudioClip("mus_maxwellcat"));
-}
-
-MaxwellCat::MaxwellCat(Scene *s, Transform t) : GameObject(s, t), RigidBody(s, t) { constructor(); }
-MaxwellCat::MaxwellCat(Scene *s) : GameObject(s), RigidBody(s) { constructor(); }
-
-MaxwellCat::~MaxwellCat()
-{
-    Scene *scene = GetScene();
-    for (GameObject *obj : GetChildren()) if (obj->tags.contains("Decal")) scene->DeleteObject(obj);
 }
 
 void MaxwellCat::Update(double delta)

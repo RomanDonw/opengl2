@@ -4,13 +4,8 @@
 
 // === PRIVATE ===
 
-void Decal::constructor()
-{
-    //tags.insert("Decal");
-}
-
-Decal::Decal(Scene *s, Transform t, double lifetime) : GameObject(s, t), Model(s, t), lifetime(lifetime) { constructor(); }
-Decal::Decal(Scene *s, double lifetime) : GameObject(s), Model(s), lifetime(lifetime) { constructor(); }
+Decal::Decal(Scene *s, Transform t, double lifetime) : GameObject(s, t), Model(s, t), lifetime(lifetime) {}
+Decal::Decal(Scene *s, double lifetime) : GameObject(s), Model(s), lifetime(lifetime) {}
 
 Decal::~Decal() {}
 

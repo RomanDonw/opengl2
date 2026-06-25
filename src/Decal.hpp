@@ -10,8 +10,6 @@ class Decal : public Model
     friend class Scene;
 
     private:
-        void constructor();
-
         double starttimestamp = -1;
 
         Decal(Scene *s, Transform t, double lifetime);

@@ -38,6 +38,9 @@ class GameObject
 
         virtual ~GameObject();
 
+        virtual void AfterCreation();
+        virtual void BeforeDeletion();
+
         virtual void Update(double delta);
         virtual void AfterUpdate();
         virtual void Render(const GameObjectRenderData *data);

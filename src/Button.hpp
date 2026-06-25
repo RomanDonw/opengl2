@@ -18,12 +18,12 @@ class Button final : public Entity
 
         PointLight *light;
 
-        void constructor();
-
         Button(Scene *s, Transform t);
         Button(Scene *s);
 
         ~Button() override;
+
+        void AfterCreation() override;
 
     public:
         std::string model;

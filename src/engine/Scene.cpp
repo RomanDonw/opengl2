@@ -91,12 +91,13 @@ void Scene::DeleteObject(GameObject *obj)
 {
     if (!HasObject(obj)) throw std::runtime_error("this scene doesn't have this object");
 
-    int32_t order = obj->order;
-    delete obj;
+    obj->BeforeDeletion();
     
-    std::unordered_set<GameObject *> *group = &objects.at(order);
+    std::unordered_set<GameObject *> *group = &objects.at(obj->order);
     group->erase(obj);
-    if (!group->size()) objects.erase(order);
+    if (!group->size()) objects.erase(obj->order);
+
+    delete obj;
 }
 
 // ============================================================================================================

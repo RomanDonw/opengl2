@@ -21,11 +21,15 @@ void GameObject::OnGlobalTransformChanged()
 GameObject::GameObject(Scene *s, Transform t) : transform(this), scene(s) { transform = t; }
 GameObject::GameObject(Scene *s) : transform(this), scene(s) {}
 
-GameObject::~GameObject()
+GameObject::~GameObject() {}
+
+void GameObject::AfterCreation() {}
+
+void GameObject::BeforeDeletion()
 {
-    SetParent(nullptr, false);
-    for (GameObject *obj : GetChildren()) obj->SetParent(nullptr);
     for (GameObject *obj : GetShadowChildren()) scene->DeleteObject(obj);
+    for (GameObject *obj : GetChildren()) obj->SetParent(nullptr);
+    SetParent(nullptr, false);
 }
 
 void GameObject::Update(double delta) {}
