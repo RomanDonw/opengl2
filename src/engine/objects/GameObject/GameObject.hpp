@@ -18,6 +18,7 @@ class GameObject
 
     private:
         int32_t order; // can be changed only by Scene class!
+        bool willbedeleted = false; // can be changed only by Scene class!
 
         // for security reasons moved to private section.
         Scene *scene;

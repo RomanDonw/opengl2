@@ -8,16 +8,14 @@
 #include "engine/physics/colliders/SphereCollider/SphereCollider.hpp"
 #include "engine/physics/colliders/BoxCollider/BoxCollider.hpp"
 
+#include "Decal.hpp"
+
 // === PRIVATE ===
 
 MaxwellCat::MaxwellCat(Scene *s, Transform t) : GameObject(s, t), RigidBody(s, t) {}
 MaxwellCat::MaxwellCat(Scene *s) : GameObject(s), RigidBody(s) {}
 
-MaxwellCat::~MaxwellCat()
-{
-    Scene *scene = GetScene();
-    for (GameObject *obj : GetChildren()) if (obj->tags.contains("Decal")) scene->DeleteObject(obj);
-}
+MaxwellCat::~MaxwellCat() {}
 
 void MaxwellCat::AfterCreation()
 {
@@ -53,8 +51,18 @@ void MaxwellCat::AfterCreation()
     src->SetCurrentClip(ResourceManager::GetAudioClip("mus_maxwellcat"));
 }
 
+void MaxwellCat::BeforeDeletion()
+{
+    RigidBody::BeforeDeletion();
+
+    Scene *scene = GetScene();
+    for (GameObject *obj : GetChildren()) if (Decal *d = dynamic_cast<Decal *>(obj)) scene->DeleteObject(d);
+}
+
 void MaxwellCat::Update(double delta)
 {
+    RigidBody::Update(delta);
+
     if (transform.GetPosition().y < -100) { GetScene()->DeleteObject(this); return; }
 
     if (src->GetState() == AudioSourceState::INIT) src->Play();

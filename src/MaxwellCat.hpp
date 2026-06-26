@@ -16,6 +16,7 @@ class MaxwellCat final : public RigidBody
         Model *model;
 
         void AfterCreation() override;
+        void BeforeDeletion() override;
 
         MaxwellCat(Scene *s, Transform t);
         MaxwellCat(Scene *s);

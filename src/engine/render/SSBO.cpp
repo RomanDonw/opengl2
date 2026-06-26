@@ -7,7 +7,7 @@ SSBO::SSBO()
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
 
-    glBufferData(GL_SHADER_STORAGE_BUFFER, 0, NULL, GL_DYNAMIC_DRAW); // clear buffer.
+    //glBufferData(GL_SHADER_STORAGE_BUFFER, 0, NULL, GL_DYNAMIC_DRAW); // clear buffer.
 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }

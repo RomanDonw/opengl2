@@ -24,20 +24,66 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-    ForEachAllObjects([&](GameObject *obj) -> bool { DeleteObject(obj); return true; });
+    //ForEachAllObjects([&](GameObject *obj) -> bool { DeleteObject(obj); return true; });
+    cleanupobjects(true);
 
     if (Engine::GetScene(Engine::GetCurrentScene()) == this) Engine::SetCurrentScene("");
 
     Engine::phys->destroyPhysicsWorld(world);
 }
 
+std::vector<GameObject *> Scene::getallobjectsflat()
+{
+    std::vector<GameObject *> ret;
+    ForEachAllObjects([&](GameObject *obj) -> bool { ret.push_back(obj); return true; });
+    return ret;
+}
+#include <cstdio>
+void Scene::deleteobject(GameObject *obj)
+{
+    printf("obj type: %s\nobj->parent (1): %p\n", typeid(*obj).name(), obj->parent);
+
+    obj->BeforeDeletion();
+
+    printf("obj->parent (2): %p\n", obj->parent);
+    
+    std::unordered_set<GameObject *> *group = &objects.at(obj->order);
+    group->erase(obj);
+    if (!group->size()) objects.erase(obj->order);
+
+    delete obj;
+
+    putchar('\n');
+}
+
+void Scene::cleanupobjects(bool forcedeletion)
+{
+    std::vector<GameObject *> objs = getallobjectsflat();
+    while (objs.size())
+    {
+        size_t delindex = 0;
+        if (!forcedeletion)
+        {
+            bool hasdelcandidate = false;
+            for (; delindex < objs.size(); delindex++) if (objs[delindex]->willbedeleted) { hasdelcandidate = true; break; }
+            if (!hasdelcandidate) break;
+        }
+
+        deleteobject(objs.at(delindex));
+        objs = getallobjectsflat();
+    }
+}
+
 void Scene::Update(double delta)
 {
-    ForEachAllObjects([&](GameObject *obj) -> bool { obj->Update(delta); return true; });
+    std::vector<GameObject *> objs = getallobjectsflat();
+
+    for (GameObject *obj : objs) obj->Update(delta);
 
     world->update(delta);
-
-    ForEachAllObjects([&](GameObject *obj) -> bool { obj->AfterUpdate(); return true; });
+    
+    for (GameObject *obj : objs) obj->AfterUpdate();
+    cleanupobjects(false);
 }
 
 void Scene::Render()
@@ -90,14 +136,7 @@ bool Scene::HasObject(GameObject *obj)
 void Scene::DeleteObject(GameObject *obj)
 {
     if (!HasObject(obj)) throw std::runtime_error("this scene doesn't have this object");
-
-    obj->BeforeDeletion();
-    
-    std::unordered_set<GameObject *> *group = &objects.at(obj->order);
-    group->erase(obj);
-    if (!group->size()) objects.erase(obj->order);
-
-    delete obj;
+    obj->willbedeleted = true;
 }
 
 // ============================================================================================================
@@ -122,8 +161,7 @@ void Scene::SetObjectOrder(GameObject *obj, int32_t order)
 
 void Scene::ForEachAllObjects(std::function<bool (GameObject *)> callback)
 {
-    auto objs = objects;
-    for (std::pair<int32_t, std::unordered_set<GameObject *>> pair : objs)
+    for (std::pair<int32_t, std::unordered_set<GameObject *>> pair : objects)
     {
         for (GameObject *obj : pair.second) if (!callback(obj)) return;
     }
@@ -131,8 +169,7 @@ void Scene::ForEachAllObjects(std::function<bool (GameObject *)> callback)
 
 void Scene::ForEachAllOrders(std::function<bool (std::unordered_set<GameObject *>)> callback)
 {
-    auto objs = objects;
-    for (std::pair<int32_t, std::unordered_set<GameObject *>> pair : objs) if (!callback(pair.second)) return;
+    for (std::pair<int32_t, std::unordered_set<GameObject *>> pair : objects) if (!callback(pair.second)) return;
 }
 
 // ============================================================================================================

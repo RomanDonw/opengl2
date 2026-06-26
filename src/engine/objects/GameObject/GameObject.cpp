@@ -47,7 +47,6 @@ bool GameObject::AddShadowChild(GameObject *child, bool saveglobalpos)
 {
     if (!child || child == this || child->scene != scene) return false; // objects must be in the same scene.
     
-    //child->SetParent(nullptr, saveglobalpos);
     if (child->parent)
     {
         if (child->isshadowchild) child->parent->shadowchildren.erase(this);

@@ -6,6 +6,7 @@
 #include <map>
 #include <unordered_map>
 #include <functional>
+#include <vector>
 
 #include "Engine.hpp"
 
@@ -24,6 +25,8 @@ class PointLight;
 
 template <typename T>
 concept GameObjectConcept = std::derived_from<T, GameObject>;
+
+typedef std::map<int32_t, std::unordered_set<GameObject *>, std::less<int32_t>> GameObjectsList;
 
 class Scene final
 {
@@ -44,9 +47,13 @@ class Scene final
 
         std::unordered_set<PointLight *> pointlights;
 
-        std::map<int32_t, std::unordered_set<GameObject *>, std::less<int32_t>> objects;
+        GameObjectsList objects;
         Camera *currcam = nullptr;
         bool hasAudioListener = false;
+
+        std::vector<GameObject *> getallobjectsflat();
+        void deleteobject(GameObject *obj);
+        void cleanupobjects(bool forcedeletion);
 
         void Render();
         void Update(double delta);

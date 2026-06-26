@@ -567,7 +567,8 @@ int main()
                 std::ostringstream oss;
                 oss << "FPS: " << ups << std::endl << std::endl;
                 oss << "X: " << pos.x << ", Y: " << pos.y << ", Z: " << pos.z;
-                ImGUI::GetForegroundDrawList()->AddText(ImVec2(10, 10), IM_COL32(255, 255, 255, 255), oss.str().c_str());
+                //ImGUI::GetBackgroundDrawList()->AddRectFilled(ImVec2(0, 0), ImVec2(100, 60), IM_COL32(0, 0, 0, 127));
+                ImGUI::GetBackgroundDrawList()->AddText(ImVec2(10, 10), IM_COL32(255, 255, 255, 255), oss.str().c_str());
             }
 
             ImGUI::SetNextWindowSize(ImVec2(600, 620), ImGuiCond_FirstUseEver);
@@ -756,8 +757,7 @@ void updateCam(GLFWwindow *window, Camera *cam, double delta, Model *crowbar)
 
 bool readtextfile(std::string filename, std::string *output)
 {
-    const size_t BUFFER_SIZE = 4096;
-    char buffer[BUFFER_SIZE];
+    char buffer[4096];
 
     std::ostringstream oss;
 
@@ -766,7 +766,7 @@ bool readtextfile(std::string filename, std::string *output)
 
     while (!feof(f))
     {
-        size_t readbytes = fread(buffer, sizeof(char), BUFFER_SIZE, f);
+        size_t readbytes = fread(buffer, 1, sizeof(buffer), f);
         for (size_t i = 0; i < readbytes; i++) oss << buffer[i];
     }
 
